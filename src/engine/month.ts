@@ -73,8 +73,12 @@ async function pickClub(st: GameState, T: Turn) {
   c?.days.forEach(d => { st.timetable[d * 2] = null; });
 }
 
-/** 자동 발생형 메인 이벤트 (한 달에 하나) */
+/** 자동 발생형 메인 이벤트 — 첫 만남(1번)은 조건이 되면 모두, 그 밖에는 한 달에 하나 */
 async function autoMainEvent(st: GameState) {
+  for (const c of CHAR_ORDER) {
+    const e = nextMain(st, c);
+    if (e && e.auto && e.step === 1) await playMain(st, e, 'day');
+  }
   for (const c of CHAR_ORDER) {
     const e = nextMain(st, c);
     if (e && e.auto) { await playMain(st, e, 'day'); return; }
@@ -114,10 +118,10 @@ export function logAff(st: GameState, before: Record<CharId, number>, title: str
   refresh();
 }
 
-/** 기본 이벤트 — 짧은 만남 */
+/** 기본 이벤트 — 짧은 만남. 첫 만남(메인 이벤트 1)을 본 사람만 (st.met) */
 export async function basicMeet(st: GameState, c: CharId, where: string, bg: string) {
+  if (!st.met[c]) return;
   const before = { ...st.aff };
-  st.met[c] = true;
   addAff(st, c, BALANCE.affection.basic);
   st.stat.spirit += BALANCE.affection.spiritOnMeet;
   addSighting(st, c, where);
@@ -244,7 +248,8 @@ async function incident(st: GameState, T: Turn, day: number) {
     const o = findOption(slot, st.timetable[day * 2 + slot]);
     if (o?.who && !(o.who === 'seoha' && T.year > 1)) cands.push({ c: o.who, where: o.place, bg: 'academy' }, { c: o.who, where: o.place, bg: 'academy' });
   }
-  const p = pick(cands);
+  // 아직 첫 만남(메인 이벤트 1)을 안 본 사람은 마주치지 않는다
+  const p = pick(cands.filter(x => st.met[x.c]));
   if (!p) return;
   ui.runClose();
   await basicMeet(st, p.c, `${DAY_LABEL[day]}요일 ${p.where}`, p.bg);

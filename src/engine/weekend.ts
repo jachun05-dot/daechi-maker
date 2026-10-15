@@ -209,7 +209,8 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
   if (newly.length && turn > 0) ui.toast(`지도에 새 장소 · ${newly.map(id => placeById(id)!.name).join(', ')}`);
 
   const traces: Record<string, string[]> = {};
-  for (const [place, cs] of Object.entries(presence)) traces[place] = cs.map(c => pick(TRACES[c]));
+  // 흔적은 이미 만난 사람만 (처음 보는 사람은 "!" 첫 만남 이벤트로 나온다)
+  for (const [place, cs] of Object.entries(presence)) { const known = cs.filter(c => st.met[c]); if (known.length) traces[place] = known.map(c => pick(TRACES[c])); }
 
   const r = await ui.planWeekend({
     title: `${T.label} · ${week + 1}주차 주말`, sub: '토·일 낮과 저녁, 어디로 갈까?', month: T.month,
@@ -306,7 +307,7 @@ async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, wea
     x.metNow.add(pc); met = true;
   }
   // 3. 출몰 — 이번 주말 아직 못 본 사람
-  const here = (x.presence[place.id] ?? []).filter(c => !x.metNow.has(c));
+  const here = (x.presence[place.id] ?? []).filter(c => st.met[c] && !x.metNow.has(c));
   if (!met && here.length) {
     const c = pick(here);
     const wid = `weather.${c}.${weather}`;
@@ -337,7 +338,6 @@ async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, wea
 /** 약속 — promise.{인물} 장면 한 줄 + 호감도 */
 async function promiseMeet(st: GameState, c: CharId, place: Place, already: boolean) {
   const before = { ...st.aff };
-  st.met[c] = true;
   addAff(st, c, BALANCE.promise.aff);
   addSighting(st, c, place.name);
   (st.promiseLog[c] ??= { kept: 0, broken: 0, declined: 0 }).kept++;
@@ -354,7 +354,6 @@ async function promiseMeet(st: GameState, c: CharId, place: Place, already: bool
 /** 날씨 전용 장면 — 기본 만남 대신, 호감도 조금 더 */
 async function weatherMeet(st: GameState, c: CharId, place: Place, scene: string) {
   const before = { ...st.aff };
-  st.met[c] = true;
   addAff(st, c, BALANCE.affection.basic + 1);
   st.stat.spirit += BALANCE.affection.spiritOnMeet;
   addSighting(st, c, place.name);
