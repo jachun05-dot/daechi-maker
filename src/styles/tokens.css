@@ -1,0 +1,61 @@
+/* =========================================================
+   디자인 토큰 — 색·글꼴·모서리는 여기서만 바꾸세요.
+   낮(현대 서울) = data-theme="day" / 밤(전생) = data-theme="night"
+   ========================================================= */
+:root {
+  --font-ui: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display: 'Gowun Batang', 'Nanum Myeongjo', 'AppleMyungjo', serif;
+  --font-serif: 'Nanum Myeongjo', 'Noto Serif KR', 'AppleMyungjo', 'Batang', serif;
+  --app-width: 480px;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+
+[data-theme='day'] {
+  --bg: #f3f4f1;          /* 백자 */
+  --panel: #ffffff;
+  --panel-2: #f8f8f6;
+  --ink: #1f2328;
+  --sub: #6b7078;
+  --line: rgba(31, 35, 40, .09);
+  --accent: #a8455f;      /* 연지 */
+  --accent-ink: #ffffff;
+  --accent-2: #4f8a80;    /* 청자 */
+  --chip: #eceeea;
+  --good: #3f8a66;
+  --bad: #c2453c;
+  --money: #9a6b18;
+  --heart: #a8455f;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(31, 35, 40, .05), 0 6px 18px rgba(31, 35, 40, .05);
+  --font: var(--font-ui);
+  --font-head: var(--font-display);
+  --vn-box: rgba(255, 255, 255, .94);
+  --vn-ink: #1f2328;
+  --vn-narr: #505660;
+}
+
+[data-theme='night'] {
+  --bg: #0e0b0a;          /* 먹 */
+  --panel: #1a1311;
+  --panel-2: #221815;
+  --ink: #eadfc8;         /* 한지 */
+  --sub: #9c8a72;
+  --line: rgba(200, 161, 90, .22);
+  --accent: #c8a15a;      /* 금박 */
+  --accent-ink: #1a1008;
+  --accent-2: #a33a2c;    /* 주홍 */
+  --chip: #2a1d18;
+  --good: #b7bd78;
+  --bad: #d6623f;
+  --money: #d9b26a;
+  --heart: #d6623f;
+  --radius: 4px;
+  --radius-sm: 3px;
+  --shadow: 0 8px 28px rgba(0, 0, 0, .5);
+  --font: var(--font-serif);
+  --font-head: var(--font-serif);
+  --vn-box: rgba(20, 12, 10, .93);
+  --vn-ink: #efe3ca;
+  --vn-narr: #cbb995;
+}
