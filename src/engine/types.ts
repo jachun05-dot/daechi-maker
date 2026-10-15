@@ -89,6 +89,10 @@ export interface GameState {
   replies: Record<string, Reply[]>;
   phoneStep: Partial<Record<CharId, number>>;
   newMemory: boolean;
+  /** 주말 — 장소별 방문 횟수 (단골 레벨) */
+  placeVisits: Record<string, number>;
+  /** 주말 약속 기록 */
+  promiseLog: Partial<Record<CharId, { kept: number; broken: number; declined: number }>>;
   savedAt: number;
 }
 

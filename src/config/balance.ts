@@ -2,7 +2,7 @@
    게임 밸런스 — 모든 수치는 여기서만 조정하세요.
    스탯은 소수로 쌓이고 화면에는 정수로 보입니다.
    ========================================================= */
-import type { BaseStat, CareerId, SkillKey, SubjectKey } from '@/engine/types';
+import type { BaseStat, CareerId, Season, SkillKey, SubjectKey } from '@/engine/types';
 
 export const BALANCE = {
   /** 시작 상태 */
@@ -41,7 +41,32 @@ export const BALANCE = {
   incidentsPerMonth: 2,
 
   /* ---------- 주말 ---------- */
-  weekend: { visitsPerWeek: 2 },
+  weekend: {
+    halfDay: 0.45,          // 낮·저녁 한 칸짜리 일정의 효과 배율 (변화량 전체에 곱함)
+    fullDay: 0.85,          // 하루 종일(long) 일정의 효과 배율
+    fare: 1500,             // 다른 구역으로 한 번 움직일 때 교통비
+    moveHp: -2,             // 다른 구역으로 한 번 움직일 때 체력
+    homeDistrict: '강남',   // 집이 있는 구역 (하루는 집에서 나가 집으로 돌아온다)
+    regular: [3, 8],        // 단골 레벨 2·3이 되는 방문 횟수
+    regularMult: [1, 1.1, 1.2], // 단골 레벨별 성장·수입 배율
+    badWeather: 0.7,        // 비·눈 오는 날 야외 장소 효율
+    streetChance: 0.22,     // 아무도 안 만난 칸에서 길거리 사건이 일어날 확률
+    /** 계절별 날씨 확률 (나머지는 맑음) */
+    weather: {
+      spring: { rain: 0.25, cloud: 0.2 }, summer: { rain: 0.45, cloud: 0.15 },
+      autumn: { rain: 0.15, cloud: 0.25 }, winter: { snow: 0.35, cloud: 0.25 },
+    } as Record<Season, Partial<Record<'rain' | 'snow' | 'cloud', number>>>,
+  },
+  /** 주말 약속 */
+  promise: {
+    minAff: 20,             // 이 호감도부터 약속 연락이 온다
+    chance: 0.3,            // 조건이 되는 인물이 이번 주에 연락할 확률
+    maxPerWeek: 2,
+    aff: 5,                 // 약속을 지켰을 때
+    decline: 1,             // 거절했을 때 잃는 호감도
+    conflict: 3,            // 같은 시간 두 약속 중 고르지 않은 쪽 (이안·무진은 질투로 추가 하락)
+    clashChance: 0.5,       // 이안·무진이 같은 주에 부를 때 같은 시간을 고를 확률
+  },
 
   /* ---------- 인연 ---------- */
   affection: {

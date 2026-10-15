@@ -28,6 +28,9 @@ export const BACKGROUNDS: Record<string, { label: string; color: string }> = {
   hospital:   { label: '병원',                 color: '#dfe9e9' },
   stage:      { label: '무대',                 color: '#2a1a1f' },
   winter:     { label: '겨울 거리',            color: '#e2e6ee' },
+  palace_night: { label: '경복궁 야간개방',      color: '#2b2433' },
+  bukhansan:  { label: '북한산 둘레길',        color: '#c9d3c0' },
+  campus:     { label: '대학 캠퍼스',          color: '#dfe3d6' },
   /* 밤 — 임진왜란 */
   burning:    { label: '불타는 마을',          color: '#4a120c' },
   mountain:   { label: '피란길 산길',          color: '#1d2427' },

@@ -7,6 +7,7 @@ import type { StoryNode, Theme } from '@/engine/types';
 import { ScenePlayer, type PlayOptions, type View } from '@/engine/story/player';
 import { getScene } from '@/engine/story/library';
 import { applyEffect, game, refresh } from '@/engine/state';
+import type { WeekendResult, WeekendSpec } from '@/engine/weekend';
 
 export type Tab = 'schedule' | 'stats' | 'phone' | 'codex' | 'system';
 export interface Chip { label: string; tone: 'up' | 'down' | 'money' | 'heart' | 'plain' }
@@ -14,8 +15,6 @@ export interface RunLog { id: number; title: string; tag?: string; body?: string
 export interface ModalButton { label: string; value: unknown; primary?: boolean }
 export interface ModalOption { label: string; desc?: string; value: unknown; chips?: Chip[]; disabled?: boolean }
 export interface ModalSpec { title?: string; text?: string; letter?: string; input?: string; buttons: ModalButton[]; endings?: { title: string; kind: string }[]; options?: ModalOption[] }
-export interface MapSpec { title: string; sub: string; markers: string[]; visited: string[] }
-export interface MapResult { place: string; action: number }
 
 interface UIState {
   theme: Theme;
@@ -28,7 +27,7 @@ interface UIState {
   vn: { player: ScenePlayer; view: View } | null;
   run: { title: string; sub: string; logs: RunLog[]; button: string | null } | null;
   modal: ModalSpec | null;
-  map: MapSpec | null;
+  map: WeekendSpec | null;
   ink: { text: string; mode: Theme; on: boolean } | null;
   credits: boolean;
   toast: { text: string; key: number } | null;
@@ -47,7 +46,7 @@ let vnResolve: ((v: string | undefined) => void) | null = null;
 let modalResolve: ((v: unknown) => void) | null = null;
 let runResolve: (() => void) | null = null;
 let creditsResolve: (() => void) | null = null;
-let mapResolve: ((r: MapResult) => void) | null = null;
+let mapResolve: ((r: WeekendResult) => void) | null = null;
 let logId = 0, toastTimer: ReturnType<typeof setTimeout> | undefined;
 
 export const ui = {
@@ -123,12 +122,12 @@ export const ui = {
   runPress() { const run = get().run; if (run) set({ run: { ...run, button: null } }); const r = runResolve; runResolve = null; r?.(); },
   runClose() { set({ run: null }); },
 
-  /* ---------- 주말 지도 ---------- */
-  chooseMap(spec: MapSpec): Promise<MapResult> {
+  /* ---------- 주말 계획판 ---------- */
+  planWeekend(spec: WeekendSpec): Promise<WeekendResult> {
     set({ map: spec });
     return new Promise(res => { mapResolve = res; });
   },
-  mapPick(r: MapResult) { set({ map: null }); const f = mapResolve; mapResolve = null; f?.(r); },
+  planDone(r: WeekendResult) { set({ map: null }); const f = mapResolve; mapResolve = null; f?.(r); },
 
   /* ---------- 크레딧 ---------- */
   credits(): Promise<void> { set({ credits: true }); return new Promise(res => { creditsResolve = res; }); },

@@ -11,8 +11,11 @@ import { WEEKEND_PLACES } from '@/content/presence';
 import { LECTURES } from '@/content/vacation';
 import { ENDINGS } from '@/content/endings';
 import { CAREER_ORDER } from '@/content/careers';
-import { ROMANCEABLE } from '@/content/characters';
+import { ROMANCEABLE, CHARACTERS } from '@/content/characters';
+const CHARACTERS_NAMES = Object.fromEntries(Object.entries(CHARACTERS).map(([k, v]) => [k, v.name.slice(1)])) as Record<string, string>;
 import { MAIN_EVENTS } from '@/engine/story/library';
+import { INVITES, TRACES, INVITE_REPLY, DECLINE_REPLY } from '@/content/weekend';
+import { isBase, isSkill } from '@/engine/timetable';
 
 const FX = ['none', 'petal', 'sakura', 'leaf', 'snow', 'rain', 'ember'];
 const CMDS = ['bg', 'fx', 'stand', 'cg', 'shake', 'flash', 'card'];
@@ -102,6 +105,38 @@ describe('시간표 · 지도 · 방학', () => {
       for (const pl of WEEKEND_PLACES[c][y]) if (!PLACES.some(p => p.id === pl)) problems.push(`${c} ${y}학년: 장소 ${pl} 없음`);
     // 요일마다 고를 수 있는 일정이 최소 하나는 있어야 한다
     for (let d = 0; d < 5; d++) for (const list of [AFTER_SCHOOL, NIGHT]) if (!list.some(o => o.days.includes(d))) problems.push(`${d}요일에 고를 일정 없음`);
+    expect(problems).toEqual([]);
+  });
+});
+
+describe('주말', () => {
+  it('장소·일정·사건·약속 데이터가 올바르다', () => {
+    const problems: string[] = [];
+    const res = ['hp', 'stress', 'money'];
+    for (const p of PLACES) {
+      if (p.pos[0] < 0 || p.pos[0] > 100 || p.pos[1] < 0 || p.pos[1] > 100) problems.push(`${p.id}: pos 범위 밖`);
+      for (const a of p.actions) for (const k of Object.keys(a.delta)) if (!isBase(k) && !isSkill(k) && !res.includes(k)) problems.push(`${p.id}/${a.label}: 알 수 없는 수치 ${k}`);
+      if (p.open?.months && !p.actions.some(a => !a.months || a.months.some(m => p.open!.months!.includes(m)))) problems.push(`${p.id}: 열리는 달에 고를 일정이 없음`);
+      for (const m of p.open?.months ?? []) if (!p.actions.some(a => !a.unlock && (!a.months || a.months.includes(m)))) problems.push(`${p.id}: ${m}월에 처음부터 고를 수 있는 일정이 없음`);
+      if (p.actions.every(a => a.unlock)) problems.push(`${p.id}: 처음부터 고를 수 있는 일정이 없음`);
+    }
+    for (const s of Object.values(SCENES).filter(s => s.id.startsWith('street.'))) {
+      const place = s.id.split('.')[1];
+      if (!PLACES.some(p => p.id === place)) problems.push(`${s.id}: 장소 ${place} 없음`);
+      if (s.attrs.if) { const e = checkCond(s.attrs.if); if (e) problems.push(`${s.id}: ${e}`); }
+      if (s.attrs.weather && !['sun', 'cloud', 'rain', 'snow'].includes(s.attrs.weather)) problems.push(`${s.id}: 날씨 ${s.attrs.weather}`);
+    }
+    for (const s of Object.values(SCENES).filter(s => s.id.startsWith('weather.'))) {
+      const [, c, w] = s.id.split('.');
+      if (!(CHAR_ORDER as string[]).includes(c)) problems.push(`${s.id}: 인물 ${c} 없음`);
+      if (!['sun', 'cloud', 'rain', 'snow'].includes(w)) problems.push(`${s.id}: 날씨 ${w}`);
+    }
+    for (const c of CHAR_ORDER) {
+      if (!TRACES[c]?.length) problems.push(`${c}: 흔적 없음`);
+      if (!INVITES[c]?.length || !INVITE_REPLY[c] || !DECLINE_REPLY[c]) problems.push(`${c}: 약속 문구 없음`);
+      if (!SCENES[`promise.${c}`]) problems.push(`promise.${c} 장면 없음`);
+      for (const t of TRACES[c] ?? []) if (t.includes(CHARACTERS_NAMES[c])) problems.push(`${c}: 흔적에 이름이 드러남`);
+    }
     expect(problems).toEqual([]);
   });
 });

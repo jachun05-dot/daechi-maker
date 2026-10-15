@@ -27,7 +27,8 @@ src/
 │  ├─ characters.ts          인물 이름·설정·색·마지막 선택 문구
 │  ├─ careers.ts             진로 4종, 기초 능력·특기·집중 과목 이름, 전생의 꿈
 │  ├─ timetable.ts           평일 시간표 일정(방과후·야간)과 동아리
-│  ├─ places.ts              주말 서울 지도 13곳
+│  ├─ places.ts              주말 서울 지도 장소 (해금·계절·단골 일정·핀 위치)
+│  ├─ weekend.ts             주말 흔적 힌트 · 약속 연락 문구 · 날씨
 │  ├─ presence.ts            인물이 주말에 자주 있는 곳 (학년별) · 학교에서 마주치는 인물
 │  ├─ vacation.ts            방학 특강
 │  ├─ calendar.ts            학사 일정 (몇 월에 무슨 이벤트)
@@ -39,11 +40,13 @@ src/
 │     ├─ basic/                    기본 이벤트 (짧은 만남)
 │     ├─ main/                     인물 메인 이벤트 (스토리)
 │     ├─ vacation/                 방학 이벤트 (여름 3 · 겨울 2단계)
+│     ├─ weekend/                  주말 약속 · 날씨 장면
+│     ├─ street/                   주말 길거리 사건
 │     ├─ dreams/                   밤 — 전생의 기억
 │     ├─ events/                   학사 이벤트 · 위기 · 방학 진행
 │     └─ endings/                  커리어 · 진/노멀/차인 · 이현 · 히든
 ├─ assets/images/            ← 이미지 넣는 곳 (아래 규칙)
-├─ engine/                   게임 진행 로직 (month.ts = 한 달 흐름)
+├─ engine/                   게임 진행 로직 (month.ts = 한 달 흐름, weekend.ts = 주말 계획판)
 ├─ ui/                       화면 컴포넌트
 └─ styles/tokens.css         ← 색·글꼴 (낮/밤 테마)
 docs/legacy-stories/         예전 버전 대사 (참고용, 게임에서 읽지 않음)

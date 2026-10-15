@@ -1,14 +1,13 @@
 /* =========================================================
    한 달(턴) 진행
-   평일 시간표 자동 진행 → 주말 지도 (토·일) × 4주 → 월말 이벤트 → 밤의 꿈 → 다음 달
+   평일 시간표 자동 진행 → 주말 계획판 (토·일 낮·저녁, weekend.ts) × 4주 → 월말 이벤트 → 밤의 꿈 → 다음 달
    ========================================================= */
 import type { CharId, GameState, StoryNode } from './types';
 import { BALANCE } from '@/config/balance';
 import { TURNS, SEASON_LABEL, DAY_LABEL, type Turn } from '@/content/calendar';
 import { CHARACTERS, CHAR_ORDER } from '@/content/characters';
 import { CLUBS } from '@/content/timetable';
-import { PLACES, placeById } from '@/content/places';
-import { WEEKEND_PLACES, SCHOOL_PEOPLE } from '@/content/presence';
+import { SCHOOL_PEOPLE } from '@/content/presence';
 import { SUBJECT_LABEL } from '@/content/careers';
 import { ui, useUI } from '@/store/ui';
 import { addDelta, applyDelta, clubAt, findClub, findOption, growthMult, topTalent, type Delta } from './timetable';
@@ -20,6 +19,7 @@ import { deliverMessages } from './phone';
 import { monthEvent } from './events';
 import { runVacation } from './vacation';
 import { finale } from './finale';
+import { runWeekend } from './weekend';
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 const yearOf = (st: GameState) => TURNS[Math.min(st.turn, TURNS.length - 1)].year;
@@ -86,7 +86,7 @@ export function nextMain(st: GameState, c: CharId): MainEvent | null {
 }
 export const mainDone = (st: GameState, c: CharId) => st.mainStep[c] >= mainEventsOf(c).length;
 
-async function playMain(st: GameState, e: MainEvent, theme: 'day' = 'day', place?: string) {
+export async function playMain(st: GameState, e: MainEvent, theme: 'day' = 'day', place?: string) {
   const c = e.ch as CharId;
   const before = { ...st.aff };
   st.met[c] = true;
@@ -99,7 +99,7 @@ async function playMain(st: GameState, e: MainEvent, theme: 'day' = 'day', place
   logAff(st, before, `${CHARACTERS[c].name} — 이야기가 움직였다`, c);
 }
 
-function logAff(st: GameState, before: Record<CharId, number>, title: string, c: CharId, body?: string) {
+export function logAff(st: GameState, before: Record<CharId, number>, title: string, c: CharId, body?: string) {
   const diff: Partial<Record<CharId, number>> = {};
   for (const k of CHAR_ORDER) if (st.aff[k] !== before[k]) diff[k] = st.aff[k] - before[k];
   ui.runLog({ title, body, tone: 'char', mark: CHARACTERS[c].hanja[0], color: CHARACTERS[c].color, chips: affChips(diff) });
@@ -107,7 +107,7 @@ function logAff(st: GameState, before: Record<CharId, number>, title: string, c:
 }
 
 /** 기본 이벤트 — 짧은 만남 */
-async function basicMeet(st: GameState, c: CharId, where: string, bg: string) {
+export async function basicMeet(st: GameState, c: CharId, where: string, bg: string) {
   const before = { ...st.aff };
   st.met[c] = true;
   addAff(st, c, BALANCE.affection.basic);
@@ -145,7 +145,7 @@ export async function runMonth() {
       if (st.stress >= 100 && !slumped) { slumped = true; await slump(st); }
       await ui.runWait('주말로');
       ui.runClose();
-      for (const day of ['토요일', '일요일']) await weekendVisit(st, T, week, day);
+      await runWeekend(st, T, week, st.turn);
     }
     ui.runOpen(`${T.label} · 한 달 정리`, `${SEASON_LABEL[T.season]} · ${T.title}`);
     ui.runLog({
@@ -235,48 +235,8 @@ async function incident(st: GameState, T: Turn, day: number) {
   ui.runOpen(`${T.label}`, '평일');
 }
 
-/* ---------- 주말 ---------- */
-function weekendPresence(st: GameState): Record<string, CharId[]> {
-  const year = yearOf(st);
-  const at: Record<string, CharId[]> = {};
-  for (const c of CHAR_ORDER) {
-    const list = WEEKEND_PLACES[c][year];
-    if (!list?.length) continue;
-    (at[pick(list)] ??= []).push(c);
-  }
-  return at;
-}
-
-async function weekendVisit(st: GameState, T: Turn, week: number, day: string) {
-  const presence = weekendPresence(st);
-  const mains: Record<string, MainEvent> = {};
-  for (const c of CHAR_ORDER) {
-    const e = nextMain(st, c);
-    if (e && !e.auto && e.place && !mains[e.place]) mains[e.place] = e;
-  }
-  const visited = PLACES.filter(p => st.flags[`v_${p.id}`]).map(p => p.id);
-  const r = await ui.chooseMap({ title: `${T.label} · ${week + 1}주차 ${day}`, sub: '어디로 갈까?', markers: Object.keys(mains), visited });
-  const place = placeById(r.place)!;
-  const action = place.actions[r.action] ?? place.actions[0];
-  st.flags[`v_${place.id}`] = true;
-  ui.runOpen(`${T.label} · ${week + 1}주차 ${day}`, place.name);
-  const d = applyDelta(st, action.delta, growthMult(st));
-  ui.runLog({ title: `${place.name} · ${action.label}`, body: action.line, chips: deltaChips(d), mark: place.name[0] });
-  refresh();
-
-  const main = mains[place.id];
-  if (main) { ui.runClose(); await playMain(st, main, 'day', place.name); ui.runOpen(`${T.label} · ${week + 1}주차 ${day}`, place.name); }
-  else {
-    const here = presence[place.id] ?? [];
-    if (here.length) { ui.runClose(); await basicMeet(st, pick(here), place.name, place.bg); ui.runOpen(`${T.label} · ${week + 1}주차 ${day}`, place.name); }
-  }
-  if (st.stress >= 100) await slump(st);
-  await ui.runWait(day === '토요일' ? '일요일' : week < 3 ? '다음 주' : '한 달 정리');
-  ui.runClose();
-}
-
 /* ---------- 위기 ---------- */
-async function slump(st: GameState) {
+export async function slump(st: GameState) {
   ui.runLog({ title: '슬럼프', tone: 'warn', mark: '亂', body: '펜을 쥔 손이 움직이지 않았다. 모든 게 의미 없게 느껴졌다.' });
   const v = await ui.playScene('event.slump', { theme: 'day' });
   ui.setTheme('day');

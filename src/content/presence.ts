@@ -8,7 +8,7 @@ import type { CharId } from '@/engine/types';
 export const WEEKEND_PLACES: Record<CharId, Record<1 | 2 | 3, string[]>> = {
   ian:    { 1: ['hannam'], 2: ['hannam'], 3: ['hannam'] },            // 이안의 주말 장소는 미정 (임시: 한남동 갤러리)
   mujin:  { 1: ['hangang', 'schoolgym'], 2: ['hangang', 'schoolgym'], 3: ['hangang', 'schoolgym'] },
-  doyun:  { 1: ['daechi'], 2: ['daechi'], 3: ['daechi'] },            // 3학년 땐 졸업생 — 대치동에서 과외 알바
+  doyun:  { 1: ['daechi'], 2: ['daechi'], 3: ['daechi', 'campus'] },  // 3학년 땐 졸업생 — 대학 캠퍼스, 대치동 과외 알바
   taejun: { 1: ['cheongdam'], 2: ['cheongdam'], 3: ['cheongdam'] },
   seoha:  { 1: ['daehakro'], 2: ['daehakro'], 3: ['daehakro'] },
   ihyun:  { 1: ['palace', 'intl'], 2: ['palace', 'intl'], 3: ['palace', 'intl'] },

@@ -107,6 +107,10 @@ me| 주인공 대사         ← 플레이어가 정한 이름으로 표시
 | `true.` `normal.` `reject.{인물}` | 마지막 선택의 결과 | `ending=` 엔딩 컬렉션 id (`content/endings.ts`) |
 | `career.{진로}` | 커리어 엔딩 | `ending=` · 엔진이 `var.kind`(dream / other)를 넘긴다 |
 
+| `promise.{인물}` (weekend/) | 주말 약속 장소에서. 한 줄 무작위 | `pick=random` |
+| `weather.{인물}.{rain\|snow}` (weekend/) | 비·눈 오는 주말에 그 인물을 만나면 기본 이벤트 대신 | — |
+| `street.{장소id}.{번호}` (street/) | 주말에 아무도 안 만난 칸에서 가끔 | `title=` · `weather=` · `year=` · `if=조건` |
+
 - 새 메인 이벤트를 추가하려면 `main.{인물}.{다음 번호}` 장면을 만들면 끝입니다. 지도 장소 id는 `content/places.ts`에 있어요.
 - 새 전생 꿈도 dreams/ 에 장면을 추가하면 도감과 해금 판정에 자동으로 들어갑니다.
 - `npm test`가 메인 이벤트 번호가 빠졌는지, 장소 id가 맞는지도 검사합니다.
