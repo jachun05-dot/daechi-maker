@@ -49,7 +49,7 @@
   ian| …나쁘지 않았어. 아니, 좋았어. 이 말 하기 싫었는데.
   [effect ian+4]
 [elif var.kind=music && met.sihyun]
-  sihyun| 범생이 아가씨, 무대 체질이네. 오늘은 인정.
+  sihyun| 범생이, 무대 체질이었네. 오늘은 인정.
   [effect sihyun+4]
 
 # --- 1학년 진로 상담 : var.hint(꿈 후보 이름)
@@ -75,7 +75,7 @@
 [fx snow]
 수능 날 아침. 첫눈이 내렸다. 수험장 앞에는 후배들의 응원 소리가 가득했다.
 [if met.mujin && aff.mujin>=30]
-  mujin| 핫팩! 초코우유! 그리고… 너 진짜 잘할 거야!
+  mujin| 핫팩! 초코우유! 그리고… 너 진짜 잘 볼 거야!
 [if met.ian && aff.ian>=30]
   휴대폰을 끄기 직전, 메시지 하나. “긴장하지 마. 넌 원래 잘해.” — 이안
 [if var.result=great]
