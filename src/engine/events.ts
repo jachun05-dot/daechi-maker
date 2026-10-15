@@ -1,18 +1,19 @@
 /* =========================================================
    월말 학사 이벤트 — 판정은 여기, 대사는 stories/events/school.story
    ========================================================= */
-import type { GameState, StatKey } from './types';
+import type { CareerId, GameState, SkillKey, StoryNode } from './types';
 import type { Turn } from '@/content/calendar';
 import { BALANCE } from '@/config/balance';
-import { ROUTES } from '@/content/routes';
+import { CAREERS, SUBJECT_LABEL } from '@/content/careers';
 import { ui, type Chip } from '@/store/ui';
-import { applyDelta, careerFit, type Delta } from './schedule';
+import { applyDelta, bestCareers, careerFit, topTalent, type Delta } from './timetable';
 import { deltaChips } from './chips';
 import { pushMsg } from './phone';
 import { refresh } from './state';
+import { getScene } from './story/library';
 
-/** 장면을 보여 준 뒤 주간 진행 화면에 결과 한 줄을 남긴다 */
-async function showEvent(T: Turn, scene: string, vars: Record<string, string | number>, after?: () => Chip[]) {
+/** 장면을 보여 준 뒤 진행 화면에 결과 한 줄을 남긴다 */
+async function showEvent(T: Turn, scene: string | StoryNode[], vars: Record<string, string | number>, after?: () => Chip[]) {
   ui.runClose();
   const value = await ui.playScene(scene, { theme: 'day', vars });
   ui.setTheme('day');
@@ -25,50 +26,37 @@ async function showEvent(T: Turn, scene: string, vars: Record<string, string | n
 
 export async function monthEvent(st: GameState, T: Turn) {
   switch (T.event) {
-    case 'exam':
-    case 'exam_winter': {
-      await exam(st, T);
-      if (T.event === 'exam_winter') await showEvent(T, 'event.winter', { year: T.year }, () => deltaChips(applyDelta(st, { hp: 15, stress: -8 }, false)));
-      return;
-    }
+    case 'exam': return exam(st, T);
     case 'sports': {
       const win = st.stat.fit >= BALANCE.sports.base + st.turn * BALANCE.sports.perTurn;
-      await showEvent(T, 'event.sports', { win: win ? 1 : 0 }, () => deltaChips(applyDelta(st, win ? { charm: 4, stress: -8 } : { stress: -4 }, false)));
+      await showEvent(T, 'event.sports', { win: win ? 1 : 0 }, () => deltaChips(applyDelta(st, win ? { cha: 2, stress: -8 } : { stress: -4 })));
       return;
     }
     case 'festival': {
-      const kinds: [StatKey, string][] = [['art', '밴드 공연'], ['sense', '연극 무대'], ['cha', '축제 MC']];
-      const [kind, stage] = kinds.sort((a, b) => st.stat[b[0]] - st.stat[a[0]])[0];
-      const ok = st.stat[kind] >= BALANCE.festival.base + st.turn * BALANCE.festival.perTurn;
-      const delta: Delta = ok ? { charm: 6, [kind]: 5, stress: -10 } : { charm: 2, stress: -3 };
-      await showEvent(T, 'event.festival', { kind, stage, ok: ok ? 1 : 0 }, () => deltaChips(applyDelta(st, delta, false)));
+      const kinds: [string, string, number, SkillKey[]][] = [
+        ['music', '밴드 공연', (st.skill.vocal + st.skill.dance) / 2, ['vocal', 'dance']],
+        ['acting', '연극 무대', (st.skill.acting + st.skill.voice) / 2, ['acting', 'voice']],
+        ['debate', '축제 MC', (st.skill.debate + st.skill.language) / 2, ['debate']],
+      ];
+      const [kind, stage, score, skills] = kinds.sort((a, b) => b[2] - a[2])[0];
+      const ok = score >= BALANCE.festival.base + st.turn * BALANCE.festival.perTurn;
+      const delta: Delta = ok ? { sense: 3, cha: 3, stress: -10, [skills[0]]: 3 } : { cha: 1, stress: -3 };
+      await showEvent(T, 'event.festival', { kind, stage, ok: ok ? 1 : 0 }, () => deltaChips(applyDelta(st, delta)));
       return;
     }
-    case 'counsel': {
-      const fit = careerFit(st, st.goal);
-      const best = (Object.keys(BALANCE.careers) as GameState['goal'][]).sort((a, b) => careerFit(st, b) - careerFit(st, a))[0];
-      const canSwitch = best !== st.goal && careerFit(st, best) > fit + BALANCE.counselSwitchGap;
-      const v = await showEvent(T, 'event.counsel', {
-        pct: Math.floor(Math.min(1, fit) * 100), level: fit >= 0.8 ? 'good' : fit >= 0.5 ? 'maybe' : 'hard',
-        switch: canSwitch ? 1 : 0, best, bestGoal: ROUTES[best].goal,
-      });
-      if (v === 'switch') { st.goal = best; ui.toast(`꿈이 바뀌었다 · ${ROUTES[best].goal}`); }
-      return;
-    }
+    case 'counsel': return T.year === 1 ? counselHint(st, T) : counselDecide(st, T);
     case 'suneung': {
       const r = st.stat.int / BALANCE.suneung.intFull;
-      await showEvent(T, 'event.suneung', { result: r >= 1 ? 'great' : r >= 0.6 ? 'ok' : 'bad' }, () => deltaChips(applyDelta(st, { stress: -20 }, false)));
+      await showEvent(T, 'event.suneung', { result: r >= 1 ? 'great' : r >= 0.6 ? 'ok' : 'bad' }, () => deltaChips(applyDelta(st, { stress: -20 })));
       return;
     }
-    case 'summer':
-      await showEvent(T, 'event.summer', {}, () => deltaChips(applyDelta(st, { hp: 15 }, false)));
-      return;
   }
 }
 
 async function exam(st: GameState, T: Turn) {
   const E = BALANCE.exam;
-  const ratio = st.stat.int / (E.base + st.turn * E.perTurn);
+  const academic = st.focus && st.focus !== 'arts';
+  const ratio = st.stat.int * (academic ? 1 + E.focusBonus : 1) / (E.base + st.turn * E.perTurn);
   const tier = E.tiers.find(t => ratio >= t.min)!;
   const mom: Record<string, string> = {
     top: '우리 딸 전교 1등!!!\n용돈 10만 원 더 보냈다!! 사랑해!!',
@@ -76,9 +64,33 @@ async function exam(st: GameState, T: Turn) {
     mid: '성적표 봤다.\n다음엔 조금만 더 해보자? 엄마는 믿어.',
     low: '…성적표 봤다.\n저녁에 얘기 좀 하자.',
   };
-  await showEvent(T, 'event.exam', { exam: T.title.split(' · ')[0], rank: tier.rank, tier: tier.tier }, () => deltaChips(applyDelta(st, tier.eff, false)));
+  await showEvent(T, 'event.exam', {
+    exam: T.title.split(' · ')[0], rank: tier.rank, tier: tier.tier,
+    hasFocus: st.focus ? 1 : 0, focus: st.focus ? SUBJECT_LABEL[st.focus] : '',
+  }, () => deltaChips(applyDelta(st, tier.eff as Delta)));
   pushMsg(st, 'mom', mom[tier.tier]);
-  const good = tier.tier === 'top' || tier.tier === 'high';
-  if (st.met.ian && st.aff.ian >= 20 && good) pushMsg(st, 'ian', '시험 잘 봤다며. 도서관에 소문 다 났어.\n…축하해. 진심으로.');
-  if (st.met.taejun && st.aff.taejun >= 20) pushMsg(st, 'taejun', good ? '너 나보다 잘 봤더라. …인정.' : '시험 별로였냐. …마카롱 사 줄까.');
+}
+
+/** 1학년 진로 상담 — 처음으로 꿈의 후보가 언급된다 */
+async function counselHint(st: GameState, T: Turn) {
+  const hint = topTalent(st);
+  st.goalHint = hint;
+  await showEvent(T, 'event.counsel.hint', { hint: CAREERS[hint].short });
+}
+
+/** 2학년 진로 상담 — 꿈을 정한다 */
+async function counselDecide(st: GameState, T: Turn) {
+  const ranked = bestCareers(st);
+  const offer: CareerId[] = [...new Set([ranked[0], ranked[1], ...(st.goal ? [st.goal] : []), ...(st.goalHint ? [st.goalHint] : [])])];
+  const nodes: StoryNode[] = [
+    ...getScene('event.counsel.decide').nodes,
+    { t: 'choice', line: 0, options: offer.map(c => ({
+      text: `${CAREERS[c].goal} (지금 적합도 ${Math.floor(Math.min(1, careerFit(st, c)) * 100)}%)`, eff: {}, value: c, body: [],
+    })) },
+  ];
+  const v = await showEvent(T, nodes, {});
+  if (v && v in CAREERS) {
+    st.goal = v as CareerId;
+    ui.toast(`꿈을 정했다 · ${CAREERS[st.goal].goal}`);
+  }
 }

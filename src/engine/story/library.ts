@@ -35,7 +35,7 @@ export const DREAMS: Dream[] = Object.values(SCENES)
   .filter(s => s.file.startsWith('dreams/'))
   .map(s => ({
     id: s.id,
-    ch: s.file.replace('dreams/', '').replace('.story', ''),
+    ch: s.attrs.ch ?? s.file.replace('dreams/', '').replace('.story', ''),
     ep: Number(s.attrs.ep ?? 1),
     title: s.attrs.title ?? s.id,
     aff: Number(s.attrs.aff ?? 0),
@@ -44,3 +44,15 @@ export const DREAMS: Dream[] = Object.values(SCENES)
     hidden: s.attrs.hidden === '1',
     requires: s.attrs.requires ? s.attrs.requires.split(',') : [],
   }));
+
+/** 인물 메인 이벤트 — events/main.{인물}.story 의 `=== main.{인물}.{번호}` 장면
+ *  속성: aff(최소 호감도) year(최소 학년) spirit(최소 감응) place(지도 장소 id) auto=1(자동 발생) */
+export interface MainEvent { id: string; ch: string; step: number; aff: number; year: number; spirit: number; place: string | null; auto: boolean }
+export const MAIN_EVENTS: MainEvent[] = Object.values(SCENES)
+  .filter(s => /^main\.\w+\.\d+$/.test(s.id))
+  .map(s => {
+    const [, ch, n] = s.id.split('.');
+    return { id: s.id, ch, step: Number(n), aff: Number(s.attrs.aff ?? 0), year: Number(s.attrs.year ?? 1), spirit: Number(s.attrs.spirit ?? 0), place: s.attrs.place ?? null, auto: s.attrs.auto === '1' };
+  })
+  .sort((a, b) => (a.ch === b.ch ? a.step - b.step : a.ch.localeCompare(b.ch)));
+export const mainEventsOf = (ch: string) => MAIN_EVENTS.filter(e => e.ch === ch);

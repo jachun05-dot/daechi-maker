@@ -6,14 +6,14 @@ import { evalCond, fill, type StoryCtx } from '@/engine/story/context';
 import { newState } from '@/engine/state';
 import type { Effect } from '@/engine/types';
 
-const ctx = (): StoryCtx => { const state = newState('서단비', 'med'); return { state, name: state.name, route: 'med', vars: { tier: 'top' } }; };
+const ctx = (): StoryCtx => { const state = newState('서단비'); state.goal = 'med'; return { state, name: state.name, vars: { tier: 'top' } }; };
 
 describe('parser', () => {
   const [scene] = parseStory(`=== test min=3 title="두 단어"
 [bg library]
 나레이션
 ian(smile)| 안녕
-* 첫째 {ian+3 spirit+1 special}
+* 첫째 {ian+3 spirit+1 vocal+2 special}
   me| 좋아요
   [if aff.ian>=3]
     호감 3 이상
@@ -30,7 +30,7 @@ ian(smile)| 안녕
     const c = scene.nodes[3];
     expect(c.t).toBe('choice');
     if (c.t !== 'choice') return;
-    expect(c.options[0].eff).toEqual({ aff: { ian: 3 }, stat: { spirit: 1 } });
+    expect(c.options[0].eff).toEqual({ aff: { ian: 3 }, stat: { spirit: 1 }, skill: { vocal: 2 } });
     expect(c.options[0].special).toBe(true);
     expect(c.options[1]).toMatchObject({ value: 'b', cond: 'met.ian' });
     expect(scene.nodes[4]).toMatchObject({ t: 'say', text: '* 별표로 시작하는 나레이션' });
@@ -66,8 +66,10 @@ describe('context', () => {
   });
   it('조건식', () => {
     const c = ctx();
-    expect(evalCond('route=med && var.tier=top', c)).toBe(true);
-    expect(evalCond('aff.ian>=1 || int>=30', c)).toBe(true);
+    expect(evalCond('goal=med && var.tier=top', c)).toBe(true);
+    expect(evalCond('past=med', c)).toBe(true);
+    expect(evalCond('aff.ian>=1 || int>=10', c)).toBe(true);
+    expect(evalCond('year=1 && vocal<1', c)).toBe(true);
     expect(evalCond('!met.ian', c)).toBe(true);
     expect(evalCond('flag.x', c)).toBe(false);
   });

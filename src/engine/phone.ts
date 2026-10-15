@@ -1,12 +1,12 @@
 /* 스마트폰 메신저 */
-import type { GameState } from './types';
+import type { CharId, GameState } from './types';
 import { BALANCE } from '@/config/balance';
 import { CHAR_ORDER } from '@/content/characters';
 import { JIYU, MOM_ALLOWANCE, PHONE } from '@/content/phone';
 import { fill } from './story/context';
-import { clamp } from './state';
+import { addAff } from './state';
 
-const ctxOf = (st: GameState) => ({ state: st, name: st.name, route: st.route, vars: {} });
+const ctxOf = (st: GameState) => ({ state: st, name: st.name, vars: {} });
 
 export function pushMsg(st: GameState, room: string, text: string, replies?: { text: string; aff: number }[]) {
   (st.chats[room] ??= []).push({ from: 'them', text: fill(text, ctxOf(st)) });
@@ -32,7 +32,7 @@ export function answer(st: GameState, room: string, index: number) {
   if (!r) return;
   st.chats[room].push({ from: 'me', text: r.text });
   if (room in st.aff && r.aff) {
-    st.aff[room as 'ian'] = clamp(st.aff[room as 'ian'] + r.aff, 0, 100);
+    addAff(st, room as CharId, r.aff);
     st.chats[room].push({ from: 'sys', text: '메시지에 하트를 눌렀습니다' });
   }
   delete st.replies[room];

@@ -8,7 +8,8 @@ export class StoryError extends Error {
   constructor(public file: string, public line: number, msg: string) { super(`${file}:${line} — ${msg}`); }
 }
 
-const STAT_KEYS = ['int', 'art', 'sense', 'cha', 'charm', 'spirit', 'fit'];
+const STAT_KEYS = ['int', 'sense', 'cha', 'fit', 'spirit'];
+const SKILL_KEYS = ['science', 'medicine', 'vocal', 'dance', 'acting', 'voice', 'language', 'debate'];
 const RES_KEYS = ['hp', 'stress', 'money'];
 
 interface Line { level: number; text: string; line: number }
@@ -30,13 +31,14 @@ export function parseEffect(tokens: string[], file: string, line: number): Effec
   for (const tok of tokens) {
     if (tok.startsWith('flag:')) { (eff.flags ??= []).push(tok.slice(5)); continue; }
     const m = /^([a-z_]+)([+-])(\d+)$/.exec(tok);
-    if (!m) throw new StoryError(file, line, `알 수 없는 효과 "${tok}" (예: ian+3, spirit+2, stress-5, flag:이름)`);
+    if (!m) throw new StoryError(file, line, `알 수 없는 효과 "${tok}" (예: ian+3, spirit+2, vocal+1, stress-5, flag:이름)`);
     const [, key, sign, num] = m;
     const v = (sign === '-' ? -1 : 1) * Number(num);
     if (STAT_KEYS.includes(key)) (eff.stat ??= {})[key as 'int'] = v;
+    else if (SKILL_KEYS.includes(key)) (eff.skill ??= {})[key as 'vocal'] = v;
     else if (RES_KEYS.includes(key)) (eff.res ??= {})[key as 'hp'] = v;
     else if ((CHAR_ORDER as string[]).includes(key)) (eff.aff ??= {})[key as 'ian'] = v;
-    else throw new StoryError(file, line, `"${key}"은(는) 스탯/리소스/인물 id가 아닙니다`);
+    else throw new StoryError(file, line, `"${key}"은(는) 스탯/특기/리소스/인물 id가 아닙니다`);
   }
   return eff;
 }

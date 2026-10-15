@@ -4,7 +4,7 @@ import { useUI } from '@/store/ui';
 import { CHARACTERS, CHAR_ORDER } from '@/content/characters';
 import { ENDINGS } from '@/content/endings';
 import { DREAMS, type Dream } from '@/engine/story/library';
-import { dreamSequence } from '@/engine/week';
+import { dreamSequence } from '@/engine/month';
 import { avatarImage, cgImage } from '@/engine/assets';
 import { Mono } from '../common/Mono';
 import { Icon } from '../common/Icon';
@@ -64,11 +64,11 @@ export function CodexTab() {
           <section key={k} className="card person-card">
             <div className="person">
               <Mono src={known ? avatarImage(k) : undefined} text={known ? c.hanja[0] : '?'} color={known ? c.color : undefined} round size={48} />
-              <div className="person-tx"><b>{known ? `${c.name} ${c.hanja}` : '???'}</b><span>{known ? c.role : c.where}</span></div>
+              <div className="person-tx"><b>{known ? `${c.name} ${c.hanja}` : '???'}</b><span>{known ? c.role : '아직 만나지 못했다'}</span></div>
             </div>
             {known && <p className="muted">{c.desc}</p>}
             <p className="muted">{pastKnown ? <><b>전생 · {c.past}({c.pastHanja})</b> — {c.pastRole}<br />{c.pastDesc}</> : '전생 · 기억이 아직 깨어나지 않았다.'}</p>
-            {known && <p className="muted">만나는 곳 · {c.where}</p>}
+            {known && <p className="muted">자주 보이는 곳 · {st?.sightings[k]?.length ? st.sightings[k]!.join(', ') : '아직 모른다'}</p>}
           </section>
         );
       })}

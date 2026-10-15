@@ -1,22 +1,18 @@
 /* =========================================================
-   3학년 12월 — 졸업 → 사야 출국 → 마지막 기억 → 엔딩
-   판정 순서: ① 커리어  ② 파트너(진/노멀/자아실현)  ③ 크레딧  ④ 사야 에필로그
+   3학년 12월 — 졸업 → 마지막 전생의 밤 → 커리어 → 마지막 선택 → 인연 → 프롤로그 재생 → 크레딧
    ========================================================= */
-import type { CharId } from './types';
+import type { CharId, StoryNode } from './types';
 import { BALANCE } from '@/config/balance';
 import { ENDINGS } from '@/content/endings';
+import { CHARACTERS, ROMANCEABLE } from '@/content/characters';
 import { ui, useUI } from '@/store/ui';
-import { careerResult } from './schedule';
-import { DREAMS, getScene } from './story/library';
-import { fill } from './story/context';
+import { careerResult } from './timetable';
+import { DREAMS, getScene, hasScene } from './story/library';
 import { game, recordEnding, S, saves } from './state';
-import { dreamSequence } from './week';
+import { dreamSequence, mainDone } from './month';
 
-const FIVE: CharId[] = ['ian', 'mujin', 'sihyun', 'seoha', 'taejun'];
-const hasAllMemories = (c: CharId) => [1, 2, 3].every(n => S().memories[`${c}${n}`]);
-
-async function play(sceneId: string, got: string[]) {
-  await ui.playScene(sceneId, { theme: 'day' });
+async function play(sceneId: string, got: string[], vars: Record<string, string | number> = {}) {
+  await ui.playScene(sceneId, { theme: 'day', vars });
   const ending = getScene(sceneId).attrs.ending;
   if (ending) { recordEnding(ending); got.push(ending); }
 }
@@ -26,38 +22,53 @@ export async function finale() {
   const got: string[] = [];
 
   await ui.playScene('event.graduation', { theme: 'day' });
-
-  const hidden = st.memories.saya4 && st.aff.saya >= E.sayaHidden.aff
-    && (st.goal === 'med' || st.stat.spirit >= E.sayaHidden.spirit || st.stat.int >= E.sayaHidden.int);
-  if (st.met.saya && st.aff.saya >= E.sayaMinAff) await ui.playScene(hidden ? 'saya.leave.hidden' : 'saya.leave', { theme: 'day' });
-
   const self3 = DREAMS.find(d => d.id === 'self3');
-  if (self3) await dreamSequence(self3);
+  if (self3 && !st.memories.self3) await dreamSequence(self3);
 
   // ① 커리어
   const career = careerResult(st);
-  await play(`career.${career}`, got);
+  await play(`career.${career.career}`, got, { kind: career.kind });
+  const careerOk = career.kind !== 'none';
 
-  // ② 파트너
-  const trueCands = FIVE.filter(c => st.aff[c] >= E.trueAff && hasAllMemories(c)).sort((a, b) => st.aff[b] - st.aff[a]);
-  const best = [...FIVE].sort((a, b) => st.aff[b] - st.aff[a])[0];
-  if (career !== 'none' && trueCands.length) await play(`true.${trueCands[0]}`, got);
-  else if (career === 'none' && st.aff[best] >= E.normalAff) await play(`normal.${best}`, got);
-  else if (career !== 'none') await play('solo', got);
+  // ② 마지막 선택 — 만난 인물 중 플레이어가 직접 고른다
+  const cands = ROMANCEABLE.filter(c => st.met[c]);
+  let partner: CharId | 'none' = 'none';
+  let truth = 0;
+  if (cands.length || st.met.ihyun) {
+    const nodes: StoryNode[] = [
+      ...getScene('final.choice').nodes,
+      { t: 'choice', line: 0, options: [
+        ...cands.map(c => ({ text: CHARACTERS[c].finalChoice, eff: {}, value: c, body: [] })),
+        ...(st.met.ihyun ? [{ text: CHARACTERS.ihyun.finalChoice, eff: {}, value: 'ihyun', body: [] }] : []),
+        { text: '아무에게도 가지 않는다', eff: {}, value: 'none', body: [] },
+      ] },
+    ];
+    const v = (await ui.playScene(nodes, { theme: 'day' })) as CharId | 'none';
 
-  // ③ 크레딧
-  await ui.credits();
-
-  // ④ 사야
-  if (st.flags.saya_saved) {
-    await ui.playScene('saya.alive', { theme: 'day' });
-    const ctx = { state: st, name: st.name, route: st.route, vars: {} };
-    const letter = getScene('saya.letter').nodes.map(n => (n.t === 'say' ? fill(n.text, ctx) : '')).join('\n\n');
-    await ui.modal({ title: '사야의 편지', letter, buttons: [{ label: '편지를 가슴에 안는다', value: true, primary: true }] });
-    await play('saya.alive.after', got);
-  } else {
-    await play(st.met.saya ? 'saya.dead' : 'saya.dead.stranger', got);
+    if (v === 'ihyun') {
+      if (st.aff.ihyun >= E.ihyunAff && mainDone(st, 'ihyun')) {
+        await play('ihyun.end', got);
+        if (st.flags.ihyun_truth) await play('ihyun.hidden', got);
+        partner = 'ihyun';                 // 손의 주인은 보이지 않는다
+      } else await play('reject.ihyun', got);
+    } else if (v && v !== 'none') {
+      if (st.aff[v] >= E.acceptAff) {
+        const isTrue = careerOk && mainDone(st, v);
+        await play(`${isTrue ? 'true' : 'normal'}.${v}`, got);
+        // 한태준 히든 — [임시 조건] 진 엔딩 + 겨울 방학 이벤트 2단계까지 함께함
+        if (isTrue && v === 'taejun' && st.vacStage.taejun.winter >= 2 && hasScene('hidden.taejun')) await play('hidden.taejun', got);
+        partner = v;
+        if (isTrue && v === 'ian') truth = 1;   // 찐남주: 손의 진짜 주인이 드러난다
+      } else await play(`reject.${v}`, got);
+    }
   }
+
+  // ③ 프롤로그 재생 — 진주성에서 손을 잡은 얼굴
+  await ui.playScene('prologue.hand', { theme: 'night', bg: 'fortress', vars: { partner, truth } });
+  ui.setTheme('day');
+
+  // ④ 크레딧
+  await ui.credits();
 
   game.meta.clears++;
   saves.saveMeta();

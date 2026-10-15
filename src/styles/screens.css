@@ -166,3 +166,58 @@ code { font-size: 11px; padding: 1px 4px; border-radius: 4px; background: var(--
 .story-errors h2 { font-size: 18px; margin-bottom: 8px; color: var(--bad); }
 .story-errors p { font-size: 13px; color: var(--sub); margin-bottom: 12px; }
 .story-errors li { font-size: 12.5px; line-height: 1.6; margin: 0 0 8px 18px; word-break: break-all; }
+
+/* --- 평일 시간표 --- */
+.seg.wrap { flex-wrap: wrap; }
+.tt { display: grid; gap: 6px; }
+.tt-row { display: grid; grid-template-columns: 58px repeat(5, minmax(0, 1fr)); gap: 5px; align-items: stretch; }
+.tt-head b { text-align: center; font-size: 12px; color: var(--sub); }
+.tt-slot { display: grid; align-content: center; font-size: 12px; font-weight: 600; }
+.tt-slot small { font-size: 10px; color: var(--sub); font-weight: 400; }
+.tt-cell { min-height: 58px; padding: 6px 4px; border-radius: var(--radius-sm); background: var(--panel-2); border: 1.5px dashed var(--line); display: grid; place-items: center; text-align: center; color: var(--sub); }
+.tt-cell.set { border-style: solid; border-color: transparent; color: var(--ink); background: color-mix(in srgb, var(--accent-2) 10%, var(--panel-2)); }
+.tt-cell.club { border: 0; background: color-mix(in srgb, var(--accent) 12%, var(--panel-2)); color: var(--accent); }
+.tt-cell b { font-size: 11px; line-height: 1.3; word-break: keep-all; font-weight: 600; }
+.plan-preview { display: grid; gap: 6px; margin: 12px 2px; }
+.center { text-align: center; margin-top: 8px; }
+.opt { flex-direction: column; align-items: stretch; gap: 8px; }
+.opt-main { display: flex; gap: 12px; text-align: left; align-items: flex-start; width: 100%; }
+.opt-main:disabled { cursor: default; }
+.opt-all { align-self: flex-end; }
+.sheet-foot { padding: 0 16px 12px; }
+
+/* --- 진로 --- */
+.career { padding: 8px 0; border-bottom: 1px solid var(--line); display: grid; gap: 4px; }
+.career:last-of-type { border-bottom: 0; }
+.career-h { display: grid; grid-template-columns: 96px 1fr 40px; align-items: center; gap: 10px; font-size: 13px; }
+.career-h .bar { height: 8px; }
+.career-h span { text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; }
+.career-h .goal { color: var(--accent); }
+.career .btn { justify-self: start; }
+
+/* --- 주말 지도 --- */
+.mapv { z-index: 36; flex-direction: column; background: var(--bg); }
+.map-h { padding: calc(18px + env(safe-area-inset-top)) 18px 6px; }
+.map-h h2 { font-family: var(--font-head); font-size: 20px; }
+.map-h span { font-size: 12px; color: var(--sub); }
+.map-ls { flex: 1; overflow-y: auto; padding: 4px 14px calc(16px + env(safe-area-inset-bottom)); display: grid; gap: 12px; align-content: start; }
+.map-img { width: 100%; border-radius: var(--radius); }
+.map-hint { border: 1.5px dashed var(--line); border-radius: var(--radius); padding: 22px; text-align: center; color: var(--sub); font-size: 12px; }
+.map-legend { font-size: 12px; color: var(--sub); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.map-district h3 { font-size: 12px; color: var(--sub); font-weight: 600; letter-spacing: 1px; margin: 0 2px 6px; }
+.map-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-items: start; }
+.place { padding: 11px; border-radius: var(--radius-sm); background: var(--panel); border: 1px solid var(--line); display: grid; gap: 6px; text-align: left; cursor: pointer; box-shadow: var(--shadow); }
+.place:active { transform: scale(.98); }
+.place.has-ev { border-color: var(--accent); }
+.place-h { display: flex; align-items: center; gap: 6px; }
+.place-h b { font-size: 13.5px; flex: 1; min-width: 0; }
+.place-act { display: grid; gap: 4px; font-size: 11.5px; color: var(--sub); text-align: left; }
+.place-act.btnlike { padding: 7px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--line); }
+.mk { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; font: 700 11px var(--font-ui); }
+.mk.ev { background: var(--accent); color: var(--accent-ink); }
+.mk.new { background: var(--chip); color: var(--sub); }
+
+/* --- 모달 선택 목록 --- */
+.modal-opts { display: grid; gap: 8px; margin-bottom: 4px; }
+.modal-opts .opt { width: 100%; text-align: left; }
+.modal-opts .opt:disabled { opacity: .45; }

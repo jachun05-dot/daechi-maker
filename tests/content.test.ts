@@ -5,9 +5,14 @@ import { checkCond } from '@/engine/story/context';
 import type { StoryNode } from '@/engine/types';
 import { BACKGROUNDS } from '@/content/backgrounds';
 import { CHAR_ORDER } from '@/content/characters';
-import { SLOTS } from '@/content/schedule';
+import { AFTER_SCHOOL, NIGHT, CLUBS } from '@/content/timetable';
+import { PLACES } from '@/content/places';
+import { WEEKEND_PLACES } from '@/content/presence';
+import { LECTURES } from '@/content/vacation';
 import { ENDINGS } from '@/content/endings';
-import { ROUTE_ORDER } from '@/content/routes';
+import { CAREER_ORDER } from '@/content/careers';
+import { ROMANCEABLE } from '@/content/characters';
+import { MAIN_EVENTS } from '@/engine/story/library';
 
 const FX = ['none', 'petal', 'sakura', 'leaf', 'snow', 'rain', 'ember'];
 const CMDS = ['bg', 'fx', 'stand', 'cg', 'shake', 'flash', 'card'];
@@ -43,14 +48,27 @@ describe('스토리 파일', () => {
   });
 
   it('엔진이 찾는 장면이 모두 있다', () => {
-    const need = ['prologue', 'wakeup', 'opening.1', 'opening.2', 'opening.3', 'self1', 'self2', 'self3',
-      'event.exam', 'event.sports', 'event.festival', 'event.counsel', 'event.suneung', 'event.summer', 'event.winter', 'event.graduation',
-      'event.sick', 'event.slump', 'event.sihyun_rescue', 'saya.leave', 'saya.leave.hidden',
-      ...ROUTE_ORDER.map(r => `career.${r}`), 'career.none', 'solo',
-      ...CHAR_ORDER.filter(c => c !== 'saya').flatMap(c => [`true.${c}`, `normal.${c}`]),
-      ...CHAR_ORDER.flatMap(c => [`enc.${c}.1`, `enc.${c}.small`]),
-      'saya.dead', 'saya.dead.stranger', 'saya.alive', 'saya.letter', 'saya.alive.after'];
+    const need = ['prologue', 'wakeup', 'prologue.hand', 'opening.1', 'opening.2', 'opening.3', 'self1', 'self2', 'self3',
+      'event.exam', 'event.sports', 'event.festival', 'event.counsel.hint', 'event.counsel.decide', 'event.suneung', 'event.graduation',
+      'event.slump', 'event.sihyun_rescue', 'vacation.start', 'vacation.lecture', 'vacation.decline', 'final.choice',
+      ...CAREER_ORDER.map(r => `career.${r}`), 'career.none',
+      ...ROMANCEABLE.flatMap(c => [`true.${c}`, `normal.${c}`, `reject.${c}`]),
+      'reject.ihyun', 'ihyun.end', 'ihyun.hidden', 'hidden.taejun',
+      ...CHAR_ORDER.flatMap(c => [`basic.${c}`, `main.${c}.1`, 'summer1', 'summer2', 'summer3', 'winter1', 'winter2'].map((x, i) => (i < 2 ? x : `vac.${c}.${x}`)))];
     expect(need.filter(id => !SCENES[id])).toEqual([]);
+  });
+
+  it('메인 이벤트는 인물별로 1부터 빠짐없이 이어지고 장소가 올바르다', () => {
+    const problems: string[] = [];
+    for (const c of CHAR_ORDER) {
+      const list = MAIN_EVENTS.filter(e => e.ch === c);
+      list.forEach((e, i) => { if (e.step !== i + 1) problems.push(`${e.id}: 번호가 ${i + 1}이어야 함`); });
+      list.forEach(e => {
+        if (!e.auto && !e.place) problems.push(`${e.id}: place= 또는 auto=1 이 필요`);
+        if (e.place && !PLACES.some(p => p.id === e.place)) problems.push(`${e.id}: 장소 ${e.place} 없음`);
+      });
+    }
+    expect(problems).toEqual([]);
   });
 
   it('엔딩 장면의 ending id가 endings.ts에 있다', () => {
@@ -65,17 +83,25 @@ describe('스토리 파일', () => {
   });
 });
 
-describe('스케줄', () => {
-  it('배경·인물·id가 올바르다', () => {
+describe('시간표 · 지도 · 방학', () => {
+  it('id와 배경·인물·장소가 올바르다', () => {
     const problems: string[] = [];
-    const seen = new Set<string>();
-    for (const s of SLOTS) for (const o of s.options) {
-      if (seen.has(o.id)) problems.push(`중복 id ${o.id}`);
-      seen.add(o.id);
-      if (!BACKGROUNDS[o.bg]) problems.push(`${o.id}: 배경 ${o.bg} 없음`);
-      if (o.who && !(CHAR_ORDER as string[]).includes(o.who)) problems.push(`${o.id}: 인물 ${o.who} 없음`);
-      if (!o.logs.length) problems.push(`${o.id}: logs 비어 있음`);
+    for (const group of [[...AFTER_SCHOOL, ...NIGHT], CLUBS, PLACES, LECTURES]) {
+      const ids = new Set<string>();
+      for (const o of group) { if (ids.has(o.id)) problems.push(`중복 id ${o.id}`); ids.add(o.id); }
     }
+    for (const o of [...AFTER_SCHOOL, ...NIGHT]) {
+      if (!o.days.length) problems.push(`${o.id}: days 비어 있음`);
+      if (o.who && !(CHAR_ORDER as string[]).includes(o.who)) problems.push(`${o.id}: 인물 ${o.who} 없음`);
+    }
+    for (const p of PLACES) {
+      if (!BACKGROUNDS[p.bg]) problems.push(`${p.id}: 배경 ${p.bg} 없음`);
+      if (!p.actions.length) problems.push(`${p.id}: actions 비어 있음`);
+    }
+    for (const c of CHAR_ORDER) for (const y of [1, 2, 3] as const)
+      for (const pl of WEEKEND_PLACES[c][y]) if (!PLACES.some(p => p.id === pl)) problems.push(`${c} ${y}학년: 장소 ${pl} 없음`);
+    // 요일마다 고를 수 있는 일정이 최소 하나는 있어야 한다
+    for (let d = 0; d < 5; d++) for (const list of [AFTER_SCHOOL, NIGHT]) if (!list.some(o => o.days.includes(d))) problems.push(`${d}요일에 고를 일정 없음`);
     expect(problems).toEqual([]);
   });
 });

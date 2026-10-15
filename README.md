@@ -18,27 +18,35 @@
 
 ## 무엇을 어디서 고치나
 
+기획 문서: [docs/CHARACTERS.md](docs/CHARACTERS.md) (캐릭터) · [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md) (게임 디자인)
+
 ```
 src/
-├─ config/balance.ts         ← 모든 수치 (시작 스탯, 용돈, 확률, 엔딩 조건, 시험 기준…)
+├─ config/balance.ts         ← 모든 수치 (성장 배율, 체력, 시험·진로 기준, 엔딩 조건…)
 ├─ content/                  ← 게임 데이터
-│  ├─ characters.ts          인물 이름·설정·색
-│  ├─ routes.ts              진로 4종, 새 게임 질문 3개
-│  ├─ schedule.ts            주간 5슬롯 일정 (효과·장소·만나는 인물·로그 문장)
+│  ├─ characters.ts          인물 이름·설정·색·마지막 선택 문구
+│  ├─ careers.ts             진로 4종, 기초 능력·특기·집중 과목 이름, 전생의 꿈
+│  ├─ timetable.ts           평일 시간표 일정(방과후·야간)과 동아리
+│  ├─ places.ts              주말 서울 지도 13곳
+│  ├─ presence.ts            인물이 주말에 자주 있는 곳 (학년별) · 학교에서 마주치는 인물
+│  ├─ vacation.ts            방학 특강
 │  ├─ calendar.ts            학사 일정 (몇 월에 무슨 이벤트)
 │  ├─ phone.ts               메신저 메시지
 │  ├─ backgrounds.ts         배경 목록
 │  ├─ endings.ts             엔딩 컬렉션 목록
 │  └─ stories/               ← 모든 대사 (.story 텍스트 파일)
-│     ├─ prologue.story
-│     ├─ encounters/{인물}.story   낮 조우 (호감도 단계별)
-│     ├─ dreams/{인물}.story       밤 전생 기억 (해금 조건은 머리말에)
-│     ├─ events/*.story            시험·축제·위기·사야 출국
-│     └─ endings/*.story           엔딩
+│     ├─ prologue.story            프롤로그 · 엔딩 직전 손의 장면
+│     ├─ basic/                    기본 이벤트 (짧은 만남)
+│     ├─ main/                     인물 메인 이벤트 (스토리)
+│     ├─ vacation/                 방학 이벤트 (여름 3 · 겨울 2단계)
+│     ├─ dreams/                   밤 — 전생의 기억
+│     ├─ events/                   학사 이벤트 · 위기 · 방학 진행
+│     └─ endings/                  커리어 · 진/노멀/차인 · 이현 · 히든
 ├─ assets/images/            ← 이미지 넣는 곳 (아래 규칙)
-├─ engine/                   게임 진행 로직 (평소엔 손댈 필요 없음)
+├─ engine/                   게임 진행 로직 (month.ts = 한 달 흐름)
 ├─ ui/                       화면 컴포넌트
 └─ styles/tokens.css         ← 색·글꼴 (낮/밤 테마)
+docs/legacy-stories/         예전 버전 대사 (참고용, 게임에서 읽지 않음)
 ```
 
 - **대사·장면 수정**: `src/content/stories/` 의 `.story` 파일. 문법은 [docs/STORY_GUIDE.md](docs/STORY_GUIDE.md)
@@ -53,13 +61,14 @@ src/
 
 | 경로 | 용도 |
 |---|---|
-| `chars/{인물id}/default.png` | 스탠딩 기본 (인물 id: ian, mujin, sihyun, seoha, taejun, saya) |
+| `chars/{인물id}/default.png` | 스탠딩 기본 (인물 id: ian, mujin, doyun, taejun, seoha, ihyun, sihyun) |
 | `chars/{인물id}/{표정}.png` | 표정 차분 — 스토리에서 `ian(smile)| 대사` 로 사용 |
 | `chars/{인물id}/past_default.png` | 밤(전생) 스탠딩. `past_{표정}` 도 가능. 없으면 현생 이미지 사용 |
 | `chars/{인물id}/avatar.png` | 프로필·메신저 아이콘 |
 | `bg/{배경key}.jpg` | 배경 (key 목록은 `src/content/backgrounds.ts`) |
 | `cg/{장면id}.jpg` | 이벤트 CG — 스토리에서 `[cg 이름]`, 도감 카드는 `cg/ian1` 처럼 꿈 id |
-| `schedule/{일정id}.png` | 스케줄 아이콘 |
+| `schedule/{일정id}.png` | 시간표 일정 아이콘 |
+| `ui/map.png` | 주말 서울 지도 |
 | `ui/title.jpg` | 타이틀 배경 |
 
 `npm run images` 로 빠진 이미지를 확인하세요.

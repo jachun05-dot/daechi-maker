@@ -15,8 +15,8 @@ export function StatusBar() {
   return (
     <header className="status">
       <div className="when"><b>{T.label}</b><span>{SEASON_LABEL[T.season]} · {T.title}</span></div>
-      <div className="meter"><div className="lb"><span>체력</span><b>{st.hp}/{max}</b></div><div className="bar"><i style={{ width: `${(st.hp / max) * 100}%` }} /></div></div>
-      <div className="meter"><div className="lb"><span>스트레스</span><b>{st.stress}</b></div><div className="bar stress"><i style={{ width: `${st.stress}%` }} /></div></div>
+      <div className="meter"><div className="lb"><span>체력</span><b>{Math.round(st.hp)}/{max}</b></div><div className="bar"><i style={{ width: `${(st.hp / max) * 100}%` }} /></div></div>
+      <div className="meter"><div className="lb"><span>스트레스</span><b>{Math.round(st.stress)}</b></div><div className="bar stress"><i style={{ width: `${st.stress}%` }} /></div></div>
       <div className="cash"><b>{won(st.money)}</b><span>용돈</span></div>
     </header>
   );

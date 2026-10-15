@@ -1,23 +1,25 @@
 /* 엔딩 컬렉션 목록 (도감 표시용). 장면은 stories/endings/*.story 의 ending=id 와 연결 */
-export const ENDINGS: { id: string; title: string; kind: string }[] = [
-  { id: 'c_med',    title: '한국대 의과대학 합격',              kind: '커리어' },
-  { id: 'c_idol',   title: '빌보드를 흔든 최정상 아티스트',      kind: '커리어' },
-  { id: 'c_actor',  title: '청룡 신인상 · 천만 배우',            kind: '커리어' },
-  { id: 'c_ceo',    title: '최연소 글로벌 CEO · 외교관',         kind: '커리어' },
-  { id: 'c_none',   title: '평범하고 소중한 대학생',             kind: '커리어' },
-  { id: 't_ian',    title: '[진] 달빛 아래 나란히 선 왕자',      kind: '진 엔딩' },
-  { id: 't_mujin',  title: '[진] 이번엔, 앞에서',               kind: '진 엔딩' },
-  { id: 't_sihyun', title: '[진] 지음(知音)의 노래',            kind: '진 엔딩' },
-  { id: 't_seoha',  title: '[진] 끝나지 않는 커튼콜',           kind: '진 엔딩' },
-  { id: 't_taejun', title: '[진] 열린 대문',                    kind: '진 엔딩' },
-  { id: 'n_ian',    title: '[노멀] 지켜지는 사람',              kind: '노멀 로맨스' },
-  { id: 'n_mujin',  title: '[노멀] 등 뒤의 온기',               kind: '노멀 로맨스' },
-  { id: 'n_sihyun', title: '[노멀] 새벽의 기타 소리',           kind: '노멀 로맨스' },
-  { id: 'n_seoha',  title: '[노멀] 객석의 두 사람',             kind: '노멀 로맨스' },
-  { id: 'n_taejun', title: '[노멀] 금빛 새장',                  kind: '노멀 로맨스' },
-  { id: 'solo',     title: '나라는 이름의 별',                  kind: '자아실현' },
-  { id: 's_dead',   title: '배꽃은 지고 — 사야의 부고',          kind: '사야 에필로그' },
-  { id: 's_alive',  title: '기적의 편지 — 사야, 살아남다',       kind: '히든 에필로그' },
+import type { CharId } from '@/engine/types';
+import { CHARACTERS, ROMANCEABLE } from './characters';
+
+export interface EndingInfo { id: string; title: string; kind: string }
+
+const per = (prefix: string, kind: string, title: (c: CharId) => string): EndingInfo[] =>
+  ROMANCEABLE.map(c => ({ id: `${prefix}_${c}`, title: title(c), kind }));
+
+export const ENDINGS: EndingInfo[] = [
+  { id: 'c_med',    title: '한국대 의과대학 합격',          kind: '커리어' },
+  { id: 'c_idol',   title: '최정상 아티스트 데뷔',          kind: '커리어' },
+  { id: 'c_actor',  title: '천만 배우 데뷔',                kind: '커리어' },
+  { id: 'c_leader', title: '세계를 움직이는 리더의 첫걸음', kind: '커리어' },
+  { id: 'c_none',   title: '아직 꿈을 찾는 중',             kind: '커리어' },
+  ...per('t', '진 엔딩', c => `${CHARACTERS[c].name} · 진 엔딩`),
+  ...per('n', '노멀 엔딩', c => `${CHARACTERS[c].name} · 노멀 엔딩`),
+  ...per('r', '차인 엔딩', c => `${CHARACTERS[c].name}에게 차였다`),
+  { id: 'h_taejun', title: '한태준 · 히든 — 진료실의 문', kind: '히든 엔딩' },
+  { id: 'e_ihyun',  title: '김이현 · 기쁨으로 나타난 아이', kind: '이현 엔딩' },
+  { id: 'h_ihyun',  title: '김이현 · 히든 — 너를 사랑한 게 내 죄가 아니었구나', kind: '히든 엔딩' },
+  { id: 'r_ihyun',  title: '김이현 · 이미 떠난 뒤', kind: '차인 엔딩' },
 ];
 
 export const CREDITS_QUOTE = '“꿈은, 남이 대신 꿔 주지 않습니다.”';

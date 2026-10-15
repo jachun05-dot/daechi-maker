@@ -5,7 +5,7 @@ import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { CHAR_ORDER, CHARACTERS } from '@/content/characters';
 import { BACKGROUNDS } from '@/content/backgrounds';
-import { SLOTS } from '@/content/schedule';
+import { AFTER_SCHOOL, NIGHT } from '@/content/timetable';
 import { DREAMS, SCENES } from '@/engine/story/library';
 import type { StoryNode } from '@/engine/types';
 
@@ -33,8 +33,8 @@ const groups: [string, { key: string; note: string; required: boolean }[]][] = [
   ])],
   ['배경 (bg/{key})', Object.entries(BACKGROUNDS).map(([k, v]) => ({ key: `bg/${k}`, note: v.label, required: true }))],
   ['전생 기억 카드·CG (cg/{장면id})', [...DREAMS.map(d => ({ key: `cg/${d.id}`, note: `도감 카드 · ${d.title}`, required: false })), ...[...cgs].map(c => ({ key: `cg/${c}`, note: '스토리 [cg] 명령', required: true }))]],
-  ['스케줄 아이콘 (schedule/{id})', SLOTS.flatMap(s => s.options.map(o => ({ key: `schedule/${o.id}`, note: `${s.label} · ${o.name}`, required: false })))],
-  ['UI (ui/…)', [{ key: 'ui/title', note: '타이틀 배경', required: false }]],
+  ['시간표 일정 아이콘 (schedule/{id})', [...AFTER_SCHOOL, ...NIGHT].map(o => ({ key: `schedule/${o.id}`, note: o.name, required: false }))],
+  ['UI (ui/…)', [{ key: 'ui/title', note: '타이틀 배경', required: false }, { key: 'ui/map', note: '주말 서울 지도', required: false }]],
 ];
 
 let total = 0, done = 0;

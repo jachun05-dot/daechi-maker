@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useUI, ui } from '@/store/ui';
 import { useGame } from '@/store/game';
 import { CHARACTERS, CHAR_ORDER } from '@/content/characters';
-import { ROUTES } from '@/content/routes';
+import { CAREERS } from '@/content/careers';
 import { CREDITS_QUOTE } from '@/content/endings';
 import { Chips } from '../common/Chips';
 import { Mono } from '../common/Mono';
@@ -45,11 +45,20 @@ export function Modal() {
         {m.title && <h3>{m.title}</h3>}
         {m.text && <p className="modal-text">{m.text}</p>}
         {m.letter && <div className="letter">{m.letter}</div>}
+        {m.options && (
+          <div className="modal-opts">
+            {m.options.map((o, i) => (
+              <button key={i} className="opt" disabled={o.disabled} onClick={() => ui.closeModal(o.value)}>
+                <div className="opt-tx"><b>{o.label}</b>{o.desc && <p>{o.desc}</p>}{o.chips && <Chips chips={o.chips} />}</div>
+              </button>
+            ))}
+          </div>
+        )}
         {m.endings && <div className="modal-endings">{m.endings.map(e => <div key={e.title} className="ending-row"><b>{e.title}</b><span>{e.kind}</span></div>)}</div>}
         {m.input !== undefined && <input autoFocus maxLength={8} placeholder={m.input} value={value} onChange={e => setValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && ui.closeModal(value.trim() || m.input)} />}
-        <div className="modal-btns">
+        {m.buttons.length > 0 && <div className="modal-btns">
           {m.buttons.map(b => <button key={b.label} className={`btn${b.primary ? ' primary' : ''}`} onClick={() => ui.closeModal(m.input !== undefined ? value.trim() || m.input : b.value)}>{b.label}</button>)}
-        </div>
+        </div>}
       </div>
     </div>
   );
@@ -70,7 +79,7 @@ export function Credits() {
       <button className="credits-skip" onClick={() => ui.creditsDone()}>SKIP</button>
       <div className="credits-roll" onAnimationEnd={() => ui.creditsDone()}>
         <h3>이화(梨花)에 지는 달</h3><p className="sm">대치동 환생록</p>
-        <h3>主人公</h3><p>{st.name} <span className="sm">/ {ROUTES[st.route].past}</span></p>
+        <h3>主人公</h3><p>{st.name} <span className="sm">/ {CAREERS[st.pastRole ?? 'med'].past}</span></p>
         <h3>因緣</h3>{CHAR_ORDER.map(k => <p key={k}>{CHARACTERS[k].name} <span className="sm">/ {CHARACTERS[k].past}</span></p>)}
         <h3>그리고</h3><p>대치동의 밤을 견뎌 낸 모든 학생들과<br />사백삼십여 년 전,<br />꿈을 품에 넣고 칼을 들었던<br />이름 없는 의병들에게</p>
         <p className="sm quote">{CREDITS_QUOTE}</p>

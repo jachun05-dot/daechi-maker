@@ -1,132 +1,148 @@
-/* 스케줄 탭 — 이번 주 5슬롯 편성 */
+/* 스케줄 탭 — 한 달 평일 시간표 (월~금 × 방과후·야간) */
 import { useGame } from '@/store/game';
 import { useUI, ui } from '@/store/ui';
-import { SLOTS } from '@/content/schedule';
-import { TURNS } from '@/content/calendar';
-import { ROUTES } from '@/content/routes';
+import { TURNS, DAY_LABEL } from '@/content/calendar';
+import { CAREERS, SUBJECT_LABEL } from '@/content/careers';
 import { CHARACTERS } from '@/content/characters';
 import { BALANCE } from '@/config/balance';
-import { careerFit, getOption, planTotals, recommendPlan, STAT_LABEL, type ScheduleOption } from '@/engine/schedule';
-import { deltaChips, shortMoney } from '@/engine/chips';
+import { clubAt, findClub, findOption, monthPreview, optionsFor, recommendTimetable, timetableReady, SLOT_LABEL, SLOT_TIME, type TimetableOption } from '@/engine/timetable';
+import { deltaChips } from '@/engine/chips';
 import { hpMax, refresh } from '@/engine/state';
 import { scheduleImage } from '@/engine/assets';
-import { runWeek } from '@/engine/week';
+import { runMonth } from '@/engine/month';
 import { josa } from '@/engine/story/context';
-import type { GameState, StatKey } from '@/engine/types';
+import type { GameState, SubjectKey } from '@/engine/types';
 import { Chips } from '../common/Chips';
 import { Mono } from '../common/Mono';
 import { Icon } from '../common/Icon';
 import { NeedGame } from '../common/NeedGame';
 
-const TIPS = [
-  '장소마다 마주칠 수 있는 사람이 달라요. 같은 장소를 꾸준히 찾아가 보세요.',
-  '전생 감응력이 높을수록, 밤마다 더 깊은 전생의 기억이 해금됩니다.',
-  '스트레스가 60을 넘으면 성장 효율이 떨어져요. 휴식도 전략입니다.',
-  '알바로 용돈을 벌어야 VVIP 과외와 청담동 라운지를 다닐 수 있어요.',
-  '근력이 오르면 최대 체력도 늘어나요.',
-  '엔딩은 ‘나의 꿈’이 1순위. 연애보다 커리어가 먼저 판정됩니다.',
-  '스마트폰 답장으로도 호감도를 올릴 수 있어요.',
-];
-
 function hint(st: GameState) {
   const T = TURNS[st.turn];
-  if (st.turn === 0) return '각 시간대를 눌러 일정을 고르세요. 장소에 따라 누군가를 만날지도 몰라요.';
-  if (st.hp < hpMax(st) * 0.3) return '체력이 위험해요. 휴식을 편성하세요. 0이 되면 강제 병결입니다.';
+  if (st.turn === 0) return '요일마다 방과후와 야간 일정을 골라 한 달 시간표를 짜세요. 주말에는 서울 지도에서 갈 곳을 고릅니다.';
+  if (T.summer) return '여름방학. 특강을 하나 고르면 방학이 빠르게 지나갑니다. 호감도가 높은 사람에게서 연락이 올지도 몰라요.';
+  if (st.hp < hpMax(st) * 0.3) return '체력이 낮으면 수업 중에 졸아서 덜 성장해요. 쉬는 칸을 넣어 주세요.';
   if (st.stress >= 75) return '스트레스가 한계에 가까워요. 100이 되면 슬럼프가 옵니다.';
-  if (T.event === 'exam' || T.event === 'exam_winter' || T.event === 'suneung') return `이번 달 말 ${T.title}. 학업을 챙겨 두세요.`;
-  if (T.event === 'festival') return '이번 달 말 이화제. 예술·감수성·화술 중 가장 높은 재능으로 무대에 섭니다.';
-  if (T.event === 'sports') return '이번 달 말 체육대회. 근력이 높으면 활약할 수 있어요.';
-  if (T.vacation) return '방학에는 체력이 더 많이 회복돼요.';
-  if (T.event === 'graduation') return '이화고에서의 마지막 달. 후회 없이 보내세요.';
-  return TIPS[st.turn % TIPS.length];
+  if (T.event === 'exam' || T.event === 'suneung') return `이번 달 말 ${T.title}. 집중 과목이 학업 과목이면 시험에 보너스가 붙어요.`;
+  if (T.event === 'festival') return '이번 달 말 이화제. 가장 자란 특기로 무대에 섭니다.';
+  if (T.event === 'counsel') return T.year === 1 ? '이번 달 말 진로 상담. 지금까지 자란 재능으로 꿈의 후보가 언급됩니다.' : '이번 달 말 진로 상담. 이번엔 꿈을 정해야 해요.';
+  return '무거운 일정을 쉬는 칸 없이 사흘 넘게 이으면 피로가 더 쌓여요.';
 }
 
 export function ScheduleTab() {
   const { state: st } = useGame();
   if (!st) return <NeedGame />;
   const T = TURNS[st.turn];
-  const sum = planTotals(st), full = st.plan.every(Boolean);
-  const fit = careerFit(st, st.goal), req = BALANCE.careers[st.goal];
+  const club = findClub(st.club);
 
+  if (T.summer) return (
+    <div className="stack">
+      <Hero st={st} />
+      <section className="card">
+        <div className="card-h"><h3>여름방학</h3></div>
+        <p className="muted">방학 동안에는 시간표와 주말 지도 대신 방학 특강을 고릅니다.</p>
+        <button className="btn primary block run-btn" onClick={() => runMonth()}><Icon name="play" size={16} />방학 시작</button>
+      </section>
+    </div>
+  );
+
+  const preview = monthPreview(st), ready = timetableReady(st);
   return (
     <div className="stack">
-      <section className="hero-card">
-        <div className="hero-kicker">{T.title}</div>
-        <h2>{T.label}</h2>
-        <p>{hint(st)}</p>
-        <div className="hero-foot"><span>남은 달 {TURNS.length - st.turn}</span><span>꿈 · {ROUTES[st.goal].goal}</span></div>
+      <Hero st={st} />
+
+      <section className="card">
+        <div className="card-h"><h3>이번 달 집중 과목</h3><small>수업 시간 · 시험 보너스</small></div>
+        <div className="seg wrap">
+          {(Object.keys(SUBJECT_LABEL) as SubjectKey[]).map(k => (
+            <button key={k} className={st.focus === k ? 'on' : ''} onClick={() => { st.focus = st.focus === k ? null : k; refresh(); }}>{SUBJECT_LABEL[k]}</button>
+          ))}
+        </div>
+        <p className="muted">동아리 · {club ? `${club.name}${club.days.length ? ` (${club.days.map(d => DAY_LABEL[d]).join('·')} 방과후)` : ''}` : '미정'}</p>
       </section>
 
       <section className="card">
-        <div className="card-h"><h3>이번 주 시간표</h3><small>시간대를 눌러 편성</small></div>
-        <div className="slots">
-          {SLOTS.map((slot, i) => {
-            const o = getOption(i, st.plan[i]);
-            return (
-              <button key={slot.key} className={`slot${o ? ' set' : ''}`} onClick={() => useUI.setState({ sheetSlot: i })}>
-                {o ? <Mono src={scheduleImage(o.id)} text={o.place[0]} /> : <div className="mono"><Icon name="plus" size={18} /></div>}
-                <div className="slot-tx">
-                  <div className="slot-time">{slot.label} · {slot.time}</div>
-                  <div className="slot-name">{o ? o.name : '일정을 선택하세요'}</div>
-                  {o && <Chips chips={deltaChips(o.delta)} />}
-                </div>
-                {o?.who && <span className="who" style={{ color: st.met[o.who] ? CHARACTERS[o.who].color : undefined }}>{st.met[o.who] ? CHARACTERS[o.who].name : '?'}</span>}
-              </button>
-            );
-          })}
+        <div className="card-h"><h3>평일 시간표</h3><small>한 달 동안 4주 반복</small></div>
+        <div className="tt">
+          <div className="tt-row tt-head"><span />{DAY_LABEL.map(d => <b key={d}>{d}</b>)}</div>
+          {([0, 1] as const).map(slot => (
+            <div key={slot} className="tt-row">
+              <span className="tt-slot">{SLOT_LABEL[slot]}<small>{SLOT_TIME[slot]}</small></span>
+              {DAY_LABEL.map((_, day) => {
+                const c = clubAt(st, day, slot);
+                const o = findOption(slot, st.timetable[day * 2 + slot]);
+                if (c) return <div key={day} className="tt-cell club"><b>{c.name}</b></div>;
+                return (
+                  <button key={day} className={`tt-cell${o ? ' set' : ''}`} onClick={() => useUI.setState({ sheetSlot: day * 2 + slot })}>
+                    {o ? <b>{o.name}</b> : <Icon name="plus" size={16} />}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </div>
-        <div className="plan-sum">
-          <span>체력 <b>{sum.hp >= 0 ? '+' : ''}{sum.hp}</b></span>
-          <span>스트레스 <b>{sum.stress >= 0 ? '+' : ''}{sum.stress}</b></span>
-          <span>용돈 <b className={st.money + sum.money < 0 ? 'neg' : ''}>{shortMoney(sum.money)}</b></span>
-        </div>
-        {st.money + sum.money < 0 && <p className="warn-line">용돈이 부족하면 해당 일정은 취소되고 집에서 쉬게 돼요.</p>}
-        {st.hp + sum.hp <= 0 && <p className="warn-line">이대로면 체력이 바닥나 쓰러질 수 있어요.</p>}
+        <div className="plan-preview"><span className="muted">한 달 예상 (수업 제외)</span><Chips chips={deltaChips(preview)} /></div>
+        {st.money + (preview.money ?? 0) < 0 && <p className="warn-line">용돈이 모자라면 비용이 드는 일정은 건너뛰게 돼요.</p>}
         <div className="row">
-          <button className="btn small" disabled={!st.lastPlan} onClick={() => { st.plan = [...st.lastPlan!]; refresh(); ui.toast('지난주 시간표를 불러왔어요'); }}><Icon name="undo" size={16} />이전 시간표 불러오기</button>
-          <button className="btn small" onClick={() => { st.plan = recommendPlan(st); refresh(); }}><Icon name="sparkle" size={16} />꿈 맞춤 추천</button>
-          <button className="btn small" onClick={() => { st.plan = [null, null, null, null, null]; refresh(); }}>비우기</button>
+          <button className="btn small" disabled={!st.lastTimetable} onClick={() => { st.timetable = [...st.lastTimetable!]; refresh(); ui.toast('지난달 시간표를 불러왔어요'); }}><Icon name="undo" size={16} />지난달 시간표</button>
+          <button className="btn small" onClick={() => { st.timetable = recommendTimetable(st); refresh(); }}><Icon name="sparkle" size={16} />재능 맞춤 추천</button>
+          <button className="btn small" onClick={() => { st.timetable = Array(10).fill(null); refresh(); }}>비우기</button>
         </div>
-        <button className="btn primary block run-btn" disabled={!full} onClick={() => runWeek()}><Icon name="play" size={16} />이번 주 시작</button>
+        <button className="btn primary block run-btn" disabled={!ready} onClick={() => runMonth()}><Icon name="play" size={16} />이번 달 시작</button>
+        {!ready && <p className="muted center">빈 칸을 모두 채우면 시작할 수 있어요.</p>}
       </section>
-
-      <section className="card">
-        <div className="card-h"><h3>나의 꿈</h3><small>{ROUTES[st.goal].goal}</small></div>
-        <div className="fit-row"><div className="bar"><i style={{ width: `${Math.min(100, fit * 100)}%` }} /></div><b>{Math.floor(Math.min(1, fit) * 100)}%</b></div>
-        <p className="muted">{Object.entries(req).map(([k, v]) => `${STAT_LABEL[k as StatKey]} ${st.stat[k as StatKey]}/${v}`).join(' · ')}</p>
-      </section>
-      <PlanSheet />
+      <CellSheet />
     </div>
   );
 }
 
-function PlanSheet() {
+function Hero({ st }: { st: GameState }) {
+  const T = TURNS[st.turn];
+  return (
+    <section className="hero-card">
+      <div className="hero-kicker">{T.title}</div>
+      <h2>{T.label}</h2>
+      <p>{hint(st)}</p>
+      <div className="hero-foot"><span>남은 달 {TURNS.length - st.turn}</span><span>꿈 · {st.goal ? CAREERS[st.goal].goal : st.goalHint ? `아직 (후보: ${CAREERS[st.goalHint].short})` : '아직 찾는 중'}</span></div>
+    </section>
+  );
+}
+
+function CellSheet() {
   const { state: st } = useGame();
-  const slotIndex = useUI(s => s.sheetSlot);
-  if (!st || slotIndex === null) return null;
-  const slot = SLOTS[slotIndex];
+  const cell = useUI(s => s.sheetSlot);
+  if (!st || cell === null) return null;
+  const day = Math.floor(cell / 2), slot = (cell % 2) as 0 | 1;
   const close = () => useUI.setState({ sheetSlot: null });
-  const choose = (o: ScheduleOption) => { st.plan[slotIndex] = o.id; close(); refresh(); };
+  const choose = (o: TimetableOption) => { st.timetable[cell] = o.id; close(); refresh(); };
+  const fillWeek = (o: TimetableOption) => {
+    for (let d = 0; d < 5; d++) if (o.days.includes(d) && !clubAt(st, d, slot)) st.timetable[d * 2 + slot] = o.id;
+    close(); refresh();
+  };
   return (
     <div className="layer sheet" onClick={e => e.target === e.currentTarget && close()}>
       <div className="sheet-pane">
-        <div className="sheet-h"><b>{slot.label}</b><span>{slot.time}</span><button onClick={close} aria-label="닫기"><Icon name="close" /></button></div>
+        <div className="sheet-h"><b>{DAY_LABEL[day]}요일 {SLOT_LABEL[slot]}</b><span>{SLOT_TIME[slot]}</span><button onClick={close} aria-label="닫기"><Icon name="close" /></button></div>
         <div className="sheet-ls">
-          {slot.options.map(o => {
-            const poor = (o.delta.money ?? 0) < 0 && st.money + o.delta.money! < 0;
+          {optionsFor(slot).map(o => {
+            const open = o.days.includes(day);
             return (
-              <button key={o.id} className={`opt${st.plan[slotIndex] === o.id ? ' sel' : ''}${poor ? ' poor' : ''}`} onClick={() => choose(o)}>
-                <Mono src={scheduleImage(o.id)} text={o.place[0]} />
-                <div className="opt-tx">
-                  <div><b>{o.name}</b> <span className="opt-place">{o.place}</span></div>
-                  <p>{o.desc}</p>
-                  <Chips chips={deltaChips(o.delta)} />
-                  {o.who && <div className="opt-meet">{st.met[o.who] ? `${josa(CHARACTERS[o.who].name, '을/를')} 만날 수 있을지도` : '누군가와 마주칠지도…'}</div>}
-                </div>
-              </button>
+              <div key={o.id} className={`opt${st.timetable[cell] === o.id ? ' sel' : ''}${open ? '' : ' poor'}`}>
+                <button className="opt-main" disabled={!open} onClick={() => choose(o)}>
+                  <Mono src={scheduleImage(o.id)} text={o.place[0]} />
+                  <div className="opt-tx">
+                    <div><b>{o.name}</b> <span className="opt-place">{o.place}{o.heavy ? ' · 무거움' : ''}</span></div>
+                    <p>{o.desc}{open ? '' : ` (${o.days.map(d => DAY_LABEL[d]).join('·')}만)`}</p>
+                    <Chips chips={deltaChips(o.delta)} />
+                    {o.who && st.met[o.who] && <div className="opt-meet">{josa(CHARACTERS[o.who].name, '을/를')} 마주칠지도</div>}
+                  </div>
+                </button>
+                {open && o.days.length > 1 && <button className="btn small opt-all" onClick={() => fillWeek(o)}>열리는 요일 모두</button>}
+              </div>
             );
           })}
         </div>
+        <p className="muted sheet-foot">체력 바닥나면 다음 날 방과후·야간을 쓰러져 잠들어요. 하루 회복 +{BALANCE.weekday.nightRegen}.</p>
       </div>
     </div>
   );

@@ -16,6 +16,9 @@ export const BACKGROUNDS: Record<string, { label: string; color: string }> = {
   music:      { label: '낙원상가 악기점',      color: '#5a4a3e' },
   daehakro:   { label: '대학로 소극장',        color: '#3f2f35' },
   cheongdam:  { label: '청담동 라운지·카페',   color: '#e8e1d2' },
+  gallery:    { label: '한남동 갤러리',        color: '#e6e3df' },
+  classroom:  { label: '이화고 교실',          color: '#e1e6ec' },
+  airport_n:  { label: '밤의 공항',            color: '#1e2433' },
   academy:    { label: '대치동 학원가',        color: '#d5dae4' },
   studycafe:  { label: '스터디카페·독서실',    color: '#3b4054' },
   palace:     { label: '경복궁·봉은사',        color: '#d8d0c0' },
@@ -36,5 +39,6 @@ export const BACKGROUNDS: Record<string, { label: string; color: string }> = {
   mansion:    { label: '양반가·약방',          color: '#2c231c' },
   moonfield:  { label: '달빛 아래 배꽃 들판',  color: '#2a2620' },
   market:     { label: '장터',                 color: '#3a2a1e' },
+  palace_n:   { label: '밤의 임금 막사',       color: '#1a1420' },
   dream:      { label: '꿈(기본)',             color: '#120b0f' },
 };
