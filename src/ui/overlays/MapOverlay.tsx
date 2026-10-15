@@ -3,7 +3,7 @@
    - 약속 연락: 수락하면 그 칸이 약속으로 고정 (같은 시간 두 약속은 하나만)
    - 핀 위치: content/places.ts 의 pos [가로 %, 세로 %]
    - 지도 이미지: src/assets/images/ui/map.png (4:5 비율 권장). 없으면 아래 SeoulMap 그림이 나온다 */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useUI, ui } from '@/store/ui';
 import { useGame } from '@/store/game';
 import { placeById, type Place } from '@/content/places';
@@ -33,6 +33,13 @@ function Planner({ spec, st }: { spec: WeekendSpec; st: GameState }) {
   const [declined, setDeclined] = useState<string[]>([]);
   const [active, setActive] = useState(0);
   const [sel, setSel] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(false);
+  const pan = useRef<HTMLDivElement>(null);
+  // 크게 보기: 지도 가운데로 스크롤
+  useEffect(() => {
+    const el = pan.current;
+    if (el && zoom) { el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2; el.scrollTop = (el.scrollHeight - el.clientHeight) / 2; }
+  }, [zoom]);
   const img = uiImage('map');
 
   const promiseAt = (i: number) => spec.invites.find(v => v.slot === i && accepted.includes(v.id));
@@ -93,6 +100,7 @@ function Planner({ spec, st }: { spec: WeekendSpec; st: GameState }) {
         </div>
       </div>
 
+      <div className="wk-scroll">
       {pending.length > 0 && (
         <div className="wk-inv">
           {pending.map(v => {
@@ -119,7 +127,9 @@ function Planner({ spec, st }: { spec: WeekendSpec; st: GameState }) {
         </div>
       )}
 
-      <div className="map-stage">
+      <div className={`map-stage${zoom ? ' zoom' : ''}`}>
+        <button className="map-zoom" onClick={() => setZoom(z => !z)}>{zoom ? '－ 전체 보기' : '＋ 크게 보기'}</button>
+        <div className="map-pan" ref={pan}>
         <div className="map-board" onClick={() => setSel(null)}>
           {img ? <img className="map-img" src={img} alt="서울 지도" draggable={false} /> : <SeoulMap />}
           {!img && settings.showSlots && <span className="map-slot">ui/map.png</span>}
@@ -142,6 +152,8 @@ function Planner({ spec, st }: { spec: WeekendSpec; st: GameState }) {
             );
           })}
         </div>
+        </div>
+      </div>
       </div>
 
       <div className="wk-plan">
@@ -154,7 +166,7 @@ function Planner({ spec, st }: { spec: WeekendSpec; st: GameState }) {
               return (
                 <button key={s} className={`wk-slot${active === i && !pk && !pr ? ' act' : ''}${pk ? ' full' : ''}${pr ? ' pr' : ''}${pk?.cont ? ' cont' : ''}`} onClick={() => tapSlot(i)}>
                   <small>{SLOT_NAMES[s]}</small>
-                  {pk ? <b>{pr ? `⏰ ${CHARACTERS[pr.c].name}` : pk.cont ? '〃 하루 종일' : pl!.name}</b> : <b className="empty">{active === i ? '장소를 누르세요' : '비어 있음'}</b>}
+                  {pk ? <b>{pr ? `⏰ ${CHARACTERS[pr.c].name}` : pk.cont ? '〃 하루 종일' : pl!.name}</b> : <b className="wk-empty">{active === i ? '장소를 누르세요' : '비어 있음'}</b>}
                   {pk && !pk.cont && <em>{pr ? pl!.name : pl!.actions[pk.action].label}</em>}
                 </button>
               );
