@@ -16,7 +16,7 @@ function lsSet(k: string, v: unknown) { try { localStorage.setItem(k, JSON.strin
 function lsDel(k: string) { try { localStorage.removeItem(k); } catch { /* 무시 */ } }
 
 const perChar = <T,>(f: () => T) => Object.fromEntries(CHAR_ORDER.map(c => [c, f()])) as Record<CharId, T>;
-const defaultMeta = (): MetaState => ({ memories: {}, endings: {}, plays: 0, clears: 0, lastName: '' });
+const defaultMeta = (): MetaState => ({ memories: {}, album: {}, endings: {}, plays: 0, clears: 0, lastName: '' });
 
 export const game = {
   state: null as GameState | null,
@@ -46,19 +46,29 @@ export function newState(name: string): GameState {
     aff: perChar(() => 0), met: {}, mainStep: perChar(() => 0), vacStage: perChar(() => ({ summer: 0, winter: 0 })),
     sightings: {}, memories: { self1: true }, flags: {},
     timetable: Array(10).fill(null), lastTimetable: null, club: null, clubTerm: -1, focus: null,
-    chats: {}, unread: {}, replies: {}, phoneStep: {}, newMemory: false, placeVisits: {}, promiseLog: {}, savedAt: Date.now(),
+    chats: {}, unread: {}, pending: {}, chatQueue: [], day: 0, phoneTime: BALANCE.phone.callsPerMonth, presence: {}, promiseNext: [], newMemory: false, placeVisits: {}, promiseLog: {}, savedAt: Date.now(),
   };
 }
 
 export const hpMax = (st: GameState = S()) => Math.min(BALANCE.hpMax.cap, BALANCE.hpMax.base + Math.floor(st.stat.fit / BALANCE.hpMax.fitPerHp));
 export const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
-/** 호감도 변화 — 이안·무진은 한쪽이 오르면 다른 쪽이 질투한다 */
+/** 다른 모듈이 끼워 넣는 알림 (메신저가 질투 같은 사건을 듣는다) — 순환 import 를 피하려고 여기 둔다 */
+export const hooks = { event: (_st: GameState, _key: string) => {} };
+
+/** 앨범에 기록 (회차를 넘어 남는다) */
+export function unlockAlbum(key: string) {
+  if (game.meta.album[key]) return;
+  game.meta.album[key] = true;
+  saves.saveMeta();
+}
+
+/** 호감도 변화 — 이안·무진은 한쪽이 크게 오르면(jealousyMin 이상) 다른 쪽이 질투한다 */
 export function addAff(st: GameState, c: CharId, v: number) {
   st.aff[c] = clamp(st.aff[c] + v, 0, 100);
-  if (v > 0 && (c === 'ian' || c === 'mujin')) {
+  if (v >= BALANCE.affection.jealousyMin && (c === 'ian' || c === 'mujin')) {
     const other: CharId = c === 'ian' ? 'mujin' : 'ian';
-    if (st.met[other]) st.aff[other] = clamp(st.aff[other] - BALANCE.affection.jealousy, 0, 100);
+    if (st.met[other]) { st.aff[other] = clamp(st.aff[other] - BALANCE.affection.jealousy, 0, 100); hooks.event(st, `jealous:${other}`); }
   }
 }
 

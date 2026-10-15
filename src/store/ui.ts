@@ -6,7 +6,7 @@ import { create } from 'zustand';
 import type { StoryNode, Theme } from '@/engine/types';
 import { ScenePlayer, type PlayOptions, type View } from '@/engine/story/player';
 import { getScene } from '@/engine/story/library';
-import { applyEffect, game, refresh } from '@/engine/state';
+import { applyEffect, game, refresh, unlockAlbum } from '@/engine/state';
 import type { WeekendResult, WeekendSpec } from '@/engine/weekend';
 
 export type Tab = 'schedule' | 'stats' | 'phone' | 'codex' | 'system';
@@ -23,7 +23,7 @@ interface UIState {
   busy: boolean;
   sheetSlot: number | null;
   phoneRoom: string | null;
-  codexSeg: 'memories' | 'endings' | 'people';
+  codexSeg: 'memories' | 'album' | 'endings' | 'people';
   vn: { player: ScenePlayer; view: View } | null;
   run: { title: string; sub: string; logs: RunLog[]; button: string | null } | null;
   modal: ModalSpec | null;
@@ -31,11 +31,17 @@ interface UIState {
   ink: { text: string; mode: Theme; on: boolean } | null;
   credits: boolean;
   toast: { text: string; key: number } | null;
+  /** 메신저 — 상대가 입력 중인 방 */
+  typing: string | null;
+  /** 메신저 — 진행 중에 도착한 대화 알림 */
+  notice: { room: string; name: string; time: string; text: string } | null;
+  /** 메신저 — 진행 화면 위에 띄운 대화방 */
+  chatRoom: string | null;
 }
 
 export const useUI = create<UIState>(() => ({
   theme: 'day', tab: 'schedule', titleOpen: true, busy: false, sheetSlot: null, phoneRoom: null, codexSeg: 'memories',
-  vn: null, run: null, modal: null, map: null, ink: null, credits: false, toast: null,
+  vn: null, run: null, modal: null, map: null, ink: null, credits: false, toast: null, typing: null, notice: null, chatRoom: null,
 }));
 
 const set = useUI.setState;
@@ -47,6 +53,8 @@ let modalResolve: ((v: unknown) => void) | null = null;
 let runResolve: (() => void) | null = null;
 let creditsResolve: (() => void) | null = null;
 let mapResolve: ((r: WeekendResult) => void) | null = null;
+let noticeResolve: ((open: boolean) => void) | null = null;
+let chatResolve: (() => void) | null = null;
 let logId = 0, toastTimer: ReturnType<typeof setTimeout> | undefined;
 
 export const ui = {
@@ -57,6 +65,8 @@ export const ui = {
   /* ---------- 비주얼 노벨 ---------- */
   playScene(scene: string | StoryNode[], opts: PlayOptions = {}): Promise<string | undefined> {
     const nodes = typeof scene === 'string' ? getScene(scene).nodes : scene;
+    // 앨범 — 인물 이야기(메인·방학·날씨) 장면은 본 순간 앨범에 남아 다시 볼 수 있다
+    if (typeof scene === 'string' && !opts.replay && /^(main|vac|weather)\./.test(scene)) unlockAlbum(`scene:${scene}`);
     const st = game.state;
     const ctx = { state: st, name: st?.name ?? (game.meta.lastName || '나'), vars: opts.vars ?? {} };
     const player = new ScenePlayer(nodes, ctx, opts, e => { if (game.state) { applyEffect(e); refresh(); } });
@@ -128,6 +138,19 @@ export const ui = {
     return new Promise(res => { mapResolve = res; });
   },
   planDone(r: WeekendResult) { set({ map: null }); const f = mapResolve; mapResolve = null; f?.(r); },
+
+  /* ---------- 메신저 ---------- */
+  setTyping: (typing: string | null) => set({ typing }),
+  notify(n: NonNullable<UIState['notice']>): Promise<boolean> {
+    set({ notice: n });
+    return new Promise(res => { noticeResolve = res; });
+  },
+  noticeDone(open: boolean) { set({ notice: null }); const r = noticeResolve; noticeResolve = null; r?.(open); },
+  openChat(room: string): Promise<void> {
+    set({ chatRoom: room });
+    return new Promise(res => { chatResolve = res; });
+  },
+  closeChat() { set({ chatRoom: null }); const r = chatResolve; chatResolve = null; r?.(); },
 
   /* ---------- 크레딧 ---------- */
   credits(): Promise<void> { set({ credits: true }); return new Promise(res => { creditsResolve = res; }); },

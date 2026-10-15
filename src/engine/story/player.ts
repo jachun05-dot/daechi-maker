@@ -21,6 +21,8 @@ export interface View {
   choices: { text: string; special: boolean }[];
   shake: number;      // 값이 바뀔 때마다 흔들림
   flash: { color: string; key: number } | null;
+  /** 메신저 사진 — [photo id 설명] */
+  photo: { id: string; caption: string } | null;
 }
 
 export interface PlayOptions {
@@ -29,6 +31,8 @@ export interface PlayOptions {
   fx?: FxType;
   vars?: Record<string, string | number>;
   replay?: boolean;                 // true면 효과를 적용하지 않음(도감 다시보기)
+  /** 재생기가 모르는 명령을 넘겨받는다 (메신저의 [promise] 등). replay 중에도 불린다 */
+  onCmd?: (name: string, args: string[], replay: boolean) => void;
 }
 
 export class ScenePlayer {
@@ -43,13 +47,13 @@ export class ScenePlayer {
     const theme = opts.theme ?? 'day';
     this.view = {
       theme, bg: opts.bg ?? (theme === 'night' ? 'dream' : 'room'), fx: opts.fx ?? 'none', stand: null, cg: null,
-      mode: 'say', speaker: null, speakerColor: null, text: '', card: null, choices: [], shake: 0, flash: null,
+      mode: 'say', speaker: null, speakerColor: null, text: '', card: null, choices: [], shake: 0, flash: null, photo: null,
     };
   }
 
   /** 다음 멈춤 지점(대사·카드·선택지·끝)까지 진행 */
   next(): View {
-    this.view = { ...this.view, card: null, choices: [] };
+    this.view = { ...this.view, card: null, choices: [], photo: null };
     while (this.queue.length) {
       const n = this.queue.shift()!;
       if (this.run(n)) return this.view;
@@ -57,6 +61,10 @@ export class ScenePlayer {
     this.view = { ...this.view, mode: 'done' };
     return this.view;
   }
+
+  /** 다시보기 상태를 바꾼다 (메신저: 저장된 대화를 빨리 감은 뒤 이어서 진행) */
+  setReplay(replay: boolean) { this.opts.replay = replay; }
+  get replaying() { return !!this.opts.replay; }
 
   choose(index: number): View {
     const opt = this.pendingChoices[index];
@@ -104,7 +112,13 @@ export class ScenePlayer {
         this.view = { ...v, mode: 'card', card: { kicker, title, sub } };
         return true;
       }
+      case 'photo': {
+        const [id = '', ...cap] = a;
+        this.view = { ...v, mode: 'say', photo: { id, caption: fill(cap.join(' '), this.ctx) } };
+        return true;
+      }
     }
+    if (this.opts.onCmd) { this.opts.onCmd(name, a, !!this.opts.replay); return false; }
     console.warn(`알 수 없는 명령 [${name}]`);
     return false;
   }

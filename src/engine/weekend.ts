@@ -13,14 +13,14 @@ import { CHARACTERS, CHAR_ORDER } from '@/content/characters';
 import { PLACES, placeById, type Place, type PlaceAction } from '@/content/places';
 import { WEEKEND_PLACES } from '@/content/presence';
 import { CAREERS } from '@/content/careers';
-import { INVITES, INVITE_REPLY, DECLINE_REPLY, TRACES, WEATHER_ICON, WEATHER_LABEL, type Weather } from '@/content/weekend';
+import { INVITES, INVITE_REPLY, DECLINE_REPLY, MY_ACCEPT, MY_DECLINE, TRACES, WEATHER_ICON, WEATHER_LABEL, type Weather } from '@/content/weekend';
 import { ui } from '@/store/ui';
 import { applyDelta, growthMult, isBase, isSkill, topTalent, type Delta } from './timetable';
 import { deltaChips } from './chips';
-import { addAff, addSighting, hpMax, refresh } from './state';
+import { addAff, addSighting, hpMax, refresh, unlockAlbum } from './state';
 import { getScene, hasScene, scenesWithPrefix } from './story/library';
 import { evalCond, fill, josa } from './story/context';
-import { pushMsg } from './phone';
+import { chatEvent, dayOf, dayTick, pushMsg } from './phone';
 import { basicMeet, logAff, nextMain, playMain, slump } from './month';
 import type { MainEvent } from './story/library';
 
@@ -32,7 +32,7 @@ export const SLOT_NAMES = ['낮', '저녁'] as const;
 export const slotLabel = (i: number) => `${DAY_NAMES[i >> 1]} ${SLOT_NAMES[i & 1]}`;
 
 /* ---------- 계획판 데이터 ---------- */
-export interface Invite { id: string; c: CharId; place: string; slot: number; text: string; clash?: string }
+export interface Invite { id: string; c: CharId; place: string; slot: number; text: string; clash?: string; fixed?: boolean }
 export interface SlotPick { place: string; action: number; cont?: boolean; invite?: string }
 export type Plan = (SlotPick | null)[];
 export interface WeekendSpec {
@@ -145,25 +145,36 @@ function rollWeather(season: Season): Weather {
   return 'sun';
 }
 
-/** 인물마다 이번 주말 있을 곳 한 군데 */
-function weekendPresence(st: GameState, T: Turn, turn: number): Record<string, CharId[]> {
-  const at: Record<string, CharId[]> = {};
+/** 인물마다 이번 주말 있을 곳 한 군데 — 주가 시작될 때 정한다 (메신저 대화가 참고한다) */
+export function computePresence(st: GameState, T: Turn, turn: number) {
+  st.presence = {};
   for (const c of CHAR_ORDER) {
+    const fixed = st.promiseNext.find(p => p.c === c);
+    if (fixed) { st.presence[c] = fixed.place; continue; }
     const list = WEEKEND_PLACES[c][T.year].filter(id => placeVisible(st, placeById(id)!, T, turn));
     const all = WEEKEND_PLACES[c][T.year];
     const where = list.length ? pick(list) : all.length ? pick(all) : null;
-    if (where) (at[where] ??= []).push(c);
+    if (where) st.presence[c] = where;
   }
-  return at;
 }
+const presenceMap = (st: GameState) => {
+  const at: Record<string, CharId[]> = {};
+  for (const [c, p] of Object.entries(st.presence) as [CharId, string][]) (at[p] ??= []).push(c);
+  return at;
+};
 
 function makeInvites(st: GameState, presence: Record<string, CharId[]>): Invite[] {
   const P = BALANCE.promise;
   const where = (c: CharId) => Object.keys(presence).find(k => presence[k].includes(c));
-  const cands = CHAR_ORDER.filter(c => st.met[c] && st.aff[c] >= P.minAff && where(c) && Math.random() < P.chance)
-    .sort(() => Math.random() - 0.5).slice(0, P.maxPerWeek);
+  // 메신저에서 이미 잡은 약속
+  const fixed: Invite[] = st.promiseNext.map(f => ({ id: `fix_${f.c}`, c: f.c, place: f.place, slot: f.slot, text: '톡으로 잡은 약속', fixed: true }));
+  const taken = fixed.map(f => f.slot);
+  const free = [0, 1, 2, 3].filter(x => !taken.includes(x));
+  if (!free.length) return fixed;
+  const cands = CHAR_ORDER.filter(c => st.met[c] && st.aff[c] >= P.minAff && where(c) && !fixed.some(f => f.c === c) && Math.random() < P.chance)
+    .sort(() => Math.random() - 0.5).slice(0, Math.max(0, P.maxPerWeek - fixed.length));
   const out: Invite[] = cands.map((c, n) => {
-    const place = where(c)!, slot = Math.floor(Math.random() * 4);
+    const place = where(c)!, slot = free[Math.floor(Math.random() * free.length)];
     const name = placeById(place)!.name;
     const text = pick(INVITES[c]).replace('{when}', slotLabel(slot)).replace('{place}', name);
     return { id: `inv${n}_${c}`, c, place, slot, text: fill(text, { state: st, name: st.name, vars: {} }) };
@@ -175,14 +186,14 @@ function makeInvites(st: GameState, presence: Record<string, CharId[]>): Invite[
     b.text = fill(pick(INVITES.mujin).replace('{when}', slotLabel(b.slot)).replace('{place}', placeById(b.place)!.name), { state: st, name: st.name, vars: {} });
   }
   for (const x of out) { const y = out.find(z => z !== x && z.slot === x.slot); if (y) x.clash = y.id; }
-  return out;
+  return [...fixed, ...out];
 }
 
 /* =========================================================
    주말 실행
    ========================================================= */
 export async function runWeekend(st: GameState, T: Turn, week: number, turn: number) {
-  const presence = weekendPresence(st, T, turn);
+  const presence = presenceMap(st);
   const mains: Record<string, MainEvent> = {};
   for (const c of CHAR_ORDER) {
     const e = nextMain(st, c);
@@ -190,7 +201,7 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
   }
   const weather: [Weather, Weather] = [rollWeather(T.season), rollWeather(T.season)];
   const invites = makeInvites(st, presence);
-  for (const inv of invites) pushMsg(st, inv.c, inv.text);
+  for (const inv of invites) if (!inv.fixed) pushMsg(st, inv.c, inv.text);
 
   const visible = PLACES.filter(p => placeVisible(st, p, T, turn) || invites.some(i => i.place === p.id)).map(p => p.id);
   const newly = visible.filter(id => !st.flags[`seen_${id}`]);
@@ -211,16 +222,19 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
   const promises: Record<number, CharId> = {};
   for (const inv of invites) {
     const log = (st.promiseLog[inv.c] ??= { kept: 0, broken: 0, declined: 0 });
+    if (inv.fixed) { promises[inv.slot] = inv.c; continue; }
     if (r.accepted.includes(inv.id)) {
       promises[inv.slot] = inv.c;
-      st.chats[inv.c].push({ from: 'me', text: '좋아. 갈게.' }, { from: 'them', text: INVITE_REPLY[inv.c] });
+      st.chats[inv.c].push({ from: 'me', text: MY_ACCEPT[inv.c] ?? '좋아. 갈게.', day: st.day }, { from: 'them', text: INVITE_REPLY[inv.c], day: st.day });
     } else {
       const lost = inv.clash && r.accepted.includes(inv.clash) ? P.conflict : P.decline;
       addAff(st, inv.c, -lost);
       log.declined++;
-      st.chats[inv.c].push({ from: 'me', text: '미안, 그날은 안 될 것 같아.' }, { from: 'them', text: DECLINE_REPLY[inv.c] });
+      st.chats[inv.c].push({ from: 'me', text: MY_DECLINE[inv.c] ?? '미안, 그날은 안 될 것 같아.', day: st.day }, { from: 'them', text: DECLINE_REPLY[inv.c], day: st.day });
+      chatEvent(st, `promise:declined:${inv.c}`);
     }
   }
+  st.promiseNext = [];
   refresh();
 
   const played = new Set<string>(), metNow = new Set<CharId>();
@@ -238,6 +252,8 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
       if (pickS.cont) continue;
       await visitSlot(st, T, day * 2 + s, pickS, weather[day], { presence, mains, promises, played, metNow, head, wsub });
     }
+    if (weather[day] === 'rain' || weather[day] === 'snow') chatEvent(st, `weather:${weather[day]}`);
+    await dayTick(st, dayOf(turn, week, 5 + day), true);
     await ui.runWait(day === 0 ? '일요일' : week < 3 ? '다음 주' : '한 달 정리');
     ui.runClose();
   }
@@ -325,6 +341,7 @@ async function promiseMeet(st: GameState, c: CharId, place: Place, already: bool
   addAff(st, c, BALANCE.promise.aff);
   addSighting(st, c, place.name);
   (st.promiseLog[c] ??= { kept: 0, broken: 0, declined: 0 }).kept++;
+  chatEvent(st, `promise:kept:${c}`);
   if (!already) {
     const lead: StoryNode = { t: 'say', text: `약속한 ${place.name}. ${josa(CHARACTERS[c].name, '이/가')} 먼저 와 있었다.`, line: 0 };
     const nodes = hasScene(`promise.${c}`) ? [lead, pick(getScene(`promise.${c}`).nodes)] : [lead];
@@ -342,6 +359,8 @@ async function weatherMeet(st: GameState, c: CharId, place: Place, scene: string
   st.stat.spirit += BALANCE.affection.spiritOnMeet;
   addSighting(st, c, place.name);
   const lead: StoryNode = { t: 'say', text: `${place.name}에서 ${josa(CHARACTERS[c].name, '과/와')} 마주쳤다.`, line: 0 };
+  unlockAlbum(`scene:${scene}`);
+  chatEvent(st, `meet:${c}`);
   await ui.playScene([lead, ...getScene(scene).nodes], { theme: 'day', bg: place.bg });
   ui.setTheme('day');
   logAff(st, before, `${josa(CHARACTERS[c].name, '을/를')} 만났다`, c, place.name);

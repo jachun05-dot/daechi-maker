@@ -10,7 +10,7 @@ import { ui } from '@/store/ui';
 import { applyDelta, growthMult, type Delta } from './timetable';
 import { deltaChips } from './chips';
 import { addAff, refresh } from './state';
-import { pushMsg } from './phone';
+import { chatEvent, pushMsg } from './phone';
 import { hasScene } from './story/library';
 
 const STAGES = { summer: 3, winter: 2 } as const;
@@ -41,7 +41,7 @@ export async function runVacation(st: GameState, season: 'summer' | 'winter') {
     .sort((a, b) => st.aff[b] - st.aff[a])
     .slice(0, BALANCE.vacation.invites);
   if (!invited.length) return;
-  for (const c of invited) pushMsg(st, c, `방학인데… 시간 있어? 같이 가고 싶은 데가 있어서.`);
+  for (const c of invited) pushMsg(st, c, c === 'seoha' ? '선배, 방학인데 시간 있어요? 같이 가고 싶은 데가 있어서요.' : '방학인데… 시간 있어? 같이 가고 싶은 데가 있어서.');
   refresh();
 
   const nodes: StoryNode[] = [
@@ -65,7 +65,8 @@ export async function runVacation(st: GameState, season: 'summer' | 'winter') {
     addAff(st, c, BALANCE.affection.vacation);
     const id = `vac.${c}.${season}${stage}`;
     if (hasScene(id)) await ui.playScene(id, { theme: 'day' });
-    for (const o of invited) if (o !== c) pushMsg(st, o, '…그래. 재밌게 보내.');
+    chatEvent(st, `vac:${c}`);
+    for (const o of invited) if (o !== c) pushMsg(st, o, o === 'seoha' ? '…그래요. 재밌게 보내요.' : '…그래. 재밌게 보내.');
   }
   ui.setTheme('day');
   refresh();

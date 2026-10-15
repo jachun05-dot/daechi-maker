@@ -307,3 +307,75 @@ code { font-size: 11px; padding: 1px 4px; border-radius: 4px; background: var(--
 .map-go-l .muted { font-size: 11px; color: var(--sub); }
 .map-go-r { white-space: pre-line; text-align: center; line-height: 1.2; font-size: 12px; }
 .map-sheet { max-height: 72%; overflow-y: auto; }
+
+/* --- 메신저 (대화형) --- */
+.chatroom .phone-top b { flex: 1; }
+.phone-top .wait, .room .wait { font-size: 10.5px; font-weight: 700; color: #d0602a; background: #fff1e6; border-radius: 8px; padding: 2px 7px; margin-left: auto; }
+.room-r { display: grid; justify-items: end; gap: 3px; }
+.room-r time { font-size: 10px; color: #a0a4ae; }
+.phone-note { font-size: 11px; color: #8a8f9c; padding: 10px 14px 14px; }
+.chat { gap: 4px; }
+.brow { display: flex; align-items: flex-end; gap: 6px; }
+.brow.head { margin-top: 8px; }
+.brow.me { justify-content: flex-end; }
+.brow.me time { order: -1; }
+.brow.sys { justify-content: center; margin: 6px 0; }
+.bav { width: 30px; flex: none; align-self: flex-start; }
+.bcol { display: grid; gap: 3px; max-width: 74%; }
+.brow.me .bcol { justify-items: end; }
+.bname { font-size: 11px; color: #4b5060; }
+.brow time { font-size: 9.5px; color: #5d6574; white-space: nowrap; }
+.bubble { max-width: 100%; }
+.bubble.photo { padding: 0; overflow: hidden; background: #fff; border-radius: 12px; }
+.bubble.photo img { display: block; width: 200px; max-width: 100%; }
+.bubble.photo .ph { width: 190px; aspect-ratio: 4 / 3; display: grid; place-content: center; justify-items: center; gap: 4px; background: linear-gradient(135deg, #e9edf3, #d9e0ea); font-size: 26px; color: #6a7282; padding: 10px; text-align: center; }
+.bubble.photo .ph span { font-size: 12px; }
+.bubble.photo .ph code { font-size: 9.5px; opacity: .7; }
+.bubble.typing { display: flex; gap: 4px; padding: 11px 13px; }
+.bubble.typing i { width: 6px; height: 6px; border-radius: 50%; background: #9aa1ad; animation: typing 1s infinite ease-in-out; }
+.bubble.typing i:nth-child(2) { animation-delay: .15s; }
+.bubble.typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+.replies button { border: 1px solid #e0e3ea; }
+.replies button:active { background: #ffe36e; }
+.call-bar { background: #fff; padding: 8px 10px; border-top: 1px solid #eceef3; }
+.call-bar .call { width: 100%; padding: 10px; border-radius: 12px; background: #f6f2dd; font-weight: 700; font-size: 13px; display: grid; gap: 2px; }
+.call-bar .call small { font-weight: 500; font-size: 10.5px; color: #8a8f9c; }
+.call-bar .call:disabled { opacity: .5; }
+.topics { display: grid; gap: 6px; }
+.topics button { text-align: left; padding: 9px 11px; border-radius: 12px; background: #eef0f5; display: grid; gap: 2px; }
+.topics button b { font-size: 13px; }
+.topics button span { font-size: 11.5px; color: #6b7080; }
+.topics button:disabled { opacity: .45; }
+.topics .cancel { text-align: center; background: none; color: #8a8f9c; }
+.chat-layer { z-index: 60; background: rgba(10, 12, 18, .45); padding: calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom)); }
+.chat-layer .phone { flex: 1; min-height: 0; box-shadow: 0 20px 50px rgba(0, 0, 0, .3); }
+.chat-layer .chat { max-height: none; }
+.notice-layer { z-index: 62; align-items: flex-start; justify-content: center; padding: calc(14px + env(safe-area-inset-top)) 12px 0; pointer-events: none; }
+.notice { pointer-events: auto; width: 100%; max-width: 420px; background: rgba(255, 255, 255, .97); color: #23252c; border-radius: 18px; box-shadow: 0 14px 40px rgba(0, 0, 0, .28); padding: 12px 14px; display: grid; gap: 10px; animation: notice-in .3s var(--ease); font-family: var(--font-ui); }
+@keyframes notice-in { from { transform: translateY(-30px); opacity: 0; } }
+.notice-h { display: flex; justify-content: space-between; font-size: 11px; color: #8a8f9c; }
+.notice-b { display: flex; gap: 10px; align-items: center; }
+.notice-b b { font-size: 14px; }
+.notice-b p { font-size: 13px; color: #3a3f4a; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.notice-f { display: grid; grid-template-columns: 1fr 1.3fr; gap: 8px; }
+
+/* --- 앨범 --- */
+.album .card-h h3 { display: flex; align-items: center; gap: 6px; }
+.album-photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 8px; }
+.aph { aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--panel-2); border: 1px solid var(--line); display: grid; place-items: center; position: relative; color: var(--sub); font-size: 22px; }
+.aph img { width: 100%; height: 100%; object-fit: cover; }
+.aph small { position: absolute; left: 0; right: 0; bottom: 0; font-size: 9.5px; padding: 3px 5px; background: rgba(0, 0, 0, .45); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.aph.locked { opacity: .5; }
+.album-scenes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.asc { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 9px 11px; border-radius: var(--radius-sm); background: var(--panel-2); border: 1px solid var(--line); text-align: left; }
+.asc span { font-size: 10.5px; color: var(--sub); }
+.asc b { font-size: 13px; }
+.asc i { font-style: normal; color: var(--accent); font-size: 11px; }
+.asc.locked { opacity: .5; }
+.lightbox { z-index: 92; background: rgba(0, 0, 0, .8); align-items: center; justify-content: center; padding: 20px; }
+.lightbox figure { display: grid; gap: 10px; max-width: 100%; }
+.lightbox img, .lightbox .ph { max-width: 100%; max-height: 70vh; border-radius: 12px; }
+.lightbox .ph { width: 280px; aspect-ratio: 4 / 3; background: #333; display: grid; place-items: center; font-size: 40px; }
+.lightbox figcaption { color: #fff; font-size: 13px; text-align: center; }
+.bday { align-self: center; font-size: 10.5px; color: #4d5565; background: rgba(255, 255, 255, .45); border-radius: 10px; padding: 2px 10px; margin: 10px 0 2px; }

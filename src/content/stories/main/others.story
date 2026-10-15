@@ -5,7 +5,7 @@
 # [임시] 장면 내용은 기획 확정 후 교체
 
 # ---------------- 강무진 ----------------
-=== main.mujin.1 auto=1 aff=0 year=1
+=== main.mujin.1 auto=1 aff=0 year=1 title="초코우유"
 [bg classroom]
 쉬는 시간, 커다란 그림자가 내 책상 위로 드리웠다.
 mujin| 안녕! 나 강무진! 우리 같은 반이지? 잘 지내자!
@@ -18,7 +18,7 @@ mujin| …이안이 좀 차갑게 굴어도 너무 신경 쓰지 마. 원래 착
   mujin| 응! 초등학교 때부터! 내가 지켜야 되는 애야.
   그 말을 아무렇지도 않게 했다. 숨 쉬는 것처럼.
 
-=== main.mujin.2 aff=15 year=1 place=hangang
+=== main.mujin.2 aff=15 year=1 place=hangang title="비 오는 날의 흉터"
 [bg hangang]
 한강 조깅로. 무진이 혼자 벤치에 앉아 팔뚝을 문지르고 있었다.
 mujin| 어, {name}! …아, 이거? 흉터. 태어날 때부터 있었대.
@@ -30,7 +30,7 @@ mujin| 다친 적도 없는데 비만 오면 쑤셔. 웃기지?
 * “아프면 아프다고 해. 웃지 말고.” {mujin+4}
   mujin| 응! …근데 이상하다. 너한테 그 말 들으니까 진짜 덜 아파.
 
-=== main.mujin.3 aff=40 year=2 place=schoolgym
+=== main.mujin.3 aff=40 year=2 place=schoolgym title="텅 빈 체육관"
 [bg gym]
 주말의 텅 빈 체육관. 무진이 공을 내려놓았다.
 mujin| 이안네서 후원 안 해 주면 나 운동 못 해. 그래서 이안 지키는 거, 당연한 거라고 생각했어.
@@ -45,7 +45,7 @@ mujin| 이안한테 미안한 건가? 아니면 너한테? 모르겠어. 머리 
   mujin| 생각해 볼게. 너 때문에 숙제 생겼다.
 
 # ---------------- 차도윤 ----------------
-=== main.doyun.1 auto=1 aff=0 year=1
+=== main.doyun.1 auto=1 aff=0 year=1 title="계단"
 [bg school]
 계단 한가운데서 누군가 내 어깨를 툭 치고 지나갔다.
 doyun| 비켜. 계단 한가운데 서 있으면 다른 사람 시간이 낭비되잖아.
@@ -56,7 +56,7 @@ doyun| …신입생 수석? 아, 그래서 얼굴이 낯익었구나. 기억할 
 * 아무 말 없이 노려본다 {doyun+2}
   doyun| 처음 보는 사람을 경멸하는 눈이네. 이유가 궁금하긴 한데, 안 물어볼게. 시간 아까우니까.
 
-=== main.doyun.2 aff=15 year=1 place=daechi
+=== main.doyun.2 aff=15 year=1 place=daechi title="계산 실수 세 개"
 [bg academy]
 주말 특강실. 도윤 선배가 내 모의고사 답안지를 멋대로 집어 들었다.
 doyun| 14번, 19번, 27번. 계산 실수 세 개. 실력 문제가 아니라 태도 문제야.
@@ -68,7 +68,7 @@ doyun| …내가 이 얘길 왜 하고 있지. 비효율적이네.
   doyun| 걱정? 계산이야.
   doyun| …둘이 같은 말이라고 생각하면, 그냥 넘어가.
 
-=== main.doyun.3 aff=40 year=2 place=daechi
+=== main.doyun.3 aff=40 year=2 place=daechi title="설명하지 않는 사람"
 [bg academy]
 [fx rain]
 도윤 선배가 학생회 결정을 뒤집었다. 이안이 맡던 행사를 통째로 가져가 버린 것이다.
@@ -84,7 +84,7 @@ doyun| …왜 그렇게 봐. 결과가 맞았으면 됐지. 설명할 필요 없
   doyun| 그리고 걔는 나 싫어해. 이유도 모르면서. …그것도 나쁘지 않아.
 
 # ---------------- 한태준 ----------------
-=== main.taejun.1 aff=0 year=1 place=cheongdam
+=== main.taejun.1 aff=0 year=1 place=cheongdam title="청담동 라운지"
 [bg cheongdam]
 청담동 라운지. 명품 로고를 두른 남자애가 다리를 꼬고 앉아 있었다.
 taejun| …여기 아무나 들어오는 데 아닌데. 한태준. 이름 정도는 들어봤지?
@@ -99,7 +99,7 @@ taejun| 왜, 엄마. 무슨 일 있어? …알았어. 내가 갈게. 울지 마.
   나가던 그가 내 테이블에 카드를 툭 올려놓았다.
   taejun| 여기 디저트 맛있어. 먹고 가. …못 들은 척해 준 값이야.
 
-=== main.taejun.2 aff=20 year=1 place=cheongdam
+=== main.taejun.2 aff=20 year=1 place=cheongdam title="너는 어떻게 하고 싶은데"
 [bg cheongdam]
 taejun| 넌 참 네 생각만 한다. 학원 빠지고 하고 싶은 거 하러 다닌다며. 엄마가 반대한다면서.
 me| 엄마 속상하게 하고 싶진 않아. 그래도 이건 내가 하고 싶어.
@@ -111,7 +111,7 @@ taejun| ……
 * 다른 얘기로 넘어가 준다 {taejun+3}
   taejun| …그래. 다음에. 다음에 생각해 볼게.
 
-=== main.taejun.3 aff=45 year=2 auto=1
+=== main.taejun.3 aff=45 year=2 auto=1 title="비싼 쇼핑백"
 [bg rain]
 [fx rain]
 약속한 날. 태준은 오지 않았다. 메시지만 하나 왔다.
@@ -126,7 +126,7 @@ taejun| 이거. 미안해서. …왜 안 받아.
   그 말이 왠지, 칭찬처럼 들리지 않았다.
 
 # ---------------- 윤서하 ----------------
-=== main.seoha.1 aff=0 year=1 place=daehakro
+=== main.seoha.1 aff=0 year=1 place=daehakro title="관객 한 명"
 [bg daehakro]
 공연이 끝난 소극장. 텅 빈 무대 위에서 남자애 하나가 낡은 수첩에 뭔가를 적고 있었다.
 seoha| 아, 들켰다. 관객이 한 명 남아 있었네.
@@ -138,7 +138,7 @@ seoha| 이상하다. 보통은 사람이 다 보이는데. 선배는 안 보이�
 * “나 너한테 선배 소리 들을 사이 아닌 것 같은데.” {seoha+3}
   seoha| 내년에 이화고 들어가요. 미리 연습해 두는 거예요, 선배.
 
-=== main.seoha.2 aff=0 year=2 auto=1
+=== main.seoha.2 aff=0 year=2 auto=1 title="메기"
 [bg school]
 [fx petal]
 2학년 첫 주. 복도에서 이안과 무진 사이에 낯익은 1학년이 서 있었다.
@@ -155,7 +155,7 @@ mujin| 어? 어…?
   mujin| 쟤… 뭐야?
   ian| 몰라. 근데 틀린 말이 아니라서 더 기분 나빠.
 
-=== main.seoha.3 aff=40 year=2 place=daehakro
+=== main.seoha.3 aff=40 year=2 place=daehakro title="불 꺼진 극장"
 [bg stage]
 불 꺼진 극장. 서하가 수첩을 덮었다.
 seoha| 저는 다른 사람 얘기만 적어요. 제 얘기는 한 줄도 없어요.
@@ -167,7 +167,7 @@ seoha| …이런 얘기 처음 해요. 선배 앞에서는 이상하게 입이 �
   seoha| 관객이 있으니까, 오늘은 무대에서 안 내려가도 될 것 같아요.
 
 # ---------------- 김이현 ----------------
-=== main.ihyun.1 aff=0 year=1 place=intl
+=== main.ihyun.1 aff=0 year=1 place=intl title="거꾸로 단 명찰"
 [bg school]
 [fx petal]
 한성국제고 교류 행사. 누군가 내 어깨를 톡톡 쳤다.
@@ -181,7 +181,7 @@ ihyun| 김이현이에요. 이름 예쁘죠? 기억해 줘요. 오래.
   ihyun| …그거 작업 멘트면, 내 대사 뺏긴 건데.
   ihyun| 우리 말 놓자. 동갑이잖아. 낯익은 사이끼리 존댓말은 좀 그렇지.
 
-=== main.ihyun.2 aff=20 year=1 place=palace
+=== main.ihyun.2 aff=20 year=1 place=palace title="근정전 계단"
 [bg palace]
 경복궁 근정전 계단을 오르던 이현이 갑자기 멈춰 섰다. 손이 가슴께를 움켜쥐고 있었다.
 ihyun| ……아, 하하. 계단이 생각보다 가파르네. 나 늙었나 봐.
@@ -192,7 +192,7 @@ ihyun| ……아, 하하. 계단이 생각보다 가파르네. 나 늙었나 봐
   봄인데도 그의 손은 얼음처럼 차가웠다.
   ihyun| …이러면 반칙이지. 내가 할 거였는데.
 
-=== main.ihyun.3 aff=45 year=3 auto=1
+=== main.ihyun.3 aff=45 year=3 auto=1 title="비 오는 정류장"
 [bg rain]
 [fx rain]
 비 오는 버스 정류장. 이현이 갑자기 무릎이 꺾이듯 주저앉았다.
@@ -207,7 +207,7 @@ ihyun| 그런 표정 하지 마. 나 그런 표정 보려고 사는 거 아니�
   무슨 뜻이냐고, 그때 나는 묻지 못했다.
 
 # ---------------- 류시현 (설정 보류) ----------------
-=== main.sihyun.1 aff=0 year=1 place=hongdae
+=== main.sihyun.1 aff=0 year=1 place=hongdae title="세 번째 곡"
 [bg hongdae]
 홍대 지하 클럽. 은발의 기타리스트가 무대에서 내려와 내 앞에 섰다.
 sihyun| 교복에 학원 가방… 대치동 범생이가 여긴 웬일이래?
@@ -217,7 +217,7 @@ sihyun| 세 번째 곡에서 표정 바뀌던데. 거기 내가 제일 아끼는
 * “나 범생이 아니거든.” {sihyun+3}
   sihyun| 하, 이빨 있네. 마음에 든다.
 
-=== main.sihyun.2 aff=20 year=1 place=nakwon
+=== main.sihyun.2 aff=20 year=1 place=nakwon title="숨 쉬는 법"
 [bg music]
 낙원상가 악기점. 시현이 기타를 내 무릎에 올려놓았다.
 sihyun| 너 숨 쉬는 법 까먹은 얼굴이야. 여기선 아무도 너 채점 안 해.
@@ -226,7 +226,7 @@ sihyun| 너 숨 쉬는 법 까먹은 얼굴이야. 여기선 아무도 너 채�
 * “숨 쉬는 거, 네가 좀 가르쳐 주든가.” {sihyun+5}
   sihyun| …너 그런 말 아무한테나 하지 마라. 위험해.
 
-=== main.sihyun.3 aff=45 year=2 place=hongdae
+=== main.sihyun.3 aff=45 year=2 place=hongdae title="첫눈 오는 옥상"
 [bg rooftop]
 첫눈 오는 밤, 클럽 옥상. 시현이 오래된 거문고 산조 음반을 내밀었다.
 sihyun| 이거 들으면 이상하게 네 생각이 나. 너 만나기 전부터 그랬어.

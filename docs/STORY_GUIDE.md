@@ -114,3 +114,22 @@ me| 주인공 대사         ← 플레이어가 정한 이름으로 표시
 - 새 메인 이벤트를 추가하려면 `main.{인물}.{다음 번호}` 장면을 만들면 끝입니다. 지도 장소 id는 `content/places.ts`에 있어요.
 - 새 전생 꿈도 dreams/ 에 장면을 추가하면 도감과 해금 판정에 자동으로 들어갑니다.
 - `npm test`가 메인 이벤트 번호가 빠졌는지, 장소 id가 맞는지도 검사합니다.
+
+## 메신저 대화 (stories/chat/)
+
+자세한 규칙은 `stories/chat/_README.story` 맨 위 설명에 있습니다.
+
+```
+=== chat.mujin.rain on=weather:rain aff=30 delay=0
+mujin| 비 온다!!!          ← 상대 말풍선
+me| 우산 있어?             ← 내 말풍선 (선택 없이)
+메시지를 삭제했습니다       ← 가운데 회색 문구
+[photo mujin_sunset 한강 노을]   ← 사진 (앨범에 저장, 이미지 photo/mujin_sunset.png)
+* 잘했어. 많이 아파? {mujin+3}   ← 답장 선택지 = 내 말풍선
+  mujin| 쬐끔…                    ← 그 답장에 대한 반응
+```
+
+- `on=` 사건 / `aff=` 최소 호감도 / `if=` 조건 / `delay=` 며칠 뒤 도착(기본 1) / `repeat=1` 여러 번
+- `[promise]` → 그 주말 그 사람이 있는 곳에 약속을 잡고, 다음 줄부터 `{var.when}` `{var.where}`
+- 먼저 연락하기 답장: `=== call.{인물}.{hello|promise|worry|dream}` — 호감도에 따라 `[if aff.ian<20]` 로 단답을 나눈다
+- 읽씹·안읽씹 반응과 호감도, 톡 시각, 답이 늦는 사람은 `content/phone.ts`

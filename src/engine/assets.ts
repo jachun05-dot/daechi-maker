@@ -23,3 +23,4 @@ export const cgImage = (key: string) => byKey[`cg/${key}`];
 export const avatarImage = (id: string) => byKey[`chars/${id}/avatar`];
 export const scheduleImage = (id: string) => byKey[`schedule/${id}`];
 export const uiImage = (key: string) => byKey[`ui/${key}`];
+export const photoImage = (id: string) => byKey[`photo/${id}`];

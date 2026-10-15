@@ -75,6 +75,7 @@ export const BALANCE = {
     main: 5,               // 메인 이벤트 기본값 (+선택지)
     vacation: 6,           // 방학 이벤트 기본값
     jealousy: 1,           // 이안·무진: 한쪽 호감이 오를 때 다른 쪽이 잃는 양
+    jealousyMin: 4,        // 이만큼 이상 오를 때만 질투 (메인·약속·방학 같은 큰 순간. 톡·짧은 만남은 제외)
     spiritOnMeet: 0.5,     // 인물을 만날 때마다 감응
   },
   /** 방학 */
@@ -86,8 +87,13 @@ export const BALANCE = {
   /** 전생 꿈을 처음 볼 때 감응 보너스 */
   dreamSpiritBonus: 3,
 
-  /** 메신저: 조건을 넘은 인물이 이번 턴에 톡을 보낼 확률 */
-  phoneChance: 0.7,
+  /** 메신저 */
+  phone: {
+    callsPerMonth: 2,      // 먼저 연락하기 — 한 달에 보낼 수 있는 횟수
+    deadline: 3,           // 답장 기한 (게임 속 날짜). 넘기면 읽씹·안읽씹 (인물별 반응·호감도는 content/phone.ts)
+    perDay: 2,             // 하루에 도착하는 대화 최대 수
+    idleChance: 0.2,       // 매주, 만난 인물이 근황 톡(on=idle)을 보낼 확률
+  },
 
   /* ---------- 월말 이벤트 ---------- */
   exam: {

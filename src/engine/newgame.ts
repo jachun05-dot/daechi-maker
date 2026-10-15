@@ -2,7 +2,7 @@
 import type { GameState } from './types';
 import { ui, useUI } from '@/store/ui';
 import { game, migrate, newState, refresh, saves } from './state';
-import { deliverMessages } from './phone';
+import { resetSessions } from './phone';
 import { beginTurn } from './month';
 
 export const DEFAULT_NAME = '서단비';
@@ -11,6 +11,7 @@ export async function newGame() {
   if (useUI.getState().busy) return;
   ui.setBusy(true);
   game.state = null;
+  resetSessions();
   useUI.setState({ titleOpen: false, sheetSlot: null, run: null, phoneRoom: null, tab: 'schedule' });
 
   await ui.inkIn('— 새 학기 전날 밤 —', 'night');
@@ -35,12 +36,12 @@ export async function newGame() {
   await ui.playScene('opening.1', { theme: 'day' });
   ui.setTheme('day');
   game.state.flags.open1 = true;
-  deliverMessages(game.state);
   ui.setBusy(false);
   await beginTurn();
 }
 
 export function loadGame(data: GameState) {
+  resetSessions();
   game.state = migrate(data);
   game.midMonth = false;
   useUI.setState({ titleOpen: false, theme: 'day', tab: 'schedule', phoneRoom: null, busy: false });

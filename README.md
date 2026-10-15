@@ -32,7 +32,7 @@ src/
 │  ├─ presence.ts            인물이 주말에 자주 있는 곳 (학년별) · 학교에서 마주치는 인물
 │  ├─ vacation.ts            방학 특강
 │  ├─ calendar.ts            학사 일정 (몇 월에 무슨 이벤트)
-│  ├─ phone.ts               메신저 메시지
+│  ├─ phone.ts               메신저 설정 (읽씹·안읽씹 반응, 톡 시각, 먼저 연락하기 주제)
 │  ├─ backgrounds.ts         배경 목록
 │  ├─ endings.ts             엔딩 컬렉션 목록
 │  └─ stories/               ← 모든 대사 (.story 텍스트 파일)
@@ -42,6 +42,7 @@ src/
 │     ├─ vacation/                 방학 이벤트 (여름 3 · 겨울 2단계)
 │     ├─ weekend/                  주말 약속 · 날씨 장면
 │     ├─ street/                   주말 길거리 사건
+│     ├─ chat/                     메신저 대화 (톡 한 판씩) · 먼저 연락하기 답장
 │     ├─ dreams/                   밤 — 전생의 기억
 │     ├─ events/                   학사 이벤트 · 위기 · 방학 진행
 │     └─ endings/                  커리어 · 진/노멀/차인 · 이현 · 히든
@@ -71,6 +72,7 @@ docs/legacy-stories/         예전 버전 대사 (참고용, 게임에서 읽�
 | `bg/{배경key}.jpg` | 배경 (key 목록은 `src/content/backgrounds.ts`) |
 | `cg/{장면id}.jpg` | 이벤트 CG — 스토리에서 `[cg 이름]`, 도감 카드는 `cg/ian1` 처럼 꿈 id |
 | `schedule/{일정id}.png` | 시간표 일정 아이콘 |
+| `photo/{사진id}.png` | 톡으로 받는 사진 (앨범에 모인다). id 는 `[photo id 설명]` |
 | `ui/map.png` | 주말 서울 지도 (4:5 비율). 핀 위치는 `content/places.ts` 의 `pos` 로 맞춘다. 없으면 기본 그림 지도 |
 | `ui/title.jpg` | 타이틀 배경 |
 

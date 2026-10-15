@@ -37,7 +37,8 @@ describe('스토리 파일', () => {
       walk(s.nodes, n => {
         const at = `${s.file}:${n.line}`;
         if (n.t === 'cmd') {
-          if (!CMDS.includes(n.name)) problems.push(`${at} 알 수 없는 명령 [${n.name}]`);
+          const chat = s.id.startsWith('chat.') || s.id.startsWith('call.');
+          if (!CMDS.includes(n.name) && !(chat && ['photo', 'promise'].includes(n.name))) problems.push(`${at} 알 수 없는 명령 [${n.name}]`);
           if (n.name === 'bg' && !BACKGROUNDS[n.args[0]]) problems.push(`${at} 배경 "${n.args[0]}"이 backgrounds.ts에 없음`);
           if (n.name === 'fx' && !FX.includes(n.args[0])) problems.push(`${at} 효과 "${n.args[0]}" 없음 (${FX.join('/')})`);
           if (n.name === 'stand' && n.args[0] !== 'off' && !(CHAR_ORDER as string[]).includes(n.args[0])) problems.push(`${at} 인물 "${n.args[0]}" 없음`);
@@ -137,6 +138,33 @@ describe('주말', () => {
       if (!SCENES[`promise.${c}`]) problems.push(`promise.${c} 장면 없음`);
       for (const t of TRACES[c] ?? []) if (t.includes(CHARACTERS_NAMES[c])) problems.push(`${c}: 흔적에 이름이 드러남`);
     }
+    expect(problems).toEqual([]);
+  });
+});
+
+describe('메신저', () => {
+  const ROOMS = [...CHAR_ORDER, 'jiyu', 'mom'] as string[];
+  const KEY = /^(main:\w+\.\d+|meet:\w+|promise:(kept|declined):\w+|weather:(rain|snow)|exam:(top|high|mid|low)|sports:(win|lose)|festival:(ok|fail)|counsel:(hint|decide)|suneung|jealous:(ian|mujin)|dream:\w+|turn:\d+|month:\d+|year:[123]|allowance|idle|stress|tired|slump|vac:\w+)$/;
+  it('대화 장면의 방·사건·말하는 사람이 올바르다', () => {
+    const problems: string[] = [];
+    const photos = new Set<string>();
+    for (const sc of Object.values(SCENES).filter(x => x.id.startsWith('chat.') || x.id.startsWith('call.'))) {
+      const room = sc.id.split('.')[1];
+      if (!ROOMS.includes(room)) { problems.push(`${sc.id}: 방 ${room} 없음`); continue; }
+      if (sc.id.startsWith('chat.')) {
+        const on = (sc.attrs.on ?? '').split(',').filter(Boolean);
+        if (!on.length) problems.push(`${sc.id}: on= 이 필요`);
+        for (const k of on) if (!KEY.test(k)) problems.push(`${sc.id}: 알 수 없는 사건 ${k}`);
+        for (const k of on) if (k.startsWith('dream:') && !DREAMS.some(d => d.id === k.slice(6))) problems.push(`${sc.id}: 전생 기억 ${k.slice(6)} 없음`);
+        for (const k of on) if (k.startsWith('main:') && !SCENES[`main.${k.slice(5)}`]) problems.push(`${sc.id}: 메인 이벤트 ${k.slice(5)} 없음`);
+        if (sc.attrs.if) { const e = checkCond(sc.attrs.if); if (e) problems.push(`${sc.id}: ${e}`); }
+      } else if (!(CHAR_ORDER as string[]).includes(room)) problems.push(`${sc.id}: 먼저 연락하기는 인물만`);
+      walk(sc.nodes, n => {
+        if (n.t === 'say' && n.who && n.who !== 'me' && (CHAR_ORDER as string[]).includes(n.who) && n.who !== room) problems.push(`${sc.file}:${n.line} ${room} 방에 ${n.who} 대사`);
+        if (n.t === 'cmd' && n.name === 'photo') { if (photos.has(n.args[0])) problems.push(`${sc.file}:${n.line} 사진 id 중복 ${n.args[0]}`); photos.add(n.args[0]); }
+      });
+    }
+    for (const c of CHAR_ORDER) for (const t of ['hello', 'promise', 'worry', 'dream']) if (!SCENES[`call.${c}.${t}`]) problems.push(`call.${c}.${t} 없음`);
     expect(problems).toEqual([]);
   });
 });

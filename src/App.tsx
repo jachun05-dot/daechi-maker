@@ -13,6 +13,7 @@ import { RunOverlay, Modal, Ink, Credits, Toast } from './ui/overlays/Overlays';
 import { Title } from './ui/overlays/Title';
 import { MapOverlay } from './ui/overlays/MapOverlay';
 import { FxLayer } from './ui/common/FxLayer';
+import { ChatNotice, ChatOverlay } from './ui/phone/Chat';
 
 const TABS = { schedule: ScheduleTab, stats: StatsTab, phone: PhoneTab, codex: CodexTab, system: SystemTab };
 
@@ -42,6 +43,8 @@ export function App() {
       <Title />
       <Credits />
       <Modal />
+      <ChatOverlay />
+      <ChatNotice />
       <Ink />
       <Toast />
     </div>

@@ -1,69 +1,75 @@
 /* =========================================================
-   스마트폰 메신저
-   - PHONE[인물]: 만난 뒤, 호감도가 min 이상이 되면 순서대로 하나씩 도착
-   - replies: 답장 선택지 (aff = 호감도 증가)
-   - JIYU: 지정한 턴(0 = 1학년 3월)에 도착하는 친구 메시지 — 인물이 주말에 자주 있는 곳 힌트
-   [임시] 인물 메시지는 설정 확정 후 교체
+   메신저 설정 — 대화 내용은 src/content/stories/chat/*.story
+   - HABIT: 인물별 톡 습관 (주로 보내는 시각, 먼저 연락했을 때 답이 오기까지 걸리는 날)
+   - IGNORE: 답장 기한(balance.ts phone.deadline)을 넘겼을 때
+       read   = 읽씹 (읽고 답을 안 함) / unread = 안읽씹 (아예 안 읽음)
+       aff: 잃는 호감도 · lines: 상대가 덧붙여 보내는 말 ("" 로 시작하면 시스템 문구)
+       stress: 내 스트레스 변화 (엄마·지유)
+   - TOPICS: 먼저 연락하기 주제 — 고르면 me 말풍선으로 나가고, call.{인물}.{주제} 장면이 답한다
    ========================================================= */
 import type { CharId } from '@/engine/types';
 
-export interface PhoneMsg { min: number; text: string; replies?: { text: string; aff: number }[] }
+export type Room = CharId | 'jiyu' | 'mom';
+/** 여주가 존댓말을 쓰는 상대 */
+export const POLITE: CharId[] = ['doyun'];
 
-export const PHONE: Record<CharId, PhoneMsg[]> = {
-  ian: [
-    { min: 5, text: '번호는 담임한테 받았어. 반장 연락망이라길래.\n…용건은 없어.', replies: [{ text: '용건 없이 연락한 거야?', aff: 3 }, { text: '반가워 ㅎㅎ 저장할게', aff: 2 }] },
-    { min: 20, text: '오늘 갤러리 행사 지루했어.\n너라면 무슨 말을 했을지 궁금하더라.' },
-    { min: 35, text: '다들 나한테 뭘 원하는지 바로 보이는데.\n너는 아직도 안 보여.', replies: [{ text: '원하는 거 없다니까.', aff: 3 }, { text: '굳이 말하면… 친구?', aff: 3 }] },
-    { min: 55, text: '{name}.\n그냥, 이름 불러 보고 싶었어.' },
-  ],
-  mujin: [
-    { min: 3, text: '{name}! 나 무진! 번호 저장해 줘!! 🏃', replies: [{ text: '저장했어!', aff: 2 }, { text: '초코우유 고마웠어 ㅎㅎ', aff: 3 }] },
-    { min: 15, text: '오늘 기록 갱신했어!!! 제일 먼저 너한테 말하고 싶었어!' },
-    { min: 30, text: '이안이 너 얘기 하더라. 무슨 얘긴지는 비밀!\n…근데 나도 너 얘기 했어.' },
-    { min: 50, text: '비 온다. 흉터 아파.\n근데 너 생각하면 덜 아파. 이상하지?', replies: [{ text: '안 이상해. 오늘은 따뜻하게 하고 자.', aff: 3 }] },
-  ],
-  doyun: [
-    { min: 5, text: '어제 모의고사 14번. 풀이 틀렸어. 사진 보낸다.\n고맙다는 말은 필요 없어.', replies: [{ text: '고맙…지는 않네요.', aff: 3 }, { text: '제 시험지를 왜 신경 쓰세요?', aff: 2 }] },
-    { min: 20, text: '이안 근처에 이상한 사람 붙으면 나한테 말해.\n이유는 묻지 마.' },
-    { min: 40, text: '계산이 또 안 맞아.\n너 때문이야. 원망하는 거 아니야.' },
-  ],
-  taejun: [
-    { min: 5, text: '한태준이다. …번호 왜 저장했냐고 묻지 마.', replies: [{ text: '안 물어봤는데?', aff: 3 }, { text: '어 반가워', aff: 2 }] },
-    { min: 20, text: '오늘 엄마가 또 전화했어.\n…그냥 누구한테 말하고 싶었어.', replies: [{ text: '괜찮아?', aff: 3 }, { text: '말해 줘서 고마워.', aff: 3 }] },
-    { min: 35, text: '선물 보냈어. 비싼 거.\n…아니다. 그냥 보고 싶다고 하면 되는 거였나.' },
-  ],
-  seoha: [
-    { min: 3, text: '선배, 오늘의 기록이에요.\n“그 사람은 여전히 안 읽힌다.”', replies: [{ text: '그거 좋은 거야 나쁜 거야?', aff: 3 }] },
-    { min: 20, text: '다음 공연 초대권 생겼어요. 맨 앞줄이에요.' },
-    { min: 40, text: '처음으로 제 얘기를 한 줄 적어 봤어요.\n선배 얘기 바로 아래에.' },
-  ],
-  ihyun: [
-    { min: 3, text: '명찰 거꾸로 달았던 이화고? 😆 나 김이현. 기억하지?', replies: [{ text: '거꾸로 안 달았거든!', aff: 3 }, { text: '누구세요? ㅎ', aff: 2 }] },
-    { min: 20, text: '오늘 경복궁 갔는데 너 없으니까 별로더라.' },
-    { min: 35, text: '나 오늘 병원… 아니, 미용실 갔다!\n어때? (사진 없음)', replies: [{ text: '…병원?', aff: 3 }, { text: '사진을 보내고 물어봐 ㅋㅋ', aff: 2 }] },
-    { min: 55, text: '고마워. 나 만나 줘서.\n…갑자기 왜 이러냐고? 그냥. 😊' },
-  ],
-  sihyun: [
-    { min: 3, text: '범생아 이번 주 토요일 클럽 공연. 맨 앞자리 비워 둔다.', replies: [{ text: '갈게! 🎸', aff: 3 }, { text: '나 학원 있는데…', aff: 1 }] },
-    { min: 20, text: '[음성메시지 0:42]\n(기타 소리와 함께 흥얼거리는 멜로디)' },
-    { min: 40, text: '{name}. 이 이름, 내 곡 가사에 넣어도 돼?' },
-  ],
+export const HABIT: Record<Room, { hours: [number, number]; replyDelay: number }> = {
+  ian:    { hours: [23, 24], replyDelay: 1 },   // 밤 11시대. 늦게 읽고 다음 날 답한다
+  mujin:  { hours: [19, 22], replyDelay: 0 },   // 훈련 끝나고 바로. 답이 빛의 속도
+  doyun:  { hours: [21, 23], replyDelay: 0 },   // 용건만, 칼같이
+  taejun: { hours: [2, 4],   replyDelay: 0 },   // 새벽
+  seoha:  { hours: [22, 24], replyDelay: 0 },   // 공연 끝나고
+  ihyun:  { hours: [20, 23], replyDelay: 0 },
+  sihyun: { hours: [1, 3],   replyDelay: 1 },   // 새벽 합주 끝나고, 답은 하루 뒤
+  jiyu:   { hours: [22, 24], replyDelay: 0 },
+  mom:    { hours: [18, 21], replyDelay: 0 },
 };
 
-export const JIYU: { turn: number; text: string }[] = [
-  { turn: 0, text: '야 우리 반 이안 봤어?? 진짜 왕자님이던데 표정 무서움ㅋㅋ\n옆에 큰 애는 강무진. 걔는 완전 강아지래' },
-  { turn: 1, text: '주말에 청담동 라운지 가면 한성그룹… 아니 무슨 졸부집 아들 있대\n명품 엄청 걸치고 다닌다던데' },
-  { turn: 2, text: '대학로 소극장에 중학생 배우 있대! 신비주의라던데\n주말에 연극 보러 가자!!' },
-  { turn: 2, text: '이안 주말엔 한남동 갤러리 행사에 끌려다닌대ㅋㅋ 재벌집도 힘들구나' },
-  { turn: 3, text: '한성국제고 교류 행사 가 봤어? 일본 혼혈 남자애 있대. 서강준 닮았대 미쳤다\n경복궁에서도 자주 보인대' },
-  { turn: 4, text: '홍대에 은발 기타리스트 있대ㅋㅋ 낙원상가에도 자주 온다던데' },
-  { turn: 5, text: '2학년 차도윤 선배 알지? 전교 1등.\n주말에도 대치동 학원가에 산대. 근데 성격 진짜 별로래…' },
-  { turn: 9, text: '벌써 1학년 끝이야…? 우리 대치동에서 살아남았다 ㅠㅠ' },
-  { turn: 19, text: '고3 되기 전 마지막 겨울이다…\n너 요즘 좀 멋있어진 거 알아?' },
-];
+export interface IgnoreRule { aff: number; stress?: number; lines: string[] }
+export const IGNORE: Record<Room, { read: IgnoreRule; unread: IgnoreRule }> = {
+  ian: {
+    read:   { aff: 4, lines: ['…그래.'] },                                   // 자존심. 봤는데 무시당한 건 오래 간다
+    unread: { aff: 1, lines: [] },                                            // 원래 기대 안 했다는 얼굴
+  },
+  mujin: {
+    read:   { aff: 2, lines: ['괜찮아!! ㅎㅎ', '…괜찮아'] },
+    unread: { aff: 1, lines: ['자?', '바빠?', '밥은 먹었어?'] },
+  },
+  doyun: {
+    read:   { aff: 1, lines: ['답이 없는 것도 답이지.'] },
+    unread: { aff: 0, lines: [] },                                            // 신경 안 쓴다 (쓰는 척도 안 한다)
+  },
+  taejun: {
+    read:   { aff: 5, lines: ['"메시지를 삭제했습니다'] },                     // 가장 아프게 받아들인다
+    unread: { aff: 3, lines: ['…나 뭐 잘못했어?'] },
+  },
+  seoha: {
+    read:   { aff: 2, lines: ['오늘의 기록. "답장 없음."'] },
+    unread: { aff: 1, lines: ['선배 바쁜 거 알아요. 기다리는 거 연습 중이에요.'] },
+  },
+  ihyun: {
+    read:   { aff: 3, lines: ['나 차인 거야? 😆'] },
+    unread: { aff: 1, lines: ['"사진을 보냈습니다'] },
+  },
+  sihyun: {
+    read:   { aff: 3, lines: ['"음성메시지 0:03 — "…됐다."'] },
+    unread: { aff: 0, lines: [] },
+  },
+  jiyu: {
+    read:   { aff: 0, stress: 2, lines: ['야 읽었으면 답을 해라 ㅡㅡ'] },
+    unread: { aff: 0, lines: ['살아는 있지?'] },
+  },
+  mom: {
+    read:   { aff: 0, stress: 4, lines: ['엄마 메시지 읽고 답 안 하니?'] },
+    unread: { aff: 0, stress: 2, lines: ['전화 좀 받아.'] },
+  },
+};
 
-export const MOM_ALLOWANCE = [
-  '이번 달 용돈 넣었다. 밥 거르지 말고!',
-  '용돈 보냈어. 학원비 아끼지 말고, 대신 몸 챙겨.',
-  '엄마가 보낸 용돈으로 맛있는 거 사 먹어. 너무 무리하지 마.',
-];
+export type Topic = 'hello' | 'promise' | 'worry' | 'dream';
+/** polite: 선배(도윤)에게 보낼 때 */
+export const TOPICS: Record<Topic, { label: string; text: string; polite: string; desc: string }> = {
+  hello:   { label: '안부',          text: '뭐 해?', polite: '선배, 뭐 해요?', desc: '근황을 묻는다' },
+  promise: { label: '주말 약속',     text: '이번 주말에 시간 돼?', polite: '이번 주말에 시간 돼요?', desc: '호감도 15 이상 · 수락하면 주말 약속이 잡힌다' },
+  worry:   { label: '고민 털어놓기', text: '나 요즘 좀 힘들어…', polite: '저 요즘 좀 힘들어요…', desc: '스트레스 50 이상 · 반응은 사람마다 다르다' },
+  dream:   { label: '꿈 얘기',       text: '나 요즘 이상한 꿈을 꿔. 옛날 꿈인데, 너도 나와.', polite: '요즘 이상한 꿈을 꿔요. 옛날 꿈인데, 선배도 나와요.', desc: '그 사람의 전생 기억을 봤을 때' },
+};

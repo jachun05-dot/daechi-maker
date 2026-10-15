@@ -15,11 +15,11 @@ import { affChips, deltaChips, won } from './chips';
 import { S, addAff, addSighting, clamp, game, hpMax, refresh, saves, unlockMemory } from './state';
 import { DREAMS, getScene, mainEventsOf, type Dream, type MainEvent } from './story/library';
 import { josa } from './story/context';
-import { deliverMessages } from './phone';
+import { chatEvent, dayOf, dayTick } from './phone';
 import { monthEvent } from './events';
 import { runVacation } from './vacation';
 import { finale } from './finale';
-import { runWeekend } from './weekend';
+import { computePresence, runWeekend } from './weekend';
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 const yearOf = (st: GameState) => TURNS[Math.min(st.turn, TURNS.length - 1)].year;
@@ -42,6 +42,13 @@ export async function beginTurn() {
   }
   if (!T.summer && st.clubTerm !== T.term) await pickClub(st, T);
   await autoMainEvent(st);
+  // 메신저 — 달이 바뀌면 생기는 대화
+  chatEvent(st, `turn:${st.turn}`);
+  chatEvent(st, `month:${T.month}`);
+  if (T.month === 3) chatEvent(st, `year:${T.year}`);
+  if (st.turn % 3 === 0) chatEvent(st, 'allowance');
+  if (!T.summer) computePresence(st, T, st.turn);
+  await dayTick(st, dayOf(st.turn, 0, 0) - 1, false);
   refresh();
   saves.autosave();
 }
@@ -96,6 +103,7 @@ export async function playMain(st: GameState, e: MainEvent, theme: 'day' = 'day'
   await ui.playScene(e.id, { theme });
   ui.setTheme('day');
   st.mainStep[c] = e.step;
+  chatEvent(st, `main:${c}.${e.step}`);
   logAff(st, before, `${CHARACTERS[c].name} — 이야기가 움직였다`, c);
 }
 
@@ -117,6 +125,7 @@ export async function basicMeet(st: GameState, c: CharId, where: string, bg: str
   const nodes: StoryNode[] = [{ t: 'say', text: `${where}에서 ${josa(CHARACTERS[c].name, '과/와')} 마주쳤다.`, line: 0 }, pick(small)];
   await ui.playScene(nodes, { theme: 'day', bg });
   ui.setTheme('day');
+  chatEvent(st, `meet:${c}`);
   logAff(st, before, `${josa(CHARACTERS[c].name, '을/를')} 만났다`, c, where);
 }
 
@@ -133,6 +142,7 @@ export async function runMonth() {
 
   if (T.summer) {
     await runVacation(st, 'summer');
+    await dayTick(st, dayOf(st.turn, 3, 6), false);
   } else {
     // 이번 달 돌발 사건이 일어날 (주, 요일)
     const incidents = new Set<string>();
@@ -140,8 +150,13 @@ export async function runMonth() {
     let heavyStreak = 0;
     let slumped = false;
     for (let week = 0; week < 4; week++) {
+      if (week > 0) computePresence(st, T, st.turn);
+      // 근황 톡 — 만난 사람과 지유가 가끔 먼저 연락한다
+      for (const r of [...CHAR_ORDER.filter(c => st.met[c]), 'jiyu' as const]) if (Math.random() < BALANCE.phone.idleChance) chatEvent(st, 'idle', r);
       ui.runOpen(`${T.label} · ${week + 1}주차`, `${SEASON_LABEL[T.season]} · ${T.title}`);
       heavyStreak = await runWeekdays(st, T, week, incidents, heavyStreak);
+      if (st.stress >= 70 && !st.flags[`ch_stress${st.turn}`]) { st.flags[`ch_stress${st.turn}`] = true; chatEvent(st, 'stress'); }
+      if (st.hp < hpMax(st) * 0.25 && !st.flags[`ch_tired${st.turn}`]) { st.flags[`ch_tired${st.turn}`] = true; chatEvent(st, 'tired'); }
       if (st.stress >= 100 && !slumped) { slumped = true; await slump(st); }
       await ui.runWait('주말로');
       ui.runClose();
@@ -155,7 +170,7 @@ export async function runMonth() {
     await ui.runWait('이달의 일정');
     await sihyunRescue(st, T);
     await monthEvent(st, T);
-    if (T.winterAfter) { ui.runClose(); await runVacation(st, 'winter'); }
+    if (T.winterAfter) { ui.runClose(); await runVacation(st, 'winter'); await dayTick(st, dayOf(st.turn, 3, 6), false); }
   }
 
   if (st.turn === TURNS.length - 1) { ui.runClose(); game.midMonth = false; ui.setBusy(false); return finale(); }
@@ -205,6 +220,7 @@ async function runWeekdays(st: GameState, T: Turn, week: number, incidents: Set<
     addDelta(total, applyDelta(st, { hp: W.nightRegen }));
 
     if (incidents.has(`${week}-${day}`)) await incident(st, T, day);
+    await dayTick(st, dayOf(st.turn, week, day), true);
   }
   refresh();
   const notes: string[] = [];
@@ -238,6 +254,7 @@ async function incident(st: GameState, T: Turn, day: number) {
 /* ---------- 위기 ---------- */
 export async function slump(st: GameState) {
   ui.runLog({ title: '슬럼프', tone: 'warn', mark: '亂', body: '펜을 쥔 손이 움직이지 않았다. 모든 게 의미 없게 느껴졌다.' });
+  chatEvent(st, 'slump');
   const v = await ui.playScene('event.slump', { theme: 'day' });
   ui.setTheme('day');
   st.stress = v === 'sihyun' || v === 'mujin' ? 35 : 45;
@@ -278,6 +295,7 @@ export async function dreamSequence(d: Dream, replay = false) {
   await p;
   if (!replay && game.state) {
     if (unlockMemory(d.id)) { game.state.stat.spirit += BALANCE.dreamSpiritBonus; game.state.newMemory = true; }
+    chatEvent(game.state, `dream:${d.id}`);
   }
   await ui.inkIn(replay ? '' : '— 새벽, 눈을 떴다 —', 'day');
   ui.setTheme('day');
@@ -297,7 +315,6 @@ async function endTurn() {
   st.stress = clamp(st.stress - P.stressDecay, 0, 100);
   st.timetable = Array(10).fill(null);
   st.focus = null;
-  const n = deliverMessages(st);
-  if (n) setTimeout(() => ui.toast(`새 메시지 ${n}개`), 900);
+  st.phoneTime = BALANCE.phone.callsPerMonth;
   await beginTurn();
 }

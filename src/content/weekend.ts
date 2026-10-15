@@ -77,6 +77,10 @@ export const INVITES: Record<CharId, string[]> = {
   ],
 };
 
+/** 계획판에서 수락·거절했을 때 내가 보내는 말 (도윤은 선배라 존댓말) */
+export const MY_ACCEPT: Partial<Record<CharId, string>> = { doyun: '좋아요. 갈게요.' };
+export const MY_DECLINE: Partial<Record<CharId, string>> = { doyun: '죄송해요, 그날은 안 될 것 같아요.' };
+
 export const INVITE_REPLY: Record<CharId, string> = {
   ian: '…그래. 늦지 마.',
   mujin: '진짜?! 아싸!! 나 지금부터 기다릴래!',

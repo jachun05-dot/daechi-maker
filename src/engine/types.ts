@@ -49,8 +49,18 @@ export interface Scene {
 }
 
 /* ---------- 세이브 데이터 ---------- */
-export interface ChatMsg { from: 'them' | 'me' | 'sys'; text: string }
-export interface Reply { text: string; aff: number }
+/** 메신저 말풍선. photo 가 있으면 사진(이미지 photo/{id}) */
+export interface ChatMsg { from: 'them' | 'me' | 'sys'; text: string; time?: string; photo?: string; day?: number }
+/** 답장을 기다리는 대화 (방마다 하나) */
+export interface PendingChat {
+  id: string;            // 장면 id (chat.… / call.…)
+  arrived: number;       // 도착한 날 (GameState.day)
+  time: string;          // 표시 시각 "23:41"
+  opened: boolean;       // 읽었는가 (읽씹/안읽씹 판정)
+  path: number[];        // 지금까지 고른 답장 (불러오기 후 이어서 진행할 때 씀)
+}
+/** 주말 약속 — 메신저에서 미리 잡힌 것 */
+export interface FixedPromise { c: CharId; place: string; slot: number }
 
 export interface GameState {
   version: number;
@@ -86,8 +96,18 @@ export interface GameState {
   focus: SubjectKey | null;
   chats: Record<string, ChatMsg[]>;
   unread: Record<string, number>;
-  replies: Record<string, Reply[]>;
-  phoneStep: Partial<Record<CharId, number>>;
+  /** 메신저 — 답장 대기 중인 대화 (방 → 대화) */
+  pending: Record<string, PendingChat>;
+  /** 메신저 — 도착 예정 대화 */
+  chatQueue: { id: string; due: number }[];
+  /** 게임 속 날짜 = 턴 × 28 + 주 × 7 + 요일(0=월 … 6=일) */
+  day: number;
+  /** 먼저 연락하기 남은 횟수 (달마다 다시 채워진다) */
+  phoneTime: number;
+  /** 이번 주 인물들이 주말에 있을 곳 */
+  presence: Partial<Record<CharId, string>>;
+  /** 메신저에서 미리 잡은 주말 약속 */
+  promiseNext: FixedPromise[];
   newMemory: boolean;
   /** 주말 — 장소별 방문 횟수 (단골 레벨) */
   placeVisits: Record<string, number>;
@@ -99,6 +119,8 @@ export interface GameState {
 /** 회차를 넘어 영구 보존되는 기록 */
 export interface MetaState {
   memories: Record<string, boolean>;
+  /** 앨범 — 다시 볼 수 있는 장면(scene:id)과 받은 사진(photo:id). 회차를 넘어 남는다 */
+  album: Record<string, boolean>;
   endings: Record<string, boolean>;
   plays: number;
   clears: number;
