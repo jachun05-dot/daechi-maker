@@ -25,13 +25,21 @@ export async function newGame() {
   await ui.inkOut();
   await wake;
 
-  const raw = await ui.modal<string>({ title: '다이어리 첫 장', text: '새 학기 다이어리의 첫 장.\n가장 먼저, 나의 이름을 적는다.', input: DEFAULT_NAME, buttons: [{ label: '적는다', value: true, primary: true }] });
+  const raw = await ui.modal<string>({ title: '다이어리 첫 장', text: '새 학기 다이어리의 첫 장.\n맨 위 칸에 나의 이름을 적는다.', input: DEFAULT_NAME, buttons: [{ label: '적는다', value: true, primary: true }] });
   const name = (raw || DEFAULT_NAME).replace(/[<>|{}]/g, '').slice(0, 8) || DEFAULT_NAME;
   game.meta.lastName = name;
   game.state = newState(name);
   game.meta.memories.self1 = true;
   game.meta.plays++;
   saves.saveMeta();
+  // 새벽에 온 지유 톡을 메신저에도 남긴다
+  game.state.chats.jiyu = [
+    { from: 'them', text: '야 너 안 자?? 내일 입학식인데 나 떨려서 잠이 안 와ㅠㅠ', time: '일 04:41' },
+    { from: 'them', text: '우리 반에 그 로열패밀리 이안 있대. 실화냐;;', time: '일 04:42' },
+    { from: 'me', text: '나도 못 자. 이상한 꿈 꿨어.' },
+  ];
+
+  await ui.playScene('wakeup.after', { theme: 'day', bg: 'room_night' });
 
   await ui.playScene('opening.1', { theme: 'day' });
   ui.setTheme('day');

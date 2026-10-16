@@ -52,7 +52,7 @@ describe('스토리 파일', () => {
   });
 
   it('엔진이 찾는 장면이 모두 있다', () => {
-    const need = ['prologue', 'wakeup', 'prologue.hand', 'opening.1', 'opening.2', 'opening.3', 'self1', 'self2', 'self3',
+    const need = ['prologue', 'wakeup', 'wakeup.after', 'prologue.hand', 'opening.1', 'opening.2', 'opening.3', 'self1', 'self2', 'self3',
       'event.exam', 'event.sports', 'event.festival', 'event.counsel.hint', 'event.counsel.decide', 'event.suneung', 'event.graduation',
       'event.slump', 'event.sihyun_rescue', 'vacation.start', 'vacation.lecture', 'vacation.decline', 'final.choice',
       ...CAREER_ORDER.map(r => `career.${r}`), 'career.none',
