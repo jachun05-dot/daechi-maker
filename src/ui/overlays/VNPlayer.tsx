@@ -67,7 +67,7 @@ export function VNPlayer() {
 
   return (
     <div className={`layer vn${shake ? ' shake' : ''}`} onClick={onTap}>
-      <div className="vn-bg" style={{ background: bgUrl ? `url("${bgUrl}") center/cover no-repeat` : (BACKGROUNDS[view.bg]?.color ?? '#222') }}>
+      <div className="vn-bg" style={{ background: bgUrl ? `url("${bgUrl}") ${BACKGROUNDS[view.bg]?.focus ?? 'center'}/cover no-repeat` : (BACKGROUNDS[view.bg]?.color ?? '#222') }}>
         {!bgUrl && settings.showSlots && <span className="vn-bg-hint">bg/{view.bg}.jpg · {BACKGROUNDS[view.bg]?.label}</span>}
       </div>
       <div className="vn-shade" />

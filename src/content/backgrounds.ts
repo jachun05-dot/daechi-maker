@@ -3,8 +3,9 @@
    - 이미지: src/assets/images/bg/{key}.jpg (또는 .png/.webp)
    - 이미지가 없으면 color 단색으로 표시됩니다.
    - 스토리에서 [bg key] 로 사용
+   - focus: 화면이 그림보다 좁을 때 어느 쪽을 보여 줄지 (CSS background-position, 기본 'center')
    ========================================================= */
-export const BACKGROUNDS: Record<string, { label: string; color: string }> = {
+export const BACKGROUNDS: Record<string, { label: string; color: string; focus?: string }> = {
   /* 낮 — 현대 서울 */
   room:       { label: '내 방(낮)',            color: '#e9e6ea' },
   room_night: { label: '내 방(밤)',            color: '#2a2a3c' },
@@ -37,7 +38,7 @@ export const BACKGROUNDS: Record<string, { label: string; color: string }> = {
   burning:    { label: '불타는 마을',          color: '#4a120c' },
   mountain:   { label: '피란길 산길',          color: '#1d2427' },
   camp:       { label: '의병 진영',            color: '#2e140c' },
-  fortress:   { label: '진주성',               color: '#3a1009' },
+  fortress:   { label: '진주성',               color: '#3a1009', focus: '28% center' },
   river:      { label: '달밤의 강·암자',       color: '#151c28' },
   enemy:      { label: '왜군 진영',            color: '#2a0c14' },
   field:      { label: '전장',                 color: '#2a100b' },
