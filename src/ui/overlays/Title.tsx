@@ -17,10 +17,10 @@ export function Title() {
     newGame();
   };
   return (
-    <div className="layer title" style={bg ? { backgroundImage: `url("${bg}")` } : undefined}>
+    <div className={`layer title${bg ? ' has-bg' : ''}`} style={bg ? { backgroundImage: `url("${bg}")` } : undefined}>
       {!bg && settings.showSlots && <span className="title-hint">ui/title.jpg</span>}
       <FxLayer type="petal" />
-      <div className="title-moon" />
+      {!bg && <div className="title-moon" />}
       <div className="title-words">
         <div className="k">大峙洞 還生錄</div>
         <h1>이화<small>梨花</small>에 지는 달</h1>
