@@ -73,7 +73,7 @@ docs/legacy-stories/         예전 버전 대사 (참고용, 게임에서 읽�
 | `cg/{장면id}.jpg` | 이벤트 CG — 스토리에서 `[cg 이름]`, 도감 카드는 `cg/ian1` 처럼 꿈 id |
 | `schedule/{일정id}.png` | 시간표 일정 아이콘 |
 | `photo/{사진id}.png` | 톡으로 받는 사진 (앨범에 모인다). id 는 `[photo id 설명]` |
-| `ui/map.png` | 주말 서울 지도 (4:5 비율). 핀 위치는 `content/places.ts` 의 `pos` 로 맞춘다. 없으면 기본 그림 지도 |
+| `ui/map.jpg` | 주말 서울 지도 (4:5 비율, png도 됨). 핀 위치는 `content/places.ts` 의 `pos` 로 맞춘다. 없으면 기본 그림 지도 |
 | `ui/title.jpg` | 타이틀 배경 |
 
 `npm run images` 로 빠진 이미지를 확인하세요.
