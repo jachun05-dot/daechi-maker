@@ -5,6 +5,7 @@ import { useGame } from '@/store/game';
 import { CHARACTERS, CHAR_ORDER } from '@/content/characters';
 import { CAREERS } from '@/content/careers';
 import { CREDITS_QUOTE } from '@/content/endings';
+import { ERA } from '@/content/eras';
 import { Chips } from '../common/Chips';
 import { Mono } from '../common/Mono';
 
@@ -81,7 +82,7 @@ export function Credits() {
         <h3>이화(梨花)에 지는 달</h3><p className="sm">대치동 환생록</p>
         <h3>主人公</h3><p>{st.name} <span className="sm">/ {CAREERS[st.pastRole ?? 'med'].past}</span></p>
         <h3>因緣</h3>{CHAR_ORDER.map(k => <p key={k}>{CHARACTERS[k].name} <span className="sm">/ {CHARACTERS[k].past}</span></p>)}
-        <h3>그리고</h3><p>대치동의 밤을 견뎌 낸 모든 학생들과<br />사백삼십여 년 전,<br />꿈을 품에 넣고 칼을 들었던<br />이름 없는 의병들에게</p>
+        <h3>그리고</h3><p>{ERA.dedication.split('\n').map((l, i) => <span key={i}>{i > 0 && <br />}{l}</span>)}</p>
         <p className="sm quote">{CREDITS_QUOTE}</p>
         <h3>— 終 —</h3>
       </div>

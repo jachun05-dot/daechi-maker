@@ -7,6 +7,8 @@ import type { BaseStat, CharId, Effect, GameState, MetaState, Settings, SkillKey
 import { BALANCE } from '@/config/balance';
 import { CHAR_ORDER } from '@/content/characters';
 import { SKILL_KEYS } from '@/content/careers';
+import { ERA } from '@/content/eras';
+import { emit } from './triggers';
 
 const KEY = { auto: 'ehwa3_auto', slot: (i: number) => `ehwa3_slot${i}`, meta: 'ehwa3_meta', settings: 'ehwa3_settings' };
 const SAVE_VERSION = 3;
@@ -38,7 +40,7 @@ export function S(): GameState {
 
 export function newState(name: string): GameState {
   return {
-    version: SAVE_VERSION, name, turn: 0,
+    version: SAVE_VERSION, era: ERA.id, name, turn: 0,
     hp: BALANCE.start.hp, stress: BALANCE.start.stress, money: BALANCE.start.money,
     stat: { ...BALANCE.start.stat },
     skill: Object.fromEntries(SKILL_KEYS.map(k => [k, 0])) as Record<SkillKey, number>,
@@ -53,9 +55,6 @@ export function newState(name: string): GameState {
 export const hpMax = (st: GameState = S()) => Math.min(BALANCE.hpMax.cap, BALANCE.hpMax.base + Math.floor(st.stat.fit / BALANCE.hpMax.fitPerHp));
 export const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
-/** 다른 모듈이 끼워 넣는 알림 (메신저가 질투 같은 사건을 듣는다) — 순환 import 를 피하려고 여기 둔다 */
-export const hooks = { event: (_st: GameState, _key: string) => {} };
-
 /** 앨범에 기록 (회차를 넘어 남는다) */
 export function unlockAlbum(key: string) {
   if (game.meta.album[key]) return;
@@ -68,7 +67,7 @@ export function addAff(st: GameState, c: CharId, v: number) {
   st.aff[c] = clamp(st.aff[c] + v, 0, 100);
   if (v >= BALANCE.affection.jealousyMin && (c === 'ian' || c === 'mujin')) {
     const other: CharId = c === 'ian' ? 'mujin' : 'ian';
-    if (st.met[other]) { st.aff[other] = clamp(st.aff[other] - BALANCE.affection.jealousy, 0, 100); hooks.event(st, `jealous:${other}`); }
+    if (st.met[other]) { st.aff[other] = clamp(st.aff[other] - BALANCE.affection.jealousy, 0, 100); emit(st, `jealous:${other as 'ian' | 'mujin'}`); }
   }
 }
 
@@ -105,6 +104,7 @@ export function migrate(d: GameState): GameState {
   const base = newState(d.name ?? '나');
   return {
     ...base, ...d,
+    era: d.era ?? 'joseon',
     stat: { ...base.stat, ...d.stat }, skill: { ...base.skill, ...d.skill },
     aff: { ...base.aff, ...d.aff }, mainStep: { ...base.mainStep, ...d.mainStep }, vacStage: { ...base.vacStage, ...d.vacStage },
   };

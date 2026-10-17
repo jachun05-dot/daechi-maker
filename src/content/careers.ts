@@ -5,37 +5,35 @@
    - 전생의 꿈(pastRole)은 현생에서 자라는 재능에 따라 꿈속에서 드러난다.
    ========================================================= */
 import type { BaseStat, CareerId, SkillKey, SubjectKey } from '@/engine/types';
+import { ERA } from './eras';
+import type { EraCareer } from './eras/types';
 
-export interface Career {
+interface CareerBase {
   id: CareerId;
   goal: string;          // {goal} 치환
   short: string;
   skills: [SkillKey, SkillKey];
-  /* 전생 — 재능에 따라 드러나는 꿈 */
-  past: string;          // {past}
-  role: string;          // {role}
-  item: string;          // {item}
-  pastDream: string;     // {pastDream}
 }
+/** 전생 쪽(past·role·item·pastDream)은 전생 시대 팩에서 붙는다 */
+export type Career = CareerBase & EraCareer;
 
-export const CAREERS: Record<CareerId, Career> = {
+const BASE: Record<CareerId, CareerBase> = {
   med: {
     id: 'med', goal: '한국대 의대 진학', short: '의대', skills: ['science', 'medicine'],
-    past: '의녀 출신 의병', role: '의병 의녀', item: '약초 주머니와 은침', pastDream: '조선 제일의 명의',
   },
   idol: {
     id: 'idol', goal: '최정상 아이돌·뮤지션 데뷔', short: '아이돌', skills: ['vocal', 'dance'],
-    past: '예인 출신 첩보 의병', role: '의병 예인', item: '가야금과 밀서를 숨긴 은비녀', pastDream: '조선 최고의 가무 예인',
   },
   actor: {
     id: 'actor', goal: '천만 배우 데뷔', short: '배우', skills: ['acting', 'voice'],
-    past: '광대 출신 연락책 의병', role: '의병 광대', item: '바가지 탈과 소고', pastDream: '세상을 웃기고 울리는 이야기꾼',
   },
   leader: {
     id: 'leader', goal: '글로벌 CEO·외교관·법조인', short: '리더', skills: ['language', 'debate'],
-    past: '몰락 양반가의 책사 겸 의병장', role: '의병장', item: '낡은 병법서와 붓 한 자루', pastDream: '신분의 벽이 없는 세상',
   },
 };
+export const CAREERS = Object.fromEntries(
+  Object.entries(BASE).map(([id, c]) => [id, { ...c, ...ERA.careers[id as CareerId] }]),
+) as Record<CareerId, Career>;
 export const CAREER_ORDER: CareerId[] = ['med', 'idol', 'actor', 'leader'];
 
 export const BASE_LABEL: Record<BaseStat, string> = { int: '지성', sense: '감성', cha: '사교', fit: '근력', spirit: '감응' };

@@ -9,7 +9,8 @@ import { ui, useUI } from '@/store/ui';
 import { careerResult } from './timetable';
 import { DREAMS, getScene, hasScene } from './story/library';
 import { game, recordEnding, S, saves } from './state';
-import { dreamSequence, mainDone } from './month';
+import { dreamSequence } from './dreams';
+import { mainDone } from './people';
 
 async function play(sceneId: string, got: string[], vars: Record<string, string | number> = {}) {
   await ui.playScene(sceneId, { theme: 'day', vars });

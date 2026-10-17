@@ -5,6 +5,7 @@ import { TURNS } from '@/content/calendar';
 import { game, refresh, saves } from '@/engine/state';
 import { loadGame, newGame, toTitle } from '@/engine/newgame';
 import type { GameState, Settings } from '@/engine/types';
+import { ERA, ERAS, chooseEra } from '@/content/eras';
 
 const info = (d: GameState | null) => d
   ? `${d.name} · ${TURNS[Math.min(d.turn, TURNS.length - 1)].label} · ${new Date(d.savedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
@@ -45,6 +46,13 @@ export function SystemTab() {
         <div className="sys-row"><div><b>이미지 자리 표시</b><span>비어 있는 이미지 칸에 파일 이름을 보여줍니다</span></div>
           <div className="seg"><button className={settings.showSlots ? 'on' : ''} onClick={() => setSetting('showSlots', true)}>켜기</button><button className={!settings.showSlots ? 'on' : ''} onClick={() => setSetting('showSlots', false)}>끄기</button></div>
         </div>
+        {Object.keys(ERAS).length > 1 && (
+          <div className="sys-row"><div><b>전생 시대</b><span>비교용 · 바꾸면 다시 시작해요</span></div>
+            <div className="seg">{Object.values(ERAS).map(e => <button key={e.id} className={ERA.id === e.id ? 'on' : ''} onClick={async () => {
+              if (e.id !== ERA.id && await ui.confirm('전생 시대', `「${e.name}」 전생으로 바꿀까요? 화면을 다시 불러옵니다.`, '바꾸기')) { saves.autosave(); chooseEra(e.id); location.reload(); }
+            }}>{e.name}</button>)}</div>
+          </div>
+        )}
       </section>
 
       <section className="card">

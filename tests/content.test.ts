@@ -16,6 +16,7 @@ const CHARACTERS_NAMES = Object.fromEntries(Object.entries(CHARACTERS).map(([k, 
 import { MAIN_EVENTS } from '@/engine/story/library';
 import { INVITES, TRACES, INVITE_REPLY, DECLINE_REPLY } from '@/content/weekend';
 import { isBase, isSkill } from '@/engine/timetable';
+import { TRIGGER_RE } from '@/engine/triggers';
 
 const FX = ['none', 'petal', 'sakura', 'leaf', 'snow', 'rain', 'ember'];
 const CMDS = ['bg', 'fx', 'stand', 'cg', 'shake', 'flash', 'card'];
@@ -144,7 +145,7 @@ describe('주말', () => {
 
 describe('메신저', () => {
   const ROOMS = [...CHAR_ORDER, 'jiyu', 'mom'] as string[];
-  const KEY = /^(main:\w+\.\d+|meet:\w+|promise:(kept|declined):\w+|weather:(rain|snow)|exam:(top|high|mid|low)|sports:(win|lose)|festival:(ok|fail)|counsel:(hint|decide)|suneung|jealous:(ian|mujin)|dream:\w+|turn:\d+|month:\d+|year:[123]|allowance|idle|stress|tired|slump|vac:\w+)$/;
+  const KEY = TRIGGER_RE; // 사건 키 목록은 src/engine/triggers.ts
   it('대화 장면의 방·사건·말하는 사람이 올바르다', () => {
     const problems: string[] = [];
     const photos = new Set<string>();

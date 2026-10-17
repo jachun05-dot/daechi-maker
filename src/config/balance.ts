@@ -103,7 +103,7 @@ export const BALANCE = {
       { min: 1.15, tier: 'high', rank: '전교 상위권', eff: { stress: -5,  money: 50_000 } },
       { min: 0.8,  tier: 'mid',  rank: '중위권',      eff: { stress: 3 } },
       { min: 0,    tier: 'low',  rank: '하위권',      eff: { stress: 10 } },
-    ],
+    ] as { min: number; tier: 'top' | 'high' | 'mid' | 'low'; rank: string; eff: Record<string, number> }[],
   },
   sports: { base: 15, perTurn: 2 },
   festival: { base: 8, perTurn: 2.5 },

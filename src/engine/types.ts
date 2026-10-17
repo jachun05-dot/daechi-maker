@@ -43,7 +43,10 @@ export interface ChoiceOption {
 
 export interface Scene {
   id: string;
+  /** 이야기 폴더 안에서의 경로 (예: dreams/self.story) */
   file: string;
+  /** 'base' = src/content/stories, 그 밖에는 전생 시대 팩 id */
+  pack?: string;
   attrs: Record<string, string>;
   nodes: StoryNode[];
 }
@@ -64,6 +67,8 @@ export interface FixedPromise { c: CharId; place: string; slot: number }
 
 export interface GameState {
   version: number;
+  /** 이 생을 시작한 전생 시대 팩 id */
+  era: string;
   name: string;
   turn: number;
   hp: number;

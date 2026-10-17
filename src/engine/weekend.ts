@@ -20,8 +20,10 @@ import { deltaChips } from './chips';
 import { addAff, addSighting, hpMax, refresh, unlockAlbum } from './state';
 import { getScene, hasScene, scenesWithPrefix } from './story/library';
 import { evalCond, fill, josa } from './story/context';
-import { chatEvent, dayOf, dayTick, pushMsg } from './phone';
-import { basicMeet, logAff, nextMain, playMain, slump } from './month';
+import { dayOf, dayTick, pushMsg } from './phone';
+import { emit } from './triggers';
+import { basicMeet, logAff, nextMain, playMain } from './people';
+import { slump } from './crisis';
 import type { MainEvent } from './story/library';
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
@@ -232,7 +234,7 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
       addAff(st, inv.c, -lost);
       log.declined++;
       st.chats[inv.c].push({ from: 'me', text: MY_DECLINE[inv.c] ?? '미안, 그날은 안 될 것 같아.', day: st.day }, { from: 'them', text: DECLINE_REPLY[inv.c], day: st.day });
-      chatEvent(st, `promise:declined:${inv.c}`);
+      emit(st, `promise:declined:${inv.c}`);
     }
   }
   st.promiseNext = [];
@@ -253,7 +255,8 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
       if (pickS.cont) continue;
       await visitSlot(st, T, day * 2 + s, pickS, weather[day], { presence, mains, promises, played, metNow, head, wsub });
     }
-    if (weather[day] === 'rain' || weather[day] === 'snow') chatEvent(st, `weather:${weather[day]}`);
+    const w = weather[day];
+    if (w === 'rain' || w === 'snow') emit(st, `weather:${w}`);
     await dayTick(st, dayOf(turn, week, 5 + day), true);
     await ui.runWait(day === 0 ? '일요일' : week < 3 ? '다음 주' : '한 달 정리');
     ui.runClose();
@@ -341,7 +344,7 @@ async function promiseMeet(st: GameState, c: CharId, place: Place, already: bool
   addAff(st, c, BALANCE.promise.aff);
   addSighting(st, c, place.name);
   (st.promiseLog[c] ??= { kept: 0, broken: 0, declined: 0 }).kept++;
-  chatEvent(st, `promise:kept:${c}`);
+  emit(st, `promise:kept:${c}`);
   if (!already) {
     const lead: StoryNode = { t: 'say', text: `약속한 ${place.name}. ${josa(CHARACTERS[c].name, '이/가')} 먼저 와 있었다.`, line: 0 };
     const nodes = hasScene(`promise.${c}`) ? [lead, pick(getScene(`promise.${c}`).nodes)] : [lead];
@@ -359,7 +362,7 @@ async function weatherMeet(st: GameState, c: CharId, place: Place, scene: string
   addSighting(st, c, place.name);
   const lead: StoryNode = { t: 'say', text: `${place.name}에서 ${josa(CHARACTERS[c].name, '과/와')} 마주쳤다.`, line: 0 };
   unlockAlbum(`scene:${scene}`);
-  chatEvent(st, `meet:${c}`);
+  emit(st, `meet:${c}`);
   await ui.playScene([lead, ...getScene(scene).nodes], { theme: 'day', bg: place.bg });
   ui.setTheme('day');
   logAff(st, before, `${josa(CHARACTERS[c].name, '을/를')} 만났다`, c, place.name);

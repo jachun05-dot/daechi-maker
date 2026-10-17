@@ -1,6 +1,6 @@
 /* =========================================================
    메신저 엔진 — 톡 하나 = 짧은 대화 한 판 (stories/chat/*.story)
-   - chatEvent(키): 사건이 일어나면 그 키를 기다리는 대화를 도착 예정 목록에 올린다
+   - 사건(triggers.ts emit)을 들으면 그 키를 기다리는 대화를 도착 예정 목록에 올린다 (chatEvent)
    - dayTick(날짜): 게임 속 하루가 지날 때마다 대화가 도착하고, 답장 기한이 지난 대화는 읽씹·안읽씹 처리
    - 대화는 첫 답장 선택지까지 한꺼번에 도착하고, 답장을 고르면 상대가 입력 중… 후 이어서 보낸다
    - 먼저 연락하기: startCall(인물, 주제) → call.{인물}.{주제} 장면이 답한다
@@ -16,7 +16,8 @@ import { ui, sleep } from '@/store/ui';
 import { ScenePlayer, type View } from './story/player';
 import { SCENES, getScene, hasScene } from './story/library';
 import { evalCond, josa, type StoryCtx } from './story/context';
-import { applyEffect, clamp, game, hooks, refresh, saves, unlockAlbum } from './state';
+import { applyEffect, clamp, game, refresh, saves, unlockAlbum } from './state';
+import { onTrigger } from './triggers';
 
 export type { Room };
 export const ROOMS: Room[] = [...CHAR_ORDER, 'jiyu', 'mom'];
@@ -221,11 +222,11 @@ export function chatEvent(st: GameState, key: string, only?: Room) {
     if (!d.repeat) st.flags[`chat_${d.id}`] = true;
   }
 }
-hooks.event = (st, key) => {
+onTrigger((st, key, { room }) => {
   // 질투 톡은 한 달에 한 번만
   if (key.startsWith('jealous:')) { const f = `jl_${key}_${st.turn}`; if (st.flags[f]) return; st.flags[f] = true; }
-  chatEvent(st, key);
-};
+  chatEvent(st, key, room as Room | undefined);
+});
 
 /** 기한이 지난 대화 — 읽씹 · 안읽씹 */
 function expire(st: GameState) {

@@ -10,7 +10,8 @@ import { ui } from '@/store/ui';
 import { applyDelta, growthMult, type Delta } from './timetable';
 import { deltaChips } from './chips';
 import { addAff, refresh } from './state';
-import { chatEvent, pushMsg } from './phone';
+import { pushMsg } from './phone';
+import { emit } from './triggers';
 import { hasScene } from './story/library';
 
 const STAGES = { summer: 3, winter: 2 } as const;
@@ -65,7 +66,7 @@ export async function runVacation(st: GameState, season: 'summer' | 'winter') {
     addAff(st, c, BALANCE.affection.vacation);
     const id = `vac.${c}.${season}${stage}`;
     if (hasScene(id)) await ui.playScene(id, { theme: 'day' });
-    chatEvent(st, `vac:${c}`);
+    emit(st, `vac:${c}`);
     for (const o of invited) if (o !== c) pushMsg(st, o, o === 'seoha' ? '…그래요. 재밌게 보내요.' : '…그래. 재밌게 보내.');
   }
   ui.setTheme('day');

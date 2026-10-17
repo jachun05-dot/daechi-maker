@@ -9,7 +9,7 @@ import type { CharId } from '@/engine/types';
 import { CHARACTERS, CHAR_ORDER } from '@/content/characters';
 import { ENDINGS } from '@/content/endings';
 import { DREAMS, type Dream } from '@/engine/story/library';
-import { dreamSequence } from '@/engine/month';
+import { dreamSequence } from '@/engine/dreams';
 import { avatarImage, cgImage } from '@/engine/assets';
 import { Mono } from '../common/Mono';
 import { Icon } from '../common/Icon';

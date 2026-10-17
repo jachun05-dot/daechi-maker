@@ -10,7 +10,7 @@
 #   약속:        [promise]  → 이번 주말 그 사람이 있는 곳에 약속이 잡힌다. 다음 줄부터 {var.when} {var.where}
 #   한 회차에 한 번만 온다 (repeat=1 이면 여러 번)
 #
-# on= 사건 (쉼표로 여러 개)
+# on= 사건 (쉼표로 여러 개) — 전체 목록·설명은 src/engine/triggers.ts
 #   main:ian.2        메인 이벤트 본 뒤
 #   meet:ian          주말·학교에서 마주친 뒤
 #   promise:kept:ian / promise:declined:ian   약속 지킴 / 거절

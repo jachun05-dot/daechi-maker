@@ -8,11 +8,13 @@ import { BACKGROUNDS } from '@/content/backgrounds';
 import { AFTER_SCHOOL, NIGHT } from '@/content/timetable';
 import { DREAMS, SCENES } from '@/engine/story/library';
 import { PHOTOS } from '@/engine/phone';
+import { ERA } from '@/content/eras';
 import type { StoryNode } from '@/engine/types';
 
 const ROOT = join(process.cwd(), 'src/assets/images');
 const EXT = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif'];
-const has = (key: string) => EXT.some(e => existsSync(join(ROOT, `${key}.${e}`)));
+// 시대 전용 그림(eras/{시대}/…)이 있으면 그것도 '있음'으로 친다
+const has = (key: string) => EXT.some(e => existsSync(join(ROOT, `${key}.${e}`)) || existsSync(join(ROOT, `eras/${ERA.id}/${key}.${e}`)));
 
 // 스토리에서 실제로 쓰인 표정·CG 수집
 const exprs: Record<string, Set<string>> = {};
@@ -39,6 +41,7 @@ const groups: [string, { key: string; note: string; required: boolean }[]][] = [
   ['UI (ui/…)', [{ key: 'ui/title', note: '타이틀 배경', required: false }, { key: 'ui/map', note: '주말 서울 지도 (4:5) — 핀 위치는 places.ts pos', required: false }]],
 ];
 
+console.log(`전생 시대: ${ERA.name} — 시대 전용 그림은 src/assets/images/eras/${ERA.id}/ 에 같은 구조로`);
 let total = 0, done = 0;
 for (const [title, items] of groups) {
   console.log(`\n■ ${title}`);

@@ -1,11 +1,15 @@
 /* =========================================================
    배경 목록
    - 이미지: src/assets/images/bg/{key}.jpg (또는 .png/.webp)
+             시대 전용 그림은 src/assets/images/eras/{시대}/bg/{key}.jpg 가 우선
    - 이미지가 없으면 color 단색으로 표시됩니다.
    - 스토리에서 [bg key] 로 사용
    - focus: 화면이 그림보다 좁을 때 어느 쪽을 보여 줄지 (CSS background-position, 기본 'center')
    ========================================================= */
-export const BACKGROUNDS: Record<string, { label: string; color: string; focus?: string }> = {
+import { ERA } from './eras';
+
+export interface Background { label: string; color: string; focus?: string }
+export const BASE_BACKGROUNDS: Record<string, Background> = {
   /* 낮 — 현대 서울 */
   room:       { label: '내 방(낮)',            color: '#e9e6ea' },
   room_night: { label: '내 방(밤)',            color: '#2a2a3c' },
@@ -34,17 +38,8 @@ export const BACKGROUNDS: Record<string, { label: string; color: string; focus?:
   campus:     { label: '대학 캠퍼스',          color: '#dfe3d6' },
   gangnam:    { label: '강남역 거리',          color: '#d9dde4' },
   seongsu:    { label: '성수동 카페 거리',     color: '#e3d6cc' },
-  /* 밤 — 임진왜란 */
-  burning:    { label: '불타는 마을',          color: '#4a120c' },
-  mountain:   { label: '피란길 산길',          color: '#1d2427' },
-  camp:       { label: '의병 진영',            color: '#2e140c' },
-  fortress:   { label: '진주성',               color: '#3a1009', focus: '28% center' },
-  river:      { label: '달밤의 강·암자',       color: '#151c28' },
-  enemy:      { label: '왜군 진영',            color: '#2a0c14' },
-  field:      { label: '전장',                 color: '#2a100b' },
-  mansion:    { label: '양반가·약방',          color: '#2c231c' },
-  moonfield:  { label: '달빛 아래 배꽃 들판',  color: '#2a2620' },
-  market:     { label: '장터',                 color: '#3a2a1e' },
-  palace_n:   { label: '밤의 임금 막사',       color: '#1a1420' },
+  /* 밤 — 공용 (시대별 밤 배경은 전생 시대 팩에) */
   dream:      { label: '꿈(기본)',             color: '#120b0f' },
 };
+
+export const BACKGROUNDS: Record<string, Background> = { ...BASE_BACKGROUNDS, ...ERA.backgrounds };

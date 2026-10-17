@@ -1,5 +1,6 @@
 /* 새 게임: 전생의 죽음의 순간(프롤로그) → 기상 → 이름 → 입학식 */
 import type { GameState } from './types';
+import { ERA, ERAS } from '@/content/eras';
 import { ui, useUI } from '@/store/ui';
 import { game, migrate, newState, refresh, saves } from './state';
 import { resetSessions } from './phone';
@@ -54,7 +55,8 @@ export function loadGame(data: GameState) {
   game.midMonth = false;
   useUI.setState({ titleOpen: false, theme: 'day', tab: 'schedule', phoneRoom: null, busy: false });
   refresh();
-  ui.toast(`이어서 살아갑니다 · ${data.name}`);
+  const era = ERAS[game.state.era];
+  ui.toast(game.state.era === ERA.id ? `이어서 살아갑니다 · ${data.name}` : `이 기록은 「${era?.name ?? game.state.era}」 전생으로 시작한 생이에요 (지금: ${ERA.name})`);
 }
 
 export function toTitle() {

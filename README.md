@@ -1,6 +1,6 @@
 # 이화(梨花)에 지는 달 : 대치동 환생록
 
-현대 대치동 육성 시뮬레이션 + 임진왜란 전생 비주얼 노벨.
+현대 대치동 육성 시뮬레이션 + 전생 비주얼 노벨 (기본 전생 시대: 임진왜란 — 시대 팩으로 교체 가능).
 
 **스택**: React 19 · TypeScript · Vite 6 · PixiJS 8(파티클) · Zustand(상태) · Capacitor 7(앱 패키징) · Vitest(테스트)
 
@@ -14,18 +14,22 @@
 | `npm run images` | 넣어야 할 이미지 목록과 이미 넣은 이미지 확인 |
 | `npm run build` | `dist/` 생성 (앱 패키징용) |
 | `npm run build:single` | `dist-single/index.html` 한 파일 생성 (링크 공유용) |
-| `npm run cap:android` / `cap:ios` | 빌드 → 네이티브 프로젝트 동기화 → Android Studio / Xcode 열기 (처음엔 `npx cap add android` 먼저) |
+| `npm run cap:android` / `cap:ios` | 빌드 → 네이티브 프로젝트 동기화 → Android Studio / Xcode 열기 (iOS 는 처음에 `npx cap add ios`) |
+
+**안드로이드 APK**: 푸시하면 GitHub Actions 가 자동으로 만들어 저장소 Releases 의 `apk-latest` 에 올립니다. 자세한 건 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#앱-배포).
 
 ## 무엇을 어디서 고치나
 
 기획 문서: [docs/CHARACTERS.md](docs/CHARACTERS.md) (캐릭터) · [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md) (게임 디자인)
+구조·확장 방법 (전생 시대 바꾸기, 새 사건·인물 추가): [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ```
 src/
 ├─ config/balance.ts         ← 모든 수치 (성장 배율, 체력, 시험·진로 기준, 엔딩 조건…)
+├─ config/game.ts            ← 전생 시대 선택
 ├─ content/                  ← 게임 데이터
-│  ├─ characters.ts          인물 이름·설정·색·마지막 선택 문구
-│  ├─ careers.ts             진로 4종, 기초 능력·특기·집중 과목 이름, 전생의 꿈
+│  ├─ characters.ts          인물 이름·설정·색·마지막 선택 문구 (전생 쪽은 eras/)
+│  ├─ careers.ts             진로 4종, 기초 능력·특기·집중 과목 이름
 │  ├─ timetable.ts           평일 시간표 일정(방과후·야간)과 동아리
 │  ├─ places.ts              주말 서울 지도 장소 (해금·계절·단골 일정·핀 위치)
 │  ├─ weekend.ts             주말 흔적 힌트 · 약속 연락 문구 · 날씨
@@ -35,19 +39,20 @@ src/
 │  ├─ phone.ts               메신저 설정 (읽씹·안읽씹 반응, 톡 시각, 먼저 연락하기 주제)
 │  ├─ backgrounds.ts         배경 목록
 │  ├─ endings.ts             엔딩 컬렉션 목록
-│  └─ stories/               ← 모든 대사 (.story 텍스트 파일)
-│     ├─ prologue.story            프롤로그 · 엔딩 직전 손의 장면
+│  ├─ eras/joseon/           ← 전생 시대 팩 (조선·임진왜란): 전생 이름·역할·꿈·밤 배경·크레딧
+│  │  └─ stories/                프롤로그(죽음의 순간 · 손의 장면) · dreams/ 전생 꿈
+│  └─ stories/               ← 현생 대사 (.story 텍스트 파일)
+│     ├─ wakeup.story              프롤로그 뒤 — 대치동에서 눈을 뜬다
 │     ├─ basic/                    기본 이벤트 (짧은 만남)
 │     ├─ main/                     인물 메인 이벤트 (스토리)
 │     ├─ vacation/                 방학 이벤트 (여름 3 · 겨울 2단계)
 │     ├─ weekend/                  주말 약속 · 날씨 장면
 │     ├─ street/                   주말 길거리 사건
 │     ├─ chat/                     메신저 대화 (톡 한 판씩) · 먼저 연락하기 답장
-│     ├─ dreams/                   밤 — 전생의 기억
 │     ├─ events/                   학사 이벤트 · 위기 · 방학 진행
 │     └─ endings/                  커리어 · 진/노멀/차인 · 이현 · 히든
 ├─ assets/images/            ← 이미지 넣는 곳 (아래 규칙)
-├─ engine/                   게임 진행 로직 (month.ts = 한 달 흐름, weekend.ts = 주말 계획판)
+├─ engine/                   게임 진행 로직 (month.ts = 한 달 흐름, weekend.ts = 주말, triggers.ts = 사건 목록)
 ├─ ui/                       화면 컴포넌트
 └─ styles/tokens.css         ← 색·글꼴 (낮/밤 테마)
 docs/legacy-stories/         예전 버전 대사 (참고용, 게임에서 읽지 않음)
@@ -75,5 +80,6 @@ docs/legacy-stories/         예전 버전 대사 (참고용, 게임에서 읽�
 | `photo/{사진id}.png` | 톡으로 받는 사진 (앨범에 모인다). id 는 `[photo id 설명]` |
 | `ui/map.jpg` | 주말 서울 지도 (4:5 비율, png도 됨). 핀 위치는 `content/places.ts` 의 `pos` 로 맞춘다. 없으면 기본 그림 지도 |
 | `ui/title.jpg` | 타이틀 배경 |
+| `eras/{시대}/…` | 전생 시대 전용 그림. 같은 구조(`bg/` `cg/` `ui/`)로 넣으면 공용보다 우선 (지금: 진주성·손 CG·타이틀) |
 
 `npm run images` 로 빠진 이미지를 확인하세요.
