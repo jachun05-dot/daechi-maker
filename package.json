@@ -16,6 +16,7 @@
     "images": "vite-node scripts/images.ts"
   },
   "dependencies": {
+    "@capacitor/app": "7.1.2",
     "@capacitor/core": "7.6.9",
     "pixi.js": "8.22.0",
     "react": "19.1.10",

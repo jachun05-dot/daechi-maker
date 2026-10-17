@@ -1,0 +1,63 @@
+# 안드로이드 APK 자동 빌드
+# - 이 브랜치나 main 에 푸시하면: 테스트 → 웹 빌드 → APK 빌드
+# - 결과물: (1) Actions 실행 화면의 Artifacts 에 "ehwa-apk"
+#           (2) Releases 의 "apk-latest" (폰에서 바로 받기 좋음, 매번 덮어씀)
+name: Android APK
+
+on:
+  push:
+    branches: [main, 'claude/ehwa-visual-novel']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx cap sync android
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Build debug APK
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../ehwa.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ehwa-apk
+          path: ehwa.apk
+
+      - name: Publish to "apk-latest" release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES="브랜치 ${GITHUB_REF_NAME} · 커밋 ${GITHUB_SHA::7} · 빌드 #${{ github.run_number }}"
+          gh release delete apk-latest --yes --cleanup-tag || true
+          gh release create apk-latest ehwa.apk \
+            --title "이화에 지는 달 — 최신 테스트 APK" \
+            --notes "$NOTES" --prerelease --target "$GITHUB_SHA"

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { saves, game } from './engine/state';
 import { useUI } from './store/ui';
+import { initNative } from './native';
 import './styles/tokens.css';
 import './styles/app.css';
 import './styles/screens.css';
@@ -16,5 +17,7 @@ document.addEventListener('contextmenu', e => e.preventDefault());
 
 // 테스트 자동화·디버깅용 핸들
 Object.assign(window, { __ehwa: { game, ui: useUI } });
+
+void initNative();
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
