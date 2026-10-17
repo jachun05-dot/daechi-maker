@@ -12,6 +12,7 @@
 | `npm run dev` | 개발 서버. 파일을 저장하면 바로 반영 (휴대폰에서도 같은 와이파이로 접속 가능) |
 | `npm test` | **스토리·스케줄 오타 검사** + 문법 테스트. 내용을 고친 뒤 꼭 돌리세요 |
 | `npm run images` | 넣어야 할 이미지 목록과 이미 넣은 이미지 확인 |
+| `npm run save-ids` | 새 버전을 낼 때 — 세이브에 들어가는 id 목록 갱신 ([설명](docs/ARCHITECTURE.md#세이브와-업데이트)) |
 | `npm run build` | `dist/` 생성 (앱 패키징용) |
 | `npm run build:single` | `dist-single/index.html` 한 파일 생성 (링크 공유용) |
 | `npm run cap:android` / `cap:ios` | 빌드 → 네이티브 프로젝트 동기화 → Android Studio / Xcode 열기 (iOS 는 처음에 `npx cap add ios`) |
@@ -39,6 +40,7 @@ src/
 │  ├─ phone.ts               메신저 설정 (읽씹·안읽씹 반응, 톡 시각, 먼저 연락하기 주제)
 │  ├─ backgrounds.ts         배경 목록
 │  ├─ endings.ts             엔딩 컬렉션 목록
+│  ├─ renames.ts             장면·장소·일정 id 를 바꾸거나 지웠을 때 기록 (세이브 보호)
 │  ├─ eras/joseon/           ← 전생 시대 팩 (조선·임진왜란): 전생 이름·역할·꿈·밤 배경·크레딧
 │  │  └─ stories/                프롤로그(죽음의 순간 · 손의 장면) · dreams/ 전생 꿈
 │  └─ stories/               ← 현생 대사 (.story 텍스트 파일)

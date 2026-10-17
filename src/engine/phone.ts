@@ -132,6 +132,12 @@ async function run(st: GameState, room: Room, s: Session, v: View, live: boolean
   return { end: v.mode as 'choice' | 'done', n };
 }
 
+/** 이어 갈 수 없는 대화 — 기록은 남기고 답장 대기만 푼다 (읽씹 벌점 없음) */
+function drop(st: GameState, room: Room) {
+  delete st.pending[room];
+  sessions.delete(room);
+}
+
 function finish(st: GameState, room: Room) {
   delete st.pending[room];
   sessions.delete(room);
@@ -148,7 +154,7 @@ async function deliver(st: GameState, id: string, live = false) {
   if (!live) st.unread[room] = (st.unread[room] ?? 0) + n;
   if (!def?.repeat && id.startsWith('chat.')) st.flags[`chat_${id}`] = true;
   if (end === 'choice') {
-    st.pending[room] = { id, arrived: st.day, time, opened: live, path: [] };
+    st.pending[room] = { id, arrived: st.day, time, opened: live, path: [], picked: [] };
     sessions.set(room, s);
   }
   return n;
@@ -162,14 +168,22 @@ export function openRoom(st: GameState, room: Room) {
   refresh();
 }
 
-/** 불러오기 뒤에는 대화를 처음부터 빨리 감아 지금 선택지까지 온다 (효과는 다시 적용하지 않는다) */
+/** 불러오기 뒤에는 대화를 처음부터 빨리 감아 지금 선택지까지 온다 (효과는 다시 적용하지 않는다)
+ *  업데이트로 대화가 바뀌었으면 고른 답장을 글로 찾고, 그래도 못 찾으면 그 대화는 벌점 없이 닫는다 */
 function ensureSession(st: GameState, room: Room, p: PendingChat) {
-  if (sessions.has(room) || !hasScene(p.id)) return;
+  if (sessions.has(room)) return;
+  if (!hasScene(p.id)) { drop(st, room); return; }
   const s = makePlayer(st, p.id, true);
   let v = s.player.next(), k = 0;
   while (v.mode !== 'done') {
-    if (v.mode === 'choice') { if (k < p.path.length) v = s.player.choose(p.path[k++]); else break; }
-    else v = s.player.next();
+    if (v.mode === 'choice') {
+      if (k >= p.path.length) break;
+      const texts = v.choices.map(c => c.text);
+      const byText = p.picked?.[k] ? texts.indexOf(p.picked[k]) : -1;
+      const i = byText >= 0 ? byText : p.path[k];
+      if (i < 0 || i >= texts.length) { drop(st, room); return; }
+      v = s.player.choose(i); k++;
+    } else v = s.player.next();
   }
   s.player.setReplay(false);
   s.view = v;
@@ -195,6 +209,7 @@ export async function reply(st: GameState, room: Room, i: number) {
   try {
     (st.chats[room] ??= []).push({ from: 'me', text: s.view.choices[i].text, day: st.day });
     p.path.push(i);
+    (p.picked ??= []).push(s.view.choices[i].text);
     p.opened = true;
     refresh();
     await sleep(350);

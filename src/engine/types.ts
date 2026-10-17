@@ -60,7 +60,8 @@ export interface PendingChat {
   arrived: number;       // 도착한 날 (GameState.day)
   time: string;          // 표시 시각 "23:41"
   opened: boolean;       // 읽었는가 (읽씹/안읽씹 판정)
-  path: number[];        // 지금까지 고른 답장 (불러오기 후 이어서 진행할 때 씀)
+  path: number[];        // 지금까지 고른 답장 번호 (불러오기 후 이어서 진행할 때 씀)
+  picked: string[];      // 고른 답장 글 — 업데이트로 선택지 순서가 바뀌어도 글로 찾아간다
 }
 /** 주말 약속 — 메신저에서 미리 잡힌 것 */
 export interface FixedPromise { c: CharId; place: string; slot: number }

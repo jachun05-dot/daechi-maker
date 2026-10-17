@@ -3,8 +3,8 @@
    - 뒤로 가기: 열린 화면을 하나씩 닫고, 첫 화면에서는 두 번 눌러야 종료
    ========================================================= */
 import { Capacitor } from '@capacitor/core';
-import { saves } from './engine/state';
-import { ui, useUI } from './store/ui';
+import { saves } from '@/engine/state';
+import { ui, useUI } from '@/store/ui';
 
 export async function initNative() {
   if (!Capacitor.isNativePlatform()) return;

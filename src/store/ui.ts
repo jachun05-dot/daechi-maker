@@ -14,7 +14,8 @@ export interface Chip { label: string; tone: 'up' | 'down' | 'money' | 'heart' |
 export interface RunLog { id: number; title: string; tag?: string; body?: string; chips?: Chip[]; tone?: 'warn' | 'sum' | 'char'; mark?: string; color?: string; image?: string }
 export interface ModalButton { label: string; value: unknown; primary?: boolean }
 export interface ModalOption { label: string; desc?: string; value: unknown; chips?: Chip[]; disabled?: boolean }
-export interface ModalSpec { title?: string; text?: string; letter?: string; input?: string; buttons: ModalButton[]; endings?: { title: string; kind: string }[]; options?: ModalOption[] }
+/** area: 긴 글 칸 (백업 코드 등). readOnly 면 보여 주기만, 아니면 버튼을 누를 때 입력한 글이 value 로 돌아온다 */
+export interface ModalSpec { title?: string; text?: string; letter?: string; input?: string; area?: { value?: string; placeholder?: string; readOnly?: boolean }; buttons: ModalButton[]; endings?: { title: string; kind: string }[]; options?: ModalOption[] }
 
 interface UIState {
   theme: Theme;

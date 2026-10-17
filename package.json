@@ -13,11 +13,13 @@
     "cap:sync": "npm run build && cap sync",
     "cap:android": "npm run build && cap sync android && cap open android",
     "cap:ios": "npm run build && cap sync ios && cap open ios",
-    "images": "vite-node scripts/images.ts"
+    "images": "vite-node scripts/images.ts",
+    "save-ids": "vite-node scripts/save-ids.ts"
   },
   "dependencies": {
     "@capacitor/app": "7.1.2",
     "@capacitor/core": "7.6.9",
+    "@capacitor/preferences": "7.0.4",
     "pixi.js": "8.22.0",
     "react": "19.1.10",
     "react-dom": "19.1.10",

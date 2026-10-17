@@ -2,7 +2,8 @@
 import type { GameState } from './types';
 import { ERA, ERAS } from '@/content/eras';
 import { ui, useUI } from '@/store/ui';
-import { game, migrate, newState, refresh, saves } from './state';
+import { game, newState, refresh, saves } from './state';
+import { migrate } from './save';
 import { resetSessions } from './phone';
 import { beginTurn } from './month';
 
@@ -51,12 +52,16 @@ export async function newGame() {
 
 export function loadGame(data: GameState) {
   resetSessions();
-  game.state = migrate(data);
+  const { state: st, notes } = migrate(data);
+  game.state = st;
+  if (notes.length) console.info('[세이브 정리]', notes);
   game.midMonth = false;
   useUI.setState({ titleOpen: false, theme: 'day', tab: 'schedule', phoneRoom: null, busy: false });
   refresh();
-  const era = ERAS[game.state.era];
-  ui.toast(game.state.era === ERA.id ? `이어서 살아갑니다 · ${data.name}` : `이 기록은 「${era?.name ?? game.state.era}」 전생으로 시작한 생이에요 (지금: ${ERA.name})`);
+  const era = ERAS[st.era];
+  ui.toast(st.era !== ERA.id ? `이 기록은 「${era?.name ?? st.era}」 전생으로 시작한 생이에요 (지금: ${ERA.name})`
+    : notes.length ? `이어서 살아갑니다 · 업데이트로 바뀐 내용을 정리했어요 (${notes.join(', ')})`
+    : `이어서 살아갑니다 · ${data.name}`);
 }
 
 export function toTitle() {

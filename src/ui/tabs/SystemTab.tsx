@@ -4,12 +4,36 @@ import { ui } from '@/store/ui';
 import { TURNS } from '@/content/calendar';
 import { game, refresh, saves } from '@/engine/state';
 import { loadGame, newGame, toTitle } from '@/engine/newgame';
+import { exportBackup, importBackup } from '@/engine/save';
+import { store } from '@/platform/storage';
 import type { GameState, Settings } from '@/engine/types';
 import { ERA, ERAS, chooseEra } from '@/content/eras';
 
 const info = (d: GameState | null) => d
   ? `${d.name} · ${TURNS[Math.min(d.turn, TURNS.length - 1)].label} · ${new Date(d.savedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
   : '비어 있음';
+
+async function makeBackup() {
+  const code = await exportBackup();
+  let copied = false;
+  try { await navigator.clipboard.writeText(code); copied = true; } catch { /* 복사가 막힌 환경 — 아래 칸에서 직접 복사 */ }
+  await ui.modal({
+    title: '백업 코드',
+    text: `${copied ? '복사했어요. ' : ''}메모장이나 나에게 보내기에 붙여 넣어 보관하세요. 새 기기나 앱을 다시 깔았을 때 「백업 들여오기」에 붙여 넣으면 세이브·도감·엔딩이 돌아와요.`,
+    area: { value: code, readOnly: true }, buttons: [{ label: '닫기', value: true, primary: true }],
+  });
+}
+
+async function restoreBackup() {
+  const code = await ui.modal<string | false>({
+    title: '백업 들여오기', text: '백업 코드를 붙여 넣으세요. 이 기기의 세이브·도감·엔딩이 백업 내용으로 바뀝니다.',
+    area: { placeholder: 'EHWA1…' }, buttons: [{ label: '취소', value: false }, { label: '들여오기', value: true, primary: true }],
+  });
+  if (!code) return;
+  const r = await importBackup(code);
+  refresh();
+  ui.toast(r.ok ? `${new Date(r.at).toLocaleDateString('ko-KR')} 백업을 들여왔어요 · 불러오기에서 이어 하세요` : r.error);
+}
 
 export function SystemTab() {
   const { state: st, settings } = useGame();
@@ -34,6 +58,12 @@ export function SystemTab() {
           })}
         </section>
       )}
+
+      <section className="card">
+        <div className="card-h"><h3>백업</h3><small>{store.backend === 'app' ? '앱 저장소' : '이 브라우저'}에 저장 중</small></div>
+        <div className="sys-row"><div><b>백업 코드 만들기</b><span>모든 세이브·도감·엔딩을 글자 한 줄로</span></div><button className="btn small" onClick={makeBackup}>만들기</button></div>
+        <div className="sys-row"><div><b>백업 들여오기</b><span>다른 기기에서 만든 코드로 되살리기</span></div><button className="btn small" onClick={restoreBackup}>들여오기</button></div>
+      </section>
 
       <section className="card">
         <div className="card-h"><h3>설정</h3></div>

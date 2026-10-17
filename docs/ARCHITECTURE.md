@@ -21,11 +21,12 @@ engine/        규칙
   vacation.ts / finale.ts / newgame.ts
   phone.ts       메신저 (사건을 듣고 톡을 보냄, 읽씹·안읽씹, 먼저 연락하기)
   triggers.ts    사건 목록 + emit/onTrigger
-  state.ts       게임 상태 · 저장 · 호감도 규칙
+  state.ts       게임 상태 · 호감도 규칙
+  save/          세이브 (index.ts 슬롯·백업 · migrate.ts 버전 변환·정리 · ids.ts 세이브에 들어가는 id)
   story/         .story 해석기 · 재생기 · 장면 사전(library.ts)
 store/ui.ts    엔진 ↔ 화면 다리 (await ui.playScene(...) 처럼 화면이 끝나길 기다림)
 ui/            React 화면
-native.ts      앱 전용 (안드로이드 뒤로 가기 등)
+platform/      웹과 앱이 다른 부분 — storage.ts (저장 위치) · native.ts (뒤로 가기 등)
 ```
 
 ### 흐름
@@ -70,10 +71,35 @@ native.ts      앱 전용 (안드로이드 뒤로 가기 등)
 | 장소 추가 | `content/places.ts` (지도 핀 `pos` 는 `ui/map.jpg` 기준 %) · 배경은 `content/backgrounds.ts` |
 | 인물 추가 | `engine/types.ts` CharId → `content/characters.ts` → 모든 시대 팩 `chars` → `content/phone.ts` (HABIT·IGNORE) → `basic.` `main.` `vac.` `call.` 장면 (테스트가 빠진 것을 알려 줌) |
 | 화면 | `ui/` 컴포넌트 · 색과 글꼴은 `styles/tokens.css` |
+| 장면·장소·일정 id 바꾸기/지우기 | `content/renames.ts` 에 기록 (아래 「세이브와 업데이트」) |
+| 세이브에 새 필드 | `engine/types.ts` GameState + `state.ts` newState (기본값이면 끝) · 모양이 바뀌면 `save/migrate.ts` MIGRATIONS |
+
+## 세이브와 업데이트
+
+출시 뒤에도 이야기·설계를 고치면 이미 플레이 중인 사람의 세이브를 지켜야 합니다.
+
+**저장 위치** — `platform/storage.ts`. 게임은 `store.get/set` 만 씁니다.
+- 웹: 브라우저 저장소 · 앱: 앱 전용 저장소(Capacitor Preferences). 웹뷰 저장소는 기기 공간이 부족하면 OS 가 지울 수 있어서 앱에서는 쓰지 않습니다.
+- 예전 앱(웹뷰에 저장하던 때)의 기록은 처음 실행할 때 한 번 옮겨 옵니다.
+- **백업 코드**: 시스템 탭 → 백업. 모든 세이브·도감·엔딩을 글자 한 줄(압축)로 만들고, 다른 기기에서 들여옵니다.
+
+**불러오기는 항상 `save/migrate.ts` 를 거칩니다**
+1. 버전 변환 — 세이브 **구조**를 바꾸면(새 필드, 모양 변경) `MIGRATIONS` 에 한 단계를 추가하고 `SAVE_VERSION` 을 올립니다. 새 필드에 새 게임 기본값만 넣으면 되는 경우는 자동이라 단계가 필요 없습니다.
+2. 내용 정리 — 지금 콘텐츠에 없는 꿈·톡·장소·일정·동아리·인물은 정리하고, 무엇을 정리했는지 불러올 때 알려 줍니다.
+3. 답장 대기 중인 톡은 고른 답장의 **글**도 기록해 두어, 선택지 순서가 바뀌어도 이어집니다. 이어 갈 수 없으면 읽씹 벌점 없이 닫습니다.
+
+**id 를 바꾸거나 지울 때** → `content/renames.ts`
+- 바꿨다: `RENAMES` 에 `'옛 id': '새 id'` — 세이브와 앨범이 새 id 를 따라갑니다.
+- 지웠다: `RETIRED` 에 옛 id.
+- `tests/fixtures/save-ids.json` 이 출시된 id 목록입니다. 어느 쪽에도 적지 않고 id 가 사라지면 `npm test` 가 알려 줍니다.
+- **새 버전을 낼 때** `npm run save-ids` 로 목록을 갱신하고 함께 커밋합니다.
+- 메인 이벤트는 번호(`main.ian.3`)로 진행도가 저장되니, 중간에 끼워 넣지 말고 **뒤에 추가**합니다.
+
+`tests/fixtures/save-v3.json` 은 실제로 10턴까지 플레이한 예전 세이브입니다. 세이브 구조를 바꾼 뒤에도 이게 불러와지는지 테스트가 확인합니다.
 
 ## 검사
 
-- `npm test` — 이야기 문법, 없는 배경·인물·장면, 톡 사건 키(triggers.ts 기준), 메인 이벤트 번호, 시대 팩 완결성.
+- `npm test` — 이야기 문법, 없는 배경·인물·장면, 톡 사건 키(triggers.ts 기준), 메인 이벤트 번호, 시대 팩 완결성, 예전 세이브 불러오기, 출시된 id 유지, 백업 코드.
 - `npm run typecheck` — 사건 키 오타는 타입 오류로도 잡힙니다 (`emit(st, 'exam:best')` ✘).
 
 ## 앱 배포

@@ -38,7 +38,7 @@ export function RunOverlay() {
 export function Modal() {
   const m = useUI(s => s.modal);
   const [value, setValue] = useState('');
-  useEffect(() => setValue(''), [m]);
+  useEffect(() => setValue(m?.area?.value ?? ''), [m]);
   if (!m) return null;
   return (
     <div className="layer modal">
@@ -57,8 +57,10 @@ export function Modal() {
         )}
         {m.endings && <div className="modal-endings">{m.endings.map(e => <div key={e.title} className="ending-row"><b>{e.title}</b><span>{e.kind}</span></div>)}</div>}
         {m.input !== undefined && <input autoFocus maxLength={8} placeholder={m.input} value={value} onChange={e => setValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && ui.closeModal(value.trim() || m.input)} />}
+        {m.area && <textarea className="modal-area" readOnly={m.area.readOnly} placeholder={m.area.placeholder} value={value}
+          onFocus={e => m.area?.readOnly && e.currentTarget.select()} onChange={e => setValue(e.target.value)} />}
         {m.buttons.length > 0 && <div className="modal-btns">
-          {m.buttons.map(b => <button key={b.label} className={`btn${b.primary ? ' primary' : ''}`} onClick={() => ui.closeModal(m.input !== undefined ? value.trim() || m.input : b.value)}>{b.label}</button>)}
+          {m.buttons.map(b => <button key={b.label} className={`btn${b.primary ? ' primary' : ''}`} onClick={() => ui.closeModal(m.input !== undefined ? value.trim() || m.input : m.area && !m.area.readOnly && b.value !== false ? value : b.value)}>{b.label}</button>)}
         </div>}
       </div>
     </div>

@@ -1,0 +1,1964 @@
+{
+ "version": 3,
+ "era": "joseon",
+ "name": "한소율",
+ "turn": 10,
+ "hp": 81.00000000000001,
+ "stress": 9.899999999999984,
+ "money": 200000,
+ "stat": {
+  "int": 101.41449999999993,
+  "sense": 28.266350000000003,
+  "cha": 12.86155,
+  "fit": 11.9305,
+  "spirit": 45.87205
+ },
+ "skill": {
+  "science": 70.36370000000001,
+  "medicine": 85.93705000000006,
+  "vocal": 6.677000000000002,
+  "dance": 2.1890000000000005,
+  "acting": 12.440999999999988,
+  "voice": 8.107000000000003,
+  "language": 16.109499999999993,
+  "debate": 2.046000000000001
+ },
+ "goal": null,
+ "goalHint": "med",
+ "pastRole": "med",
+ "aff": {
+  "ian": 57,
+  "mujin": 54,
+  "doyun": 29,
+  "taejun": 5,
+  "seoha": 17,
+  "ihyun": 8,
+  "sihyun": 13
+ },
+ "met": {
+  "ian": true,
+  "mujin": true,
+  "doyun": true,
+  "taejun": true,
+  "seoha": true,
+  "ihyun": true,
+  "sihyun": true
+ },
+ "mainStep": {
+  "ian": 2,
+  "mujin": 2,
+  "doyun": 2,
+  "taejun": 1,
+  "seoha": 2,
+  "ihyun": 1,
+  "sihyun": 1
+ },
+ "vacStage": {
+  "ian": {
+   "summer": 0,
+   "winter": 0
+  },
+  "mujin": {
+   "summer": 1,
+   "winter": 1
+  },
+  "doyun": {
+   "summer": 0,
+   "winter": 0
+  },
+  "taejun": {
+   "summer": 0,
+   "winter": 0
+  },
+  "seoha": {
+   "summer": 0,
+   "winter": 0
+  },
+  "ihyun": {
+   "summer": 0,
+   "winter": 0
+  },
+  "sihyun": {
+   "summer": 0,
+   "winter": 0
+  }
+ },
+ "sightings": {
+  "doyun": [
+   "대치동 학원가",
+   "화요일 이화고",
+   "월요일 이화고",
+   "목요일 이화고",
+   "금요일 이화고",
+   "수요일 이화고"
+  ],
+  "ian": [
+   "목요일 이화고",
+   "금요일 이화고",
+   "월요일 이화고",
+   "수요일 이화고",
+   "화요일 이화고",
+   "한남동 갤러리"
+  ],
+  "taejun": [
+   "청담동",
+   "월요일 대치동 라운지"
+  ],
+  "seoha": [
+   "대학로"
+  ],
+  "mujin": [
+   "화요일 이화고",
+   "한강공원",
+   "목요일 이화고",
+   "이화고 체육관",
+   "금요일 이화고",
+   "수요일 이화고"
+  ],
+  "ihyun": [
+   "한성국제고"
+  ],
+  "sihyun": [
+   "홍대"
+  ]
+ },
+ "memories": {
+  "self1": true,
+  "mujin1": true,
+  "ian1": true,
+  "doyun1": true,
+  "self2": true
+ },
+ "flags": {
+  "open1": true,
+  "chat_chat.ian.pencil": true,
+  "jl_jealous:ian_0": true,
+  "chat_chat.jiyu.triangle": true,
+  "chat_chat.mujin.milk": true,
+  "chat_chat.doyun.stairs": true,
+  "chat_chat.jiyu.doyun": true,
+  "chat_chat.jiyu.t0": true,
+  "ignored_ian": true,
+  "unreadignore_ian": true,
+  "ignored_jiyu": true,
+  "unreadignore_jiyu": true,
+  "seen_home": true,
+  "seen_daechi": true,
+  "seen_gangnam": true,
+  "seen_schoolgym": true,
+  "seen_bongeunsa": true,
+  "seen_hospital": true,
+  "seen_seongsu": true,
+  "seen_hangang": true,
+  "v_daechi": true,
+  "ignored_doyun": true,
+  "unreadignore_doyun": true,
+  "v_hospital": true,
+  "st_street.hospital.1": true,
+  "readignore_jiyu": true,
+  "v_bongeunsa": true,
+  "chat_chat.jiyu.t1": true,
+  "readignore_ian": true,
+  "seen_cheongdam": true,
+  "seen_yeouido": true,
+  "v_cheongdam": true,
+  "chat_chat.taejun.lounge": true,
+  "ignored_taejun": true,
+  "readignore_taejun": true,
+  "ch_stress1": true,
+  "v_home": true,
+  "v_yeouido": true,
+  "chat_chat.doyun.top": true,
+  "chat_chat.jiyu.top": true,
+  "chat_chat.jiyu.t2": true,
+  "ignored_mom": true,
+  "unreadignore_mom": true,
+  "readignore_doyun": true,
+  "ch_stress2": true,
+  "seen_hannam": true,
+  "seen_daehakro": true,
+  "v_daehakro": true,
+  "chat_chat.seoha.first": true,
+  "chat_chat.mujin.idle1": true,
+  "ignored_seoha": true,
+  "readignore_seoha": true,
+  "st_street.bongeunsa.1": true,
+  "chat_chat.mujin.lose": true,
+  "chat_chat.jiyu.t3": true,
+  "ch_stress3": true,
+  "seen_intl": true,
+  "seen_palace": true,
+  "v_intl": true,
+  "chat_chat.ihyun.first": true,
+  "v_hangang": true,
+  "jl_jealous:ian_3": true,
+  "chat_chat.mujin.scar": true,
+  "ignored_ihyun": true,
+  "unreadignore_ihyun": true,
+  "chat_chat.mujin.declined": true,
+  "chat_chat.mujin.rain": true,
+  "ignored_mujin": true,
+  "unreadignore_mujin": true,
+  "chat_chat.ian.exam": true,
+  "chat_chat.mujin.dream": true,
+  "jl_jealous:ian_4": true,
+  "chat_chat.jiyu.t4": true,
+  "chat_chat.mujin.idle2": true,
+  "ch_stress5": true,
+  "seen_nakwon": true,
+  "seen_hongdae": true,
+  "v_hongdae": true,
+  "chat_chat.sihyun.song": true,
+  "ch_stress6": true,
+  "chat_chat.ian.idle1": true,
+  "v_hannam": true,
+  "jl_jealous:mujin_6": true,
+  "chat_chat.mujin.jealous": true,
+  "chat_chat.ian.gallery": true,
+  "chat_chat.ian.dream": true,
+  "readignore_mujin": true,
+  "ch_stress7": true,
+  "jl_jealous:mujin_7": true,
+  "chat_chat.ian.kept": true,
+  "chat_chat.doyun.note": true,
+  "v_schoolgym": true,
+  "jl_jealous:ian_7": true,
+  "chat_chat.ian.jealous": true,
+  "chat_chat.mujin.kept": true,
+  "chat_chat.doyun.rain": true,
+  "chat_chat.ian.rain": true,
+  "chat_chat.doyun.dream": true,
+  "ch_stress8": true,
+  "jl_jealous:mujin_8": true,
+  "chat_chat.ian.idle2": true,
+  "chat_chat.doyun.idle1": true,
+  "chat_chat.doyun.declined": true,
+  "chat_chat.seoha.idle1": true,
+  "chat_chat.ian.xmas": true,
+  "ch_stress9": true,
+  "seen_skating": true,
+  "v_skating": true,
+  "jl_jealous:mujin_9": true,
+  "jl_jealous:ian_9": true,
+  "chat_chat.jiyu.slump": true,
+  "open2": true,
+  "chat_chat.seoha.hallway": true,
+  "chat_chat.jiyu.y2": true
+ },
+ "timetable": [
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+ ],
+ "lastTimetable": [
+  "study",
+  "vvip",
+  "study",
+  "medstudy",
+  null,
+  "dokseo",
+  "study",
+  "medstudy",
+  null,
+  "dokseo"
+ ],
+ "club": "science",
+ "clubTerm": 2,
+ "focus": null,
+ "chats": {
+  "jiyu": [
+   {
+    "from": "them",
+    "text": "야 너 안 자?? 내일 입학식인데 나 떨려서 잠이 안 와ㅠㅠ",
+    "time": "일 04:41"
+   },
+   {
+    "from": "them",
+    "text": "우리 반에 그 로열패밀리 이안 있대. 실화냐;;",
+    "time": "일 04:42"
+   },
+   {
+    "from": "me",
+    "text": "나도 못 자. 이상한 꿈 꿨어."
+   },
+   {
+    "from": "them",
+    "text": "야 이안이랑 강무진 오늘 하루 종일 말 한마디도 안 했대;;",
+    "time": "화 23:42",
+    "day": 1
+   },
+   {
+    "from": "them",
+    "text": "원래 둘이 붙어 다니잖아. 무슨 일 있나?",
+    "time": "화 23:42",
+    "day": 1
+   },
+   {
+    "from": "them",
+    "text": "살아는 있지?",
+    "time": "금 22:51",
+    "day": 4
+   },
+   {
+    "from": "them",
+    "text": "2학년 차도윤 선배 알지? 전교 1등",
+    "time": "금 23:16",
+    "day": 4
+   },
+   {
+    "from": "them",
+    "text": "근데 성격 진짜 별로래… 선생님들 앞에서만 천사",
+    "time": "금 23:16",
+    "day": 4
+   },
+   {
+    "from": "them",
+    "text": "살아는 있지?",
+    "time": "월 22:25",
+    "day": 7
+   },
+   {
+    "from": "them",
+    "text": "야 우리 반 이안 봤어?? 진짜 왕자님이던데 표정 무서움ㅋㅋ",
+    "time": "월 22:33",
+    "day": 7
+   },
+   {
+    "from": "them",
+    "text": "옆에 큰 애는 강무진. 걔는 완전 강아지래",
+    "time": "월 22:33",
+    "day": 7
+   },
+   {
+    "from": "them",
+    "text": "야 읽었으면 답을 해라 ㅡㅡ",
+    "time": "목 22:04",
+    "day": 10
+   },
+   {
+    "from": "them",
+    "text": "오늘 학원 쌤 또 숙제 폭탄…",
+    "time": "목 22:28",
+    "day": 10
+   },
+   {
+    "from": "them",
+    "text": "너는 뭐 해",
+    "time": "목 22:28",
+    "day": 10
+   },
+   {
+    "from": "me",
+    "text": "잠깐 쉬는 중.",
+    "day": 10
+   },
+   {
+    "from": "them",
+    "text": "쉬는 거 좋다. 나도 5분만 쉬어야지 (30분 됨)",
+    "day": 10
+   },
+   {
+    "from": "them",
+    "text": "오늘 학원 쌤 또 숙제 폭탄…",
+    "time": "월 22:56",
+    "day": 14
+   },
+   {
+    "from": "them",
+    "text": "너는 뭐 해",
+    "time": "월 22:56",
+    "day": 14
+   },
+   {
+    "from": "me",
+    "text": "잠깐 쉬는 중.",
+    "day": 14
+   },
+   {
+    "from": "them",
+    "text": "쉬는 거 좋다. 나도 5분만 쉬어야지 (30분 됨)",
+    "day": 14
+   },
+   {
+    "from": "them",
+    "text": "청담동 라운지에 명품 엄청 두른 애 있대",
+    "time": "월 23:45",
+    "day": 28
+   },
+   {
+    "from": "them",
+    "text": "졸부집 아들이라던데 엄마 전화만 오면 얼굴이 굳는대. 소문이 별걸 다 알아 ㅋㅋ",
+    "time": "월 23:45",
+    "day": 28
+   },
+   {
+    "from": "me",
+    "text": "왜 그렇게 굳을까.",
+    "day": 28
+   },
+   {
+    "from": "them",
+    "text": "몰라… 너 그런 거 은근 궁금해하더라?",
+    "day": 28
+   },
+   {
+    "from": "them",
+    "text": "너 요즘 진짜 얼굴 안 좋아",
+    "time": "토 23:31",
+    "day": 40
+   },
+   {
+    "from": "them",
+    "text": "떡볶이 먹자. 내가 살게. 거절 금지",
+    "time": "토 23:31",
+    "day": 40
+   },
+   {
+    "from": "me",
+    "text": "괜찮아…",
+    "day": 40
+   },
+   {
+    "from": "them",
+    "text": "안 괜찮은 거 다 알아. 너 괜찮다고 할 때가 제일 안 괜찮아",
+    "day": 40
+   },
+   {
+    "from": "them",
+    "text": "야 전교 1등 실화?? 너 이제 나랑 안 놀아 주는 거 아니지??",
+    "time": "월 22:38",
+    "day": 56
+   },
+   {
+    "from": "them",
+    "text": "살아는 있지?",
+    "time": "목 23:58",
+    "day": 59
+   },
+   {
+    "from": "them",
+    "text": "대학로 소극장에 중학생 배우 있대! 신비주의래",
+    "time": "목 23:40",
+    "day": 59
+   },
+   {
+    "from": "them",
+    "text": "그리고 이안 주말엔 한남동 갤러리 행사에 끌려다닌대ㅋㅋ 재벌도 힘들다",
+    "time": "목 23:40",
+    "day": 59
+   },
+   {
+    "from": "me",
+    "text": "이안 얘기는 어디서 듣는 거야?",
+    "day": 59
+   },
+   {
+    "from": "them",
+    "text": "우리 반 단톡이 이안 얘기로 굴러가 ㅋㅋㅋ",
+    "day": 59
+   },
+   {
+    "from": "them",
+    "text": "너 요즘 진짜 얼굴 안 좋아",
+    "time": "토 22:55",
+    "day": 61
+   },
+   {
+    "from": "them",
+    "text": "떡볶이 먹자. 내가 살게. 거절 금지",
+    "time": "토 22:55",
+    "day": 61
+   },
+   {
+    "from": "me",
+    "text": "괜찮아…",
+    "day": 61
+   },
+   {
+    "from": "them",
+    "text": "안 괜찮은 거 다 알아. 너 괜찮다고 할 때가 제일 안 괜찮아",
+    "day": 61
+   },
+   {
+    "from": "them",
+    "text": "오늘 학원 쌤 또 숙제 폭탄…",
+    "time": "월 23:41",
+    "day": 63
+   },
+   {
+    "from": "them",
+    "text": "너는 뭐 해",
+    "time": "월 23:41",
+    "day": 63
+   },
+   {
+    "from": "me",
+    "text": "잠깐 쉬는 중.",
+    "day": 63
+   },
+   {
+    "from": "them",
+    "text": "야 읽었으면 답을 해라 ㅡㅡ",
+    "time": "목 22:47",
+    "day": 66
+   },
+   {
+    "from": "them",
+    "text": "쉬는 거 좋다. 나도 5분만 쉬어야지 (30분 됨)",
+    "day": 83
+   },
+   {
+    "from": "them",
+    "text": "한성국제고에 일본 혼혈 남자애 있대. 서강준 닮았대 미쳤다",
+    "time": "월 22:13",
+    "day": 84
+   },
+   {
+    "from": "them",
+    "text": "교류 행사 때 가면 볼 수 있대. 경복궁에서도 자주 보인대",
+    "time": "월 22:13",
+    "day": 84
+   },
+   {
+    "from": "me",
+    "text": "서강준은 좀 과장 아니야?",
+    "day": 84
+   },
+   {
+    "from": "them",
+    "text": "직접 보고 와서 말해 ㅋㅋ",
+    "day": 84
+   },
+   {
+    "from": "them",
+    "text": "너 요즘 진짜 얼굴 안 좋아",
+    "time": "토 22:56",
+    "day": 89
+   },
+   {
+    "from": "them",
+    "text": "떡볶이 먹자. 내가 살게. 거절 금지",
+    "time": "토 22:56",
+    "day": 89
+   },
+   {
+    "from": "me",
+    "text": "고마워. 내일 먹자.",
+    "day": 89
+   },
+   {
+    "from": "them",
+    "text": "내일 4시 분식집. 늦으면 네가 사",
+    "day": 89
+   },
+   {
+    "from": "them",
+    "text": "홍대에 은발 기타리스트 있대ㅋㅋ 낙원상가에도 자주 온다던데",
+    "time": "월 22:43",
+    "day": 140
+   },
+   {
+    "from": "them",
+    "text": "너 숨 막힐 때 홍대 한번 가 봐. 나는 거기 가면 좀 살 것 같더라",
+    "time": "월 22:43",
+    "day": 140
+   },
+   {
+    "from": "me",
+    "text": "다음에 같이 가자.",
+    "day": 140
+   },
+   {
+    "from": "them",
+    "text": "콜. 대신 학원 땡땡이는 네가 책임져",
+    "day": 140
+   },
+   {
+    "from": "them",
+    "text": "너 요즘 진짜 얼굴 안 좋아",
+    "time": "토 22:42",
+    "day": 145
+   },
+   {
+    "from": "them",
+    "text": "떡볶이 먹자. 내가 살게. 거절 금지",
+    "time": "토 22:42",
+    "day": 145
+   },
+   {
+    "from": "them",
+    "text": "살아는 있지?",
+    "time": "화 23:55",
+    "day": 148
+   },
+   {
+    "from": "them",
+    "text": "너 요즘 진짜 얼굴 안 좋아",
+    "time": "토 22:35",
+    "day": 173
+   },
+   {
+    "from": "them",
+    "text": "떡볶이 먹자. 내가 살게. 거절 금지",
+    "time": "토 22:35",
+    "day": 173
+   },
+   {
+    "from": "them",
+    "text": "야 읽었으면 답을 해라 ㅡㅡ",
+    "time": "화 22:21",
+    "day": 176
+   },
+   {
+    "from": "them",
+    "text": "오늘 학원 쌤 또 숙제 폭탄…",
+    "time": "월 23:49",
+    "day": 189
+   },
+   {
+    "from": "them",
+    "text": "너는 뭐 해",
+    "time": "월 23:49",
+    "day": 189
+   },
+   {
+    "from": "me",
+    "text": "잠깐 쉬는 중.",
+    "day": 189
+   },
+   {
+    "from": "them",
+    "text": "야 읽었으면 답을 해라 ㅡㅡ",
+    "time": "목 23:17",
+    "day": 192
+   },
+   {
+    "from": "them",
+    "text": "쉬는 거 좋다. 나도 5분만 쉬어야지 (30분 됨)",
+    "day": 193
+   },
+   {
+    "from": "them",
+    "text": "너 요즘 진짜 얼굴 안 좋아",
+    "time": "토 22:24",
+    "day": 201
+   },
+   {
+    "from": "them",
+    "text": "떡볶이 먹자. 내가 살게. 거절 금지",
+    "time": "토 22:24",
+    "day": 201
+   },
+   {
+    "from": "them",
+    "text": "살아는 있지?",
+    "time": "화 23:38",
+    "day": 204
+   },
+   {
+    "from": "them",
+    "text": "너 요즘 진짜 얼굴 안 좋아",
+    "time": "토 23:55",
+    "day": 229
+   },
+   {
+    "from": "them",
+    "text": "떡볶이 먹자. 내가 살게. 거절 금지",
+    "time": "토 23:55",
+    "day": 229
+   },
+   {
+    "from": "them",
+    "text": "야 읽었으면 답을 해라 ㅡㅡ",
+    "time": "화 22:14",
+    "day": 232
+   },
+   {
+    "from": "them",
+    "text": "편의점 신상 먹어 봤어? 진짜 맛있음",
+    "time": "월 22:05",
+    "day": 245
+   },
+   {
+    "from": "them",
+    "text": "야 읽었으면 답을 해라 ㅡㅡ",
+    "time": "목 22:21",
+    "day": 248
+   },
+   {
+    "from": "them",
+    "text": "너 요즘 진짜 얼굴 안 좋아",
+    "time": "토 23:40",
+    "day": 257
+   },
+   {
+    "from": "them",
+    "text": "떡볶이 먹자. 내가 살게. 거절 금지",
+    "time": "토 23:40",
+    "day": 257
+   },
+   {
+    "from": "them",
+    "text": "살아는 있지?",
+    "time": "화 22:19",
+    "day": 260
+   },
+   {
+    "from": "them",
+    "text": "너 어디야. 전화 안 받아서 걱정했잖아",
+    "time": "일 23:28",
+    "day": 265
+   },
+   {
+    "from": "me",
+    "text": "미안. 그냥 좀 쉬고 싶었어.",
+    "day": 265
+   },
+   {
+    "from": "them",
+    "text": "쉬어. 대신 나한테는 말하고 쉬어. 그거면 돼",
+    "day": 265
+   }
+  ],
+  "ian": [
+   {
+    "from": "them",
+    "text": "연필.",
+    "time": "화 23:48",
+    "day": 1
+   },
+   {
+    "from": "them",
+    "text": "돌려줄 필요 없다고 했지.",
+    "time": "화 23:48",
+    "day": 1
+   },
+   {
+    "from": "them",
+    "text": "근데 책상 위에 두고 갔더라.",
+    "time": "화 23:48",
+    "day": 1
+   },
+   {
+    "from": "me",
+    "text": "뭐 해?",
+    "time": "일 22:10",
+    "day": 27
+   },
+   {
+    "from": "sys",
+    "text": "읽음"
+   },
+   {
+    "from": "them",
+    "text": "용건이 뭔데.",
+    "time": "월 23:11",
+    "day": 28
+   },
+   {
+    "from": "them",
+    "text": "…그래.",
+    "time": "목 23:35",
+    "day": 31
+   },
+   {
+    "from": "them",
+    "text": "1등이더라.",
+    "time": "일 23:51",
+    "day": 139
+   },
+   {
+    "from": "them",
+    "text": "뭐 해.",
+    "time": "월 23:56",
+    "day": 189
+   },
+   {
+    "from": "me",
+    "text": "네 생각.",
+    "day": 189
+   },
+   {
+    "from": "them",
+    "text": "거짓말.",
+    "day": 189
+   },
+   {
+    "from": "them",
+    "text": "…거짓말이어도 괜찮아.",
+    "day": 189
+   },
+   {
+    "from": "them",
+    "text": "그 그림",
+    "time": "토 23:03",
+    "day": 194
+   },
+   {
+    "from": "them",
+    "text": "다음 달에 다른 데로 옮긴대.",
+    "time": "토 23:03",
+    "day": 194
+   },
+   {
+    "from": "them",
+    "text": "…그냥 알려 주는 거야.",
+    "time": "토 23:03",
+    "day": 194
+   },
+   {
+    "from": "me",
+    "text": "일부러 알려 준 거잖아 ㅋㅋ",
+    "day": 194
+   },
+   {
+    "from": "them",
+    "text": "아니거든.",
+    "day": 194
+   },
+   {
+    "from": "them",
+    "text": "…맞아.",
+    "day": 194
+   },
+   {
+    "from": "them",
+    "text": "이상한 꿈 꿨어.",
+    "time": "월 23:32",
+    "day": 196
+   },
+   {
+    "from": "them",
+    "text": "비 오는 산길이었는데, 누가 우산도 없이 나한테 걸어왔어.",
+    "time": "월 23:32",
+    "day": 196
+   },
+   {
+    "from": "them",
+    "text": "얼굴은 기억 안 나. 근데 깨고 나서 네 생각이 났어.",
+    "time": "월 23:32",
+    "day": 196
+   },
+   {
+    "from": "them",
+    "text": "…그래.",
+    "time": "목 23:12",
+    "day": 199
+   },
+   {
+    "from": "them",
+    "text": "토요일 낮에 시간 돼? 한남동 갤러리 쪽에 있을 건데.\n용건은… 와 보면 알아.",
+    "time": "금 23:00",
+    "day": 207
+   },
+   {
+    "from": "me",
+    "text": "좋아. 갈게.",
+    "day": 207
+   },
+   {
+    "from": "them",
+    "text": "…그래. 늦지 마.",
+    "day": 207
+   },
+   {
+    "from": "them",
+    "text": "오늘.",
+    "time": "토 23:23",
+    "day": 208
+   },
+   {
+    "from": "them",
+    "text": "나쁘지 않았어.",
+    "time": "토 23:23",
+    "day": 208
+   },
+   {
+    "from": "them",
+    "text": "일요일 저녁, 한남동 갤러리. 지루한 자리인데 너 있으면 좀 나을 것 같아서.\n…싫으면 말고.",
+    "time": "금 23:25",
+    "day": 214
+   },
+   {
+    "from": "me",
+    "text": "좋아. 갈게.",
+    "day": 214
+   },
+   {
+    "from": "them",
+    "text": "…그래. 늦지 마.",
+    "day": 214
+   },
+   {
+    "from": "them",
+    "text": "비 온다.",
+    "time": "일 23:20",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "비 오는 날은 이상하게 누가 날 두고 간 기분이 들어.",
+    "time": "일 23:20",
+    "day": 223
+   },
+   {
+    "from": "me",
+    "text": "창문 닫고 자. 감기 걸려.",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "엄마 같은 소리 하네.",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "닫았어.",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "무진이랑 친하더라.",
+    "time": "일 23:25",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "그냥 하는 말이야.",
+    "time": "일 23:25",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "토요일 저녁에 시간 돼? 한남동 갤러리 쪽에 있을 건데.\n용건은… 와 보면 알아.",
+    "time": "금 23:38",
+    "day": 228
+   },
+   {
+    "from": "me",
+    "text": "좋아. 갈게.",
+    "day": 228
+   },
+   {
+    "from": "them",
+    "text": "…그래. 늦지 마.",
+    "day": 228
+   },
+   {
+    "from": "them",
+    "text": "한남동 옥상에서 본 서울 야경",
+    "photo": "ian_night",
+    "time": "월 23:44",
+    "day": 231
+   },
+   {
+    "from": "them",
+    "text": "여기서 보면 서울이 다 장난감 같아.",
+    "time": "월 23:44",
+    "day": 231
+   },
+   {
+    "from": "them",
+    "text": "너한테도 보여 주고 싶었어.",
+    "time": "월 23:44",
+    "day": 231
+   },
+   {
+    "from": "me",
+    "text": "예쁘다. 다음엔 직접 보여 줘.",
+    "day": 231
+   },
+   {
+    "from": "them",
+    "text": "그래. 약속.",
+    "day": 231
+   },
+   {
+    "from": "them",
+    "text": "토요일 저녁, 한남동 갤러리. 지루한 자리인데 너 있으면 좀 나을 것 같아서.\n…싫으면 말고.",
+    "time": "금 23:54",
+    "day": 235
+   },
+   {
+    "from": "me",
+    "text": "좋아. 갈게.",
+    "day": 235
+   },
+   {
+    "from": "them",
+    "text": "…그래. 늦지 마.",
+    "day": 235
+   },
+   {
+    "from": "them",
+    "text": "집에 파티 있어. 사람 이백 명.",
+    "time": "월 23:29",
+    "day": 252
+   },
+   {
+    "from": "them",
+    "text": "그중에 아는 사람 한 명도 없는 것 같아.",
+    "time": "월 23:29",
+    "day": 252
+   },
+   {
+    "from": "them",
+    "text": "일요일 낮에 시간 돼? 한남동 갤러리 쪽에 있을 건데.\n용건은… 와 보면 알아.",
+    "time": "금 23:13",
+    "day": 256
+   },
+   {
+    "from": "me",
+    "text": "좋아. 갈게.",
+    "day": 256
+   },
+   {
+    "from": "them",
+    "text": "…그래. 늦지 마.",
+    "day": 256
+   },
+   {
+    "from": "them",
+    "text": "토요일 저녁, 한남동 갤러리. 지루한 자리인데 너 있으면 좀 나을 것 같아서.\n…싫으면 말고.",
+    "time": "금 23:28",
+    "day": 270
+   },
+   {
+    "from": "me",
+    "text": "좋아. 갈게.",
+    "day": 270
+   },
+   {
+    "from": "them",
+    "text": "…그래. 늦지 마.",
+    "day": 270
+   },
+   {
+    "from": "them",
+    "text": "방학인데… 시간 있어? 같이 가고 싶은 데가 있어서.",
+    "time": "일 23:27",
+    "day": 279
+   },
+   {
+    "from": "them",
+    "text": "…그래. 재밌게 보내.",
+    "time": "일 23:08",
+    "day": 279
+   }
+  ],
+  "mujin": [
+   {
+    "from": "them",
+    "text": "한소율!! 나 무진!!",
+    "time": "수 21:07",
+    "day": 2
+   },
+   {
+    "from": "them",
+    "text": "번호 반 단톡에서 찾았어 ㅎㅎ 저장해 줘!!",
+    "time": "수 21:07",
+    "day": 2
+   },
+   {
+    "from": "them",
+    "text": "초코우유 맛있었지?! 내일도 사 갈까?!",
+    "time": "수 21:07",
+    "day": 2
+   },
+   {
+    "from": "me",
+    "text": "매일은 살쪄 ㅋㅋ",
+    "day": 2
+   },
+   {
+    "from": "them",
+    "text": "헉 그럼 같이 뛰자!! 해결!!",
+    "day": 2
+   },
+   {
+    "from": "them",
+    "text": "체육관 기록판 — 신기록",
+    "photo": "mujin_record",
+    "time": "월 21:21",
+    "day": 63
+   },
+   {
+    "from": "them",
+    "text": "기록 갱신!!! 제일 먼저 너한테 보내고 싶었어!!",
+    "time": "월 21:21",
+    "day": 63
+   },
+   {
+    "from": "me",
+    "text": "대박! 축하해!!",
+    "day": 63
+   },
+   {
+    "from": "them",
+    "text": "이안한테는 두 번째로 보냈다 ㅋㅋ 비밀",
+    "day": 63
+   },
+   {
+    "from": "them",
+    "text": "무릎 괜찮아?? 밴드 있어!! 내일 갖다줄게",
+    "time": "월 20:39",
+    "day": 84
+   },
+   {
+    "from": "me",
+    "text": "괜찮아. 다들 웃었으니까 됐어.",
+    "day": 84
+   },
+   {
+    "from": "them",
+    "text": "그치!! 넘어진 것도 멋있었어!! 진짜로!!",
+    "day": 84
+   },
+   {
+    "from": "them",
+    "text": "오늘 흉터 얘기 들어 줘서 고마워!",
+    "time": "일 19:58",
+    "day": 90
+   },
+   {
+    "from": "them",
+    "text": "이거 아무한테도 안 했는데. 이안 빼고.",
+    "time": "일 19:58",
+    "day": 90
+   },
+   {
+    "from": "me",
+    "text": "근데 진짜 다친 적 없어?",
+    "day": 90
+   },
+   {
+    "from": "them",
+    "text": "없어! 엄마도 신기하대",
+    "day": 90
+   },
+   {
+    "from": "them",
+    "text": "꿈에서는 가끔 다쳐 ㅋㅋ 칼 같은 걸로. 웃기지",
+    "day": 90
+   },
+   {
+    "from": "them",
+    "text": "한소율!! 일요일 낮에 이화고 체육관 올래? 같이 뛰자! 아니 걸어도 돼!",
+    "time": "금 20:53",
+    "day": 95
+   },
+   {
+    "from": "me",
+    "text": "미안, 그날은 안 될 것 같아.",
+    "day": 95
+   },
+   {
+    "from": "them",
+    "text": "아 그래? 괜찮아! 다음에! …다음엔 꼭이다?",
+    "day": 95
+   },
+   {
+    "from": "them",
+    "text": "비 온다!!!",
+    "time": "토 19:56",
+    "day": 96
+   },
+   {
+    "from": "them",
+    "text": "흉터 쑤셔 ㅠ",
+    "time": "토 19:56",
+    "day": 96
+   },
+   {
+    "from": "them",
+    "text": "아 근데 아프면 아프다고 하라며 그래서 말하는 거야!! 🫡",
+    "time": "토 19:56",
+    "day": 96
+   },
+   {
+    "from": "them",
+    "text": "자?",
+    "time": "화 20:48",
+    "day": 99
+   },
+   {
+    "from": "them",
+    "text": "바빠?",
+    "time": "화 20:48",
+    "day": 99
+   },
+   {
+    "from": "them",
+    "text": "밥은 먹었어?",
+    "time": "화 20:48",
+    "day": 99
+   },
+   {
+    "from": "them",
+    "text": "괜찮아!! 바쁜 거 알아!!",
+    "time": "화 19:22",
+    "day": 99
+   },
+   {
+    "from": "them",
+    "text": "…근데 초코우유 두 개 사 놨었는데 ㅎㅎ 하나는 내가 먹을게",
+    "time": "화 19:22",
+    "day": 99
+   },
+   {
+    "from": "them",
+    "text": "자?",
+    "time": "금 20:33",
+    "day": 102
+   },
+   {
+    "from": "them",
+    "text": "바빠?",
+    "time": "금 20:33",
+    "day": 102
+   },
+   {
+    "from": "them",
+    "text": "밥은 먹었어?",
+    "time": "금 20:33",
+    "day": 102
+   },
+   {
+    "from": "them",
+    "text": "방학인데… 시간 있어? 같이 가고 싶은 데가 있어서.",
+    "time": "일 20:07",
+    "day": 111
+   },
+   {
+    "from": "them",
+    "text": "나 오늘 꿈 꿨다!!",
+    "time": "일 20:56",
+    "day": 139
+   },
+   {
+    "from": "them",
+    "text": "내가 옛날 무사였어 ㅋㅋㅋ 칼 들고 누구 지키는",
+    "time": "일 20:56",
+    "day": 139
+   },
+   {
+    "from": "them",
+    "text": "근데 깨니까 이상하게 울고 있었어. 웃기지",
+    "time": "일 20:56",
+    "day": 139
+   },
+   {
+    "from": "me",
+    "text": "누굴 지켰는데?",
+    "day": 139
+   },
+   {
+    "from": "them",
+    "text": "몰라… 근데 한 명이 아니었던 것 같아",
+    "day": 139
+   },
+   {
+    "from": "them",
+    "text": "둘이었어. 둘 다 엄청 소중했어",
+    "day": 139
+   },
+   {
+    "from": "them",
+    "text": "자?",
+    "time": "월 20:56",
+    "day": 140
+   },
+   {
+    "from": "them",
+    "text": "그냥. 오늘 하루 어땠나 해서",
+    "time": "월 20:56",
+    "day": 140
+   },
+   {
+    "from": "me",
+    "text": "그냥 그랬어. 너는?",
+    "day": 140
+   },
+   {
+    "from": "them",
+    "text": "나는 오늘 너 세 번 봤으니까 좋은 날!",
+    "day": 140
+   },
+   {
+    "from": "them",
+    "text": "일요일 낮에 한강공원 있을 거야! 초코우유 두 개 사 갈게 ㅎㅎ",
+    "time": "금 21:09",
+    "day": 172
+   },
+   {
+    "from": "me",
+    "text": "미안, 그날은 안 될 것 같아.",
+    "day": 172
+   },
+   {
+    "from": "them",
+    "text": "아 그래? 괜찮아! 다음에! …다음엔 꼭이다?",
+    "day": 172
+   },
+   {
+    "from": "them",
+    "text": "너 요즘 이안이랑 자주 있더라!",
+    "time": "토 21:06",
+    "day": 194
+   },
+   {
+    "from": "them",
+    "text": "좋다!! 이안 웃는 거 오랜만에 봐!!",
+    "time": "토 21:06",
+    "day": 194
+   },
+   {
+    "from": "them",
+    "text": "…근데 왜 나 기분이 이상하지",
+    "time": "토 21:06",
+    "day": 194
+   },
+   {
+    "from": "them",
+    "text": "괜찮아!! ㅎㅎ",
+    "time": "화 21:05",
+    "day": 197
+   },
+   {
+    "from": "them",
+    "text": "…괜찮아",
+    "time": "화 21:05",
+    "day": 197
+   },
+   {
+    "from": "them",
+    "text": "일요일 저녁에 한강공원 있을 거야! 초코우유 두 개 사 갈게 ㅎㅎ",
+    "time": "금 21:33",
+    "day": 200
+   },
+   {
+    "from": "me",
+    "text": "미안, 그날은 안 될 것 같아.",
+    "day": 200
+   },
+   {
+    "from": "them",
+    "text": "아 그래? 괜찮아! 다음에! …다음엔 꼭이다?",
+    "day": 200
+   },
+   {
+    "from": "them",
+    "text": "일요일 낮에 이화고 체육관 있을 거야! 초코우유 두 개 사 갈게 ㅎㅎ",
+    "time": "금 21:22",
+    "day": 221
+   },
+   {
+    "from": "me",
+    "text": "좋아. 갈게.",
+    "day": 221
+   },
+   {
+    "from": "them",
+    "text": "진짜?! 아싸!! 나 지금부터 기다릴래!",
+    "day": 221
+   },
+   {
+    "from": "them",
+    "text": "뛰고 나서 찍은 한강 노을",
+    "photo": "mujin_sunset",
+    "time": "일 20:26",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "오늘 진짜 재밌었다!!!!",
+    "time": "일 20:26",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "자?",
+    "time": "수 19:29",
+    "day": 226
+   },
+   {
+    "from": "them",
+    "text": "바빠?",
+    "time": "수 19:29",
+    "day": 226
+   },
+   {
+    "from": "them",
+    "text": "밥은 먹었어?",
+    "time": "수 19:29",
+    "day": 226
+   },
+   {
+    "from": "them",
+    "text": "한소율!! 일요일 저녁에 이화고 체육관 올래? 같이 뛰자! 아니 걸어도 돼!",
+    "time": "금 20:22",
+    "day": 228
+   },
+   {
+    "from": "me",
+    "text": "미안, 그날은 안 될 것 같아.",
+    "day": 228
+   },
+   {
+    "from": "them",
+    "text": "아 그래? 괜찮아! 다음에! …다음엔 꼭이다?",
+    "day": 228
+   },
+   {
+    "from": "them",
+    "text": "한소율!! 일요일 저녁에 이화고 체육관 올래? 같이 뛰자! 아니 걸어도 돼!",
+    "time": "금 20:48",
+    "day": 256
+   },
+   {
+    "from": "me",
+    "text": "좋아. 갈게.",
+    "day": 256
+   },
+   {
+    "from": "them",
+    "text": "진짜?! 아싸!! 나 지금부터 기다릴래!",
+    "day": 256
+   },
+   {
+    "from": "them",
+    "text": "방학인데… 시간 있어? 같이 가고 싶은 데가 있어서.",
+    "time": "일 20:22",
+    "day": 279
+   }
+  ],
+  "doyun": [
+   {
+    "from": "them",
+    "text": "차도윤. 2학년.",
+    "time": "수 21:14",
+    "day": 2
+   },
+   {
+    "from": "them",
+    "text": "어제 계단. 내 말이 틀렸다고 생각하면 반박해.",
+    "time": "수 21:14",
+    "day": 2
+   },
+   {
+    "from": "them",
+    "text": "1등.",
+    "time": "월 21:58",
+    "day": 56
+   },
+   {
+    "from": "them",
+    "text": "우연인지 다음 시험에서 확인할게.",
+    "time": "월 21:58",
+    "day": 56
+   },
+   {
+    "from": "me",
+    "text": "선배도 1등 했어요?",
+    "day": 56
+   },
+   {
+    "from": "them",
+    "text": "답이 없는 것도 답이지.",
+    "time": "목 22:42",
+    "day": 59
+   },
+   {
+    "from": "them",
+    "text": "늘.",
+    "day": 59
+   },
+   {
+    "from": "them",
+    "text": "근데 오늘은 그게 별로 안 궁금했어.",
+    "day": 59
+   },
+   {
+    "from": "them",
+    "text": "방학인데… 시간 있어? 같이 가고 싶은 데가 있어서.",
+    "time": "일 21:44",
+    "day": 111
+   },
+   {
+    "from": "them",
+    "text": "…그래. 재밌게 보내.",
+    "time": "일 21:14",
+    "day": 111
+   },
+   {
+    "from": "them",
+    "text": "빨간 펜으로 고친 풀이 세 장",
+    "photo": "doyun_note",
+    "time": "토 22:24",
+    "day": 215
+   },
+   {
+    "from": "them",
+    "text": "14, 19, 27번. 다시 풀어서 보내.",
+    "time": "토 22:24",
+    "day": 215
+   },
+   {
+    "from": "me",
+    "text": "선배는 왜 이렇게까지 해요?",
+    "day": 215
+   },
+   {
+    "from": "them",
+    "text": "답이 없는 것도 답이지.",
+    "time": "화 22:46",
+    "day": 218
+   },
+   {
+    "from": "them",
+    "text": "우산 있어?",
+    "time": "일 21:41",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "강수 확률 70%. 학원 끝나는 시간에 제일 많이 와.",
+    "time": "일 21:41",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "틀린 게 보이면 못 참아서.",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "너한테만 그런 건 아니야. 아마도.",
+    "day": 223
+   },
+   {
+    "from": "them",
+    "text": "질문 하나.",
+    "time": "월 21:49",
+    "day": 224
+   },
+   {
+    "from": "them",
+    "text": "처음 본 날부터 나를 그런 눈으로 본 이유. 아직도 궁금해.",
+    "time": "월 21:49",
+    "day": 224
+   },
+   {
+    "from": "them",
+    "text": "깨어 있으면 이거 풀어 봐.",
+    "time": "월 21:04",
+    "day": 231
+   },
+   {
+    "from": "them",
+    "text": "화이트보드에 적힌 문제 하나",
+    "photo": "doyun_puzzle",
+    "time": "월 21:04",
+    "day": 231
+   },
+   {
+    "from": "them",
+    "text": "답이 없는 것도 답이지.",
+    "time": "목 22:37",
+    "day": 234
+   },
+   {
+    "from": "them",
+    "text": "토요일 낮, 대치동 학원가. 지난번 틀린 유형 정리해 놨어.\n안 오면 그냥 버릴 거고.",
+    "time": "금 21:36",
+    "day": 235
+   },
+   {
+    "from": "me",
+    "text": "죄송해요, 그날은 안 될 것 같아요.",
+    "day": 235
+   },
+   {
+    "from": "them",
+    "text": "예상했어. 시간 아꼈네.",
+    "day": 235
+   },
+   {
+    "from": "them",
+    "text": "예상했어.",
+    "time": "토 22:21",
+    "day": 236
+   },
+   {
+    "from": "them",
+    "text": "다음엔 예상 밖으로 와 봐.",
+    "time": "토 22:21",
+    "day": 236
+   },
+   {
+    "from": "them",
+    "text": "답이 없는 것도 답이지.",
+    "time": "화 21:28",
+    "day": 239
+   },
+   {
+    "from": "them",
+    "text": "토요일 저녁에 대치동 학원가. 네 풀이 습관 고쳐 줄 시간 30분 있어. 효율적으로 쓸지는 네 선택.",
+    "time": "금 22:06",
+    "day": 270
+   },
+   {
+    "from": "me",
+    "text": "죄송해요, 그날은 안 될 것 같아요.",
+    "day": 270
+   },
+   {
+    "from": "them",
+    "text": "예상했어. 시간 아꼈네.",
+    "day": 270
+   }
+  ],
+  "mom": [
+   {
+    "from": "them",
+    "text": "용돈 보냈어. 학원비 아끼지 말고, 대신 몸 챙겨.",
+    "time": "목 18:48",
+    "day": 3
+   },
+   {
+    "from": "me",
+    "text": "응. 엄마도.",
+    "day": 3
+   },
+   {
+    "from": "them",
+    "text": "엄마는 괜찮아. 너만 잘 자면 돼",
+    "day": 3
+   },
+   {
+    "from": "them",
+    "text": "우리 딸 전교 1등!!!",
+    "time": "일 20:17",
+    "day": 55
+   },
+   {
+    "from": "them",
+    "text": "용돈 더 보냈다!! 사랑해!!",
+    "time": "일 20:17",
+    "day": 55
+   },
+   {
+    "from": "them",
+    "text": "전화 좀 받아.",
+    "time": "수 18:53",
+    "day": 58
+   },
+   {
+    "from": "them",
+    "text": "용돈 보냈어. 학원비 아끼지 말고, 대신 몸 챙겨.",
+    "time": "화 18:37",
+    "day": 85
+   },
+   {
+    "from": "me",
+    "text": "응. 엄마도.",
+    "day": 85
+   },
+   {
+    "from": "them",
+    "text": "엄마는 괜찮아. 너만 잘 자면 돼",
+    "day": 85
+   },
+   {
+    "from": "them",
+    "text": "우리 딸 전교 1등!!!",
+    "time": "일 20:57",
+    "day": 111
+   },
+   {
+    "from": "them",
+    "text": "용돈 더 보냈다!! 사랑해!!",
+    "time": "일 20:57",
+    "day": 111
+   },
+   {
+    "from": "them",
+    "text": "전화 좀 받아.",
+    "time": "일 20:35",
+    "day": 139
+   },
+   {
+    "from": "them",
+    "text": "요즘 늦게 들어오던데. 피곤하지?",
+    "time": "월 19:34",
+    "day": 168
+   },
+   {
+    "from": "them",
+    "text": "용돈 넣었어. 맛있는 거 사 먹어.",
+    "time": "월 19:34",
+    "day": 168
+   },
+   {
+    "from": "me",
+    "text": "괜찮아!",
+    "day": 168
+   },
+   {
+    "from": "them",
+    "text": "괜찮다는 말은 엄마 닮았네",
+    "day": 168
+   },
+   {
+    "from": "them",
+    "text": "우리 딸 전교 1등!!!",
+    "time": "월 19:09",
+    "day": 224
+   },
+   {
+    "from": "them",
+    "text": "용돈 더 보냈다!! 사랑해!!",
+    "time": "월 19:09",
+    "day": 224
+   },
+   {
+    "from": "me",
+    "text": "엄마 딸이니까!",
+    "day": 224
+   },
+   {
+    "from": "them",
+    "text": "맞아 엄마 딸이니까!!!",
+    "day": 224
+   },
+   {
+    "from": "them",
+    "text": "요즘 늦게 들어오던데. 피곤하지?",
+    "time": "월 18:07",
+    "day": 252
+   },
+   {
+    "from": "them",
+    "text": "용돈 넣었어. 맛있는 거 사 먹어.",
+    "time": "월 18:07",
+    "day": 252
+   },
+   {
+    "from": "me",
+    "text": "응, 좀 피곤해.",
+    "day": 252
+   },
+   {
+    "from": "them",
+    "text": "오늘은 일찍 자. 엄마가 깎은 사과 식탁에 있다",
+    "day": 252
+   },
+   {
+    "from": "them",
+    "text": "우리 딸 전교 1등!!!",
+    "time": "일 19:35",
+    "day": 279
+   },
+   {
+    "from": "them",
+    "text": "용돈 더 보냈다!! 사랑해!!",
+    "time": "일 19:35",
+    "day": 279
+   }
+  ],
+  "taejun": [
+   {
+    "from": "them",
+    "text": "어제 라운지.",
+    "time": "토 03:02",
+    "day": 33
+   },
+   {
+    "from": "them",
+    "text": "본 거 다 잊어. 통화한 거.",
+    "time": "토 03:02",
+    "day": 33
+   },
+   {
+    "from": "sys",
+    "text": "메시지를 삭제했습니다",
+    "day": 36
+   }
+  ],
+  "seoha": [
+   {
+    "from": "them",
+    "text": "선배, 어제 그 관객이요. 윤서하.",
+    "time": "토 22:55",
+    "day": 61
+   },
+   {
+    "from": "them",
+    "text": "번호는 매표소 방명록에서 봤어요. 기록하는 습관이 이럴 때 쓸모 있네요.",
+    "time": "토 22:55",
+    "day": 61
+   },
+   {
+    "from": "them",
+    "text": "오늘의 기록. \"답장 없음.\"",
+    "time": "화 22:35",
+    "day": 64
+   },
+   {
+    "from": "them",
+    "text": "오늘의 기록.",
+    "time": "월 23:21",
+    "day": 238
+   },
+   {
+    "from": "them",
+    "text": "“지하철 옆자리 아저씨, 퇴근길에 꽃 한 송이. 아마 기념일.”",
+    "time": "월 23:21",
+    "day": 238
+   },
+   {
+    "from": "them",
+    "text": "선배는 오늘 뭐 봤어요?",
+    "time": "월 23:21",
+    "day": 238
+   },
+   {
+    "from": "them",
+    "text": "오늘의 기록. \"답장 없음.\"",
+    "time": "목 23:14",
+    "day": 241
+   }
+  ],
+  "ihyun": [
+   {
+    "from": "them",
+    "text": "이화고! 나 이현 😊",
+    "time": "토 20:57",
+    "day": 89
+   },
+   {
+    "from": "them",
+    "text": "오늘은 명찰 똑바로 달았어?",
+    "time": "토 20:57",
+    "day": 89
+   },
+   {
+    "from": "sys",
+    "text": "사진을 보냈습니다",
+    "day": 92
+   }
+  ],
+  "sihyun": [
+   {
+    "from": "them",
+    "text": "범생아.",
+    "time": "토 01:56",
+    "day": 145
+   },
+   {
+    "from": "them",
+    "text": "세 번째 곡 녹음본. 너만 들어.",
+    "time": "토 01:56",
+    "day": 145
+   },
+   {
+    "from": "sys",
+    "text": "음성메시지 2:41",
+    "day": 145
+   },
+   {
+    "from": "me",
+    "text": "들었어. 좋다.",
+    "day": 145
+   },
+   {
+    "from": "them",
+    "text": "그 한마디면 됐어.",
+    "day": 145
+   }
+  ]
+ },
+ "unread": {
+  "ian": 7,
+  "jiyu": 0,
+  "mujin": 12,
+  "doyun": 2,
+  "mom": 2,
+  "taejun": 0,
+  "seoha": 1,
+  "ihyun": 2,
+  "sihyun": 0
+ },
+ "pending": {
+  "mom": {
+   "id": "chat.mom.top",
+   "arrived": 279,
+   "time": "일 19:35",
+   "opened": false,
+   "path": []
+  }
+ },
+ "chatQueue": [
+  {
+   "id": "chat.seoha.hallway",
+   "due": 280
+  },
+  {
+   "id": "chat.jiyu.y2",
+   "due": 280
+  }
+ ],
+ "day": 279,
+ "phoneTime": 2,
+ "presence": {
+  "ian": "hannam",
+  "mujin": "schoolgym",
+  "doyun": "daechi",
+  "taejun": "cheongdam",
+  "seoha": "daehakro",
+  "ihyun": "intl",
+  "sihyun": "nakwon"
+ },
+ "promiseNext": [],
+ "newMemory": true,
+ "placeVisits": {
+  "daechi": 2,
+  "hospital": 81,
+  "bongeunsa": 4,
+  "cheongdam": 1,
+  "home": 33,
+  "yeouido": 6,
+  "daehakro": 1,
+  "intl": 1,
+  "hangang": 1,
+  "hongdae": 2,
+  "hannam": 7,
+  "schoolgym": 2,
+  "skating": 1
+ },
+ "promiseLog": {
+  "mujin": {
+   "kept": 2,
+   "broken": 0,
+   "declined": 4
+  },
+  "ian": {
+   "kept": 6,
+   "broken": 0,
+   "declined": 0
+  },
+  "doyun": {
+   "kept": 0,
+   "broken": 0,
+   "declined": 2
+  }
+ },
+ "savedAt": 1792207229219
+}

@@ -2,6 +2,7 @@
    게임 상태 · 저장소
    - game.state 는 엔진이 직접 수정하는 평범한 객체
    - 수정 후 refresh() 를 부르면 화면이 다시 그려진다
+   - 저장·불러오기는 save/ (저장 위치는 platform/storage.ts)
    ========================================================= */
 import type { BaseStat, CharId, Effect, GameState, MetaState, Settings, SkillKey } from './types';
 import { BALANCE } from '@/config/balance';
@@ -9,21 +10,20 @@ import { CHAR_ORDER } from '@/content/characters';
 import { SKILL_KEYS } from '@/content/careers';
 import { ERA } from '@/content/eras';
 import { emit } from './triggers';
+import { SAVE_VERSION } from './save/migrate';
+import { saves } from './save';
 
-const KEY = { auto: 'ehwa3_auto', slot: (i: number) => `ehwa3_slot${i}`, meta: 'ehwa3_meta', settings: 'ehwa3_settings' };
-const SAVE_VERSION = 3;
-
-function lsGet<T>(k: string): T | null { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : null; } catch { return null; } }
-function lsSet(k: string, v: unknown) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
-function lsDel(k: string) { try { localStorage.removeItem(k); } catch { /* 무시 */ } }
+export { saves };
 
 const perChar = <T,>(f: () => T) => Object.fromEntries(CHAR_ORDER.map(c => [c, f()])) as Record<CharId, T>;
-const defaultMeta = (): MetaState => ({ memories: {}, album: {}, endings: {}, plays: 0, clears: 0, lastName: '' });
+export const defaultMeta = (): MetaState => ({ memories: {}, album: {}, endings: {}, plays: 0, clears: 0, lastName: '' });
+export const defaultSettings = (): Settings => ({ textSpeed: 1, fx: true, showSlots: true });
 
+/** 저장된 기록은 시작할 때 save/loadPersisted() 가 채운다 */
 export const game = {
   state: null as GameState | null,
-  meta: { ...defaultMeta(), ...(lsGet<MetaState>(KEY.meta) ?? {}) } as MetaState,
-  settings: { textSpeed: 1, fx: true, showSlots: true, ...(lsGet<Settings>(KEY.settings) ?? {}) } as Settings,
+  meta: defaultMeta(),
+  settings: defaultSettings(),
   /** 한 달이 진행 중이면 true — 이때는 자동 저장하지 않는다 (달 시작 시점으로만 저장) */
   midMonth: false,
 };
@@ -81,33 +81,6 @@ export function applyEffect(e: Effect, st: GameState = S()) {
   if (r.stress) st.stress = clamp(st.stress + r.stress, 0, 100);
   if (r.money) st.money = Math.max(0, st.money + r.money);
   for (const f of e.flags ?? []) st.flags[f] = true;
-}
-
-/* ---------- 저장 ---------- */
-export const saves = {
-  autosave() { if (game.state && !game.midMonth) { game.state.savedAt = Date.now(); lsSet(KEY.auto, game.state); } },
-  clearAuto() { lsDel(KEY.auto); },
-  readAuto: () => lsGet<GameState>(KEY.auto),
-  readSlot: (i: number) => lsGet<GameState>(KEY.slot(i)),
-  writeSlot(i: number) { if (!game.state || game.midMonth) return false; game.state.savedAt = Date.now(); return lsSet(KEY.slot(i), game.state); },
-  saveMeta() { lsSet(KEY.meta, game.meta); },
-  saveSettings() { lsSet(KEY.settings, game.settings); },
-  wipeAll() {
-    [KEY.auto, KEY.slot(1), KEY.slot(2), KEY.slot(3), KEY.meta].forEach(lsDel);
-    game.meta = defaultMeta();
-    game.state = null;
-  },
-};
-
-/** 이전 버전 저장 데이터에 빠진 필드를 기본값으로 채운다 */
-export function migrate(d: GameState): GameState {
-  const base = newState(d.name ?? '나');
-  return {
-    ...base, ...d,
-    era: d.era ?? 'joseon',
-    stat: { ...base.stat, ...d.stat }, skill: { ...base.skill, ...d.skill },
-    aff: { ...base.aff, ...d.aff }, mainStep: { ...base.mainStep, ...d.mainStep }, vacStage: { ...base.vacStage, ...d.vacStage },
-  };
 }
 
 export function unlockMemory(id: string) {
