@@ -38,6 +38,23 @@ export function gainChips(a: Snap, b: Snap, { res = true }: { res?: boolean } = 
   return out;
 }
 
+/* ---------- 생활 기록 ---------- */
+/** 3년 동안의 횟수 기록 — o:{일정id} 평일 일정 · exam_top 등 시험 · sportsWin · festivalOk · slump · snack · casting */
+export function bump(st: GameState, key: string, n = 1) {
+  (st.tally ??= {})[key] = (st.tally[key] ?? 0) + n;
+}
+export const tally = (st: GameState, key: string) => st.tally?.[key] ?? 0;
+
+/** 지금 스타일 — 스트레스가 높으면 피부가 뒤집어지고, 체력이 바닥이면 다크서클, 야식 다음 주엔 부은 얼굴 */
+export function styleNow(st: GameState, maxHp: number) {
+  let m = 1;
+  const why: string[] = [];
+  if (st.stress >= 70) { m *= 0.85; why.push('피부 트러블'); }
+  if (st.hp < maxHp * 0.3) { m *= 0.9; why.push('다크서클'); }
+  if (st.flags.puffy) { m *= 0.95; why.push('부은 얼굴'); }
+  return { value: st.stat.style * m, why };
+}
+
 /* ---------- 이정표 ---------- */
 export interface Milestone { kind: 'grade' | 'skill' | 'unlock'; title: string; body: string; mark: string }
 const SKILL_STEP = 25;
@@ -81,6 +98,7 @@ const GRADE_LINE: Record<BaseStat, string> = {
   sense: '같은 풍경도 전보다 많은 것이 보인다.',
   cha: '말을 걸어오는 사람이 늘었다.',
   fit: '계단을 올라도 숨이 덜 찬다.',
+  style: '쇼윈도에 비친 내가 조금 낯설고, 꽤 마음에 든다.',
   spirit: '꿈과 현실의 경계가 조금 얇아졌다.',
 };
 

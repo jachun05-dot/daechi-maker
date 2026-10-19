@@ -9,9 +9,9 @@ import { ui, type Chip } from '@/store/ui';
 import { applyDelta, bestCareers, careerFit, topTalent, type Delta } from './timetable';
 import { deltaChips } from './chips';
 import { emit } from './triggers';
-import { refresh } from './state';
+import { hpMax, refresh } from './state';
 import { getScene } from './story/library';
-import { month } from './progress';
+import { bump, month, styleNow } from './progress';
 
 /** 장면을 보여 주고 결과를 월말 성적표에 남긴다 */
 async function showEvent(T: Turn, scene: string | StoryNode[], vars: Record<string, string | number>, after?: () => Chip[], result?: string) {
@@ -30,19 +30,23 @@ export async function monthEvent(st: GameState, T: Turn) {
     case 'sports': {
       const win = st.stat.fit >= BALANCE.sports.base + st.turn * BALANCE.sports.perTurn;
       await showEvent(T, 'event.sports', { win: win ? 1 : 0 }, () => deltaChips(applyDelta(st, win ? { cha: 2, stress: -8 } : { stress: -4 })), win ? '우리 반 우승' : '아쉬운 패배');
+      bump(st, win ? 'sportsWin' : 'sportsLose');
       emit(st, win ? 'sports:win' : 'sports:lose');
       return;
     }
     case 'festival': {
+      // 무대에서는 스타일도 점수 — 그날 컨디션(피부·다크서클)까지
+      const look = styleNow(st, hpMax(st)).value * BALANCE.festival.styleBonus;
       const kinds: [string, string, number, SkillKey[]][] = [
-        ['music', '밴드 공연', (st.skill.vocal + st.skill.dance) / 2, ['vocal', 'dance']],
-        ['acting', '연극 무대', (st.skill.acting + st.skill.voice) / 2, ['acting', 'voice']],
+        ['music', '밴드 공연', (st.skill.vocal + st.skill.dance) / 2 + look, ['vocal', 'dance']],
+        ['acting', '연극 무대', (st.skill.acting + st.skill.voice) / 2 + look, ['acting', 'voice']],
         ['debate', '축제 MC', (st.skill.debate + st.skill.language) / 2, ['debate']],
       ];
       const [kind, stage, score, skills] = kinds.sort((a, b) => b[2] - a[2])[0];
       const ok = score >= BALANCE.festival.base + st.turn * BALANCE.festival.perTurn;
       const delta: Delta = ok ? { sense: 3, cha: 3, stress: -10, [skills[0]]: 3 } : { cha: 1, stress: -3 };
       await showEvent(T, 'event.festival', { kind, stage, ok: ok ? 1 : 0 }, () => deltaChips(applyDelta(st, delta)), `${stage} ${ok ? '대성공' : '아쉬운 무대'}`);
+      if (ok) bump(st, 'festivalOk');
       emit(st, ok ? 'festival:ok' : 'festival:fail');
       return;
     }
@@ -65,6 +69,7 @@ async function exam(st: GameState, T: Turn) {
     exam: T.title.split(' · ')[0], rank: tier.rank, tier: tier.tier,
     hasFocus: st.focus ? 1 : 0, focus: st.focus ? SUBJECT_LABEL[st.focus] : '',
   }, () => deltaChips(applyDelta(st, tier.eff as Delta)), tier.rank);
+  bump(st, `exam_${tier.tier}`);
   emit(st, `exam:${tier.tier}`);
 }
 

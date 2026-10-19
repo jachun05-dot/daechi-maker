@@ -16,7 +16,7 @@ import { DREAMS, hasScene, mainEventsOf } from '../story/library';
 import { newState } from '../state';
 
 /** 지금 세이브 구조 버전 */
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 
 type Raw = Record<string, any>;
 
@@ -27,6 +27,14 @@ export const MIGRATIONS: { to: number; note: string; run(d: Raw): void }[] = [
     run(d) {
       d.era ??= 'joseon';
       for (const p of Object.values<Raw>(d.pending ?? {})) p.picked ??= [];
+    },
+  },
+  {
+    to: 5, note: '스타일 능력치 · 생활 기록(tally)',
+    run(d) {
+      // 스타일은 지금까지 사교·감성으로 꾸며 온 만큼 조금 얹어 시작한다
+      if (d.stat && d.stat.style === undefined) d.stat.style = 10 + Math.floor(((d.stat.cha ?? 10) + (d.stat.sense ?? 10) - 20) * 0.2);
+      d.tally ??= {};
     },
   },
 ];

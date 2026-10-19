@@ -36,9 +36,9 @@ export const CAREERS = Object.fromEntries(
 ) as Record<CareerId, Career>;
 export const CAREER_ORDER: CareerId[] = ['med', 'idol', 'actor', 'leader'];
 
-export const BASE_LABEL: Record<BaseStat, string> = { int: '지성', sense: '감성', cha: '사교', fit: '근력', spirit: '감응' };
+export const BASE_LABEL: Record<BaseStat, string> = { int: '지성', sense: '감성', cha: '사교', fit: '근력', style: '스타일', spirit: '감응' };
 export const BASE_DESC: Record<BaseStat, string> = {
-  int: '공부하는 머리', sense: '느끼고 표현하는 힘', cha: '말하고 사람을 움직이는 힘', fit: '몸. 최대 체력을 늘린다', spirit: '전생을 느끼는 힘',
+  int: '공부하는 머리', sense: '느끼고 표현하는 힘', cha: '말하고 사람을 움직이는 힘', fit: '몸. 최대 체력을 늘린다', style: '꾸미고 가꾸는 감각. 잠과 스트레스에 민감하다', spirit: '전생을 느끼는 힘',
 };
 export const SKILL_LABEL: Record<SkillKey, string> = {
   science: '수리·과학', medicine: '의학 지식', vocal: '보컬', dance: '댄스', acting: '연기', voice: '발성', language: '외국어', debate: '토론',

@@ -24,7 +24,7 @@ import { dayOf, dayTick, pushMsg } from './phone';
 import { emit } from './triggers';
 import { basicMeet, logAff, nextMain, playMain } from './people';
 import { slump } from './crisis';
-import { checkMilestones, gainChips, snap } from './progress';
+import { bump, checkMilestones, gainChips, snap } from './progress';
 import type { MainEvent } from './story/library';
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
@@ -340,6 +340,7 @@ async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, wea
     if (pool.length) {
       const s = pick(pool);
       st.flags[`st_${s.id}`] = true;
+      if (s.id.endsWith('.cast')) bump(st, 'casting');
       ui.runHide();
       await ui.playScene(s.id, { theme: 'day', bg: place.bg });
       ui.setTheme('day');

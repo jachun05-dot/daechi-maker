@@ -15,7 +15,7 @@ import { applyDelta, clubAt, findClub, findOption, growthMult, type Delta } from
 import { hpMax, refresh } from './state';
 import { dayOf, dayTick } from './phone';
 import { basicMeet } from './people';
-import { checkMilestones, gainChips, month, snap } from './progress';
+import { bump, checkMilestones, gainChips, month, snap, styleNow } from './progress';
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 
@@ -60,6 +60,7 @@ export function weekdayStep(st: GameState, day: number, heavyStreak: number): { 
       if (!o) { res.slots.push({ id: null, name: '', state: 'empty' }); continue; }
       if ((o.delta.money ?? 0) < 0 && st.money + o.delta.money! < 0) { res.slots.push({ id: o.id, name: o.name, state: 'broke' }); continue; }
       applyDelta(st, o.delta, growthMult(st));
+      bump(st, `o:${o.id}`);
       res.slots.push({ id: o.id, name: o.name, state: club ? 'club' : 'ok' });
       if (club || (o as { heavy?: boolean }).heavy) heavyToday = true;
     }
@@ -91,15 +92,18 @@ export async function runWeekdays(st: GameState, T: Turn, week: number, incident
     slots: d.slots.map(s => ({ name: s.name, state: s.state })),
   }));
   const notes: string[] = [];
+  const look = styleNow(st, hpMax(st));
+  if (look.why.length) notes.push(`${look.why.join('·')} — 이번 주 스타일이 죽었다`);
   if (doze) notes.push(`수업 중 ${doze}일 졸았다`);
   if (collapse) notes.push(`${collapse}일은 쓰러져 잠들었다`);
   if (broke) notes.push(`용돈이 모자라 ${broke}번 건너뛰었다`);
   ui.runLog({
     kind: 'week', title: `${week + 1}주차 평일`, tag: st.focus ? `집중 과목 · ${SUBJECT_LABEL[st.focus]}` : '집중 과목 없음',
-    body: weekLine(days, collapse, doze, broke), chips: gainChips(before, snap(st)),
+    body: st.flags.puffy ? pick(WEEK_LINES.puffy) : weekLine(days, collapse, doze, broke), chips: gainChips(before, snap(st)),
     week: { days: view, notes }, tone: collapse || doze >= 2 ? 'warn' : undefined, mark: '平',
   });
   for (const m of checkMilestones(st)) ui.runLog({ kind: 'grade', title: m.title, body: m.body, mark: m.mark });
+  st.flags.puffy = false;
   refresh();
   return heavyStreak;
 }

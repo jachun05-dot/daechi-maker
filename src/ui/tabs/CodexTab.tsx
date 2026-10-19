@@ -52,17 +52,21 @@ export function CodexTab() {
 
       {seg === 'album' && <Album />}
 
-      {seg === 'endings' && (
-        <section className="card">
-          <div className="card-h"><h3>엔딩 컬렉션</h3><small>{ENDINGS.filter(e => meta.endings[e.id]).length}/{ENDINGS.length}</small></div>
-          {ENDINGS.map(e => (
+      {seg === 'endings' && ([
+        ['커리어 엔딩', '꿈을 못 이뤄도 키운 대로 길이 열린다', ENDINGS.filter(e => e.kind.startsWith('커리어'))],
+        ['인연 엔딩', '마지막 선택과 그 사람의 마음', ENDINGS.filter(e => !e.kind.startsWith('커리어'))],
+      ] as const).map(([title, sub, list]) => (
+        <section key={title} className="card">
+          <div className="card-h"><h3>{title}</h3><small>{list.filter(e => meta.endings[e.id]).length}/{list.length}</small></div>
+          <p className="muted">{sub}</p>
+          {list.map(e => (
             <div key={e.id} className={`ending-row${meta.endings[e.id] ? '' : ' locked'}`}>
-              <b>{meta.endings[e.id] ? e.title : '??????'}</b><span>{e.kind}</span>
+              <b>{meta.endings[e.id] ? e.title : e.hint ? `??? · ${e.hint}` : '??????'}</b><span>{e.kind.replace('커리어 · ', '')}</span>
             </div>
           ))}
-          <p className="muted">플레이 {meta.plays}회 · 완주 {meta.clears}회</p>
         </section>
-      )}
+      ))}
+      {seg === 'endings' && <p className="muted center">플레이 {meta.plays}회 · 완주 {meta.clears}회</p>}
 
       {seg === 'people' && CHAR_ORDER.map(k => {
         const c = CHARACTERS[k];

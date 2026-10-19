@@ -1,18 +1,17 @@
 /* 엔딩 컬렉션 목록 (도감 표시용). 장면은 stories/endings/*.story 의 ending=id 와 연결 */
 import type { CharId } from '@/engine/types';
 import { CHARACTERS, ROMANCEABLE } from './characters';
+import { CAREER_ENDINGS, KIND_LABEL } from './careerEndings';
 
-export interface EndingInfo { id: string; title: string; kind: string }
+/** hint: 아직 못 본 엔딩에 보이는 힌트 */
+export interface EndingInfo { id: string; title: string; kind: string; hint?: string }
 
 const per = (prefix: string, kind: string, title: (c: CharId) => string): EndingInfo[] =>
   ROMANCEABLE.map(c => ({ id: `${prefix}_${c}`, title: title(c), kind }));
 
 export const ENDINGS: EndingInfo[] = [
-  { id: 'c_med',    title: '한국대 의과대학 합격',          kind: '커리어' },
-  { id: 'c_idol',   title: '최정상 아티스트 데뷔',          kind: '커리어' },
-  { id: 'c_actor',  title: '천만 배우 데뷔',                kind: '커리어' },
-  { id: 'c_leader', title: '세계를 움직이는 리더의 첫걸음', kind: '커리어' },
-  { id: 'c_none',   title: '아직 꿈을 찾는 중',             kind: '커리어' },
+  // 커리어 — content/careerEndings.ts
+  ...CAREER_ENDINGS.map(e => ({ id: e.id, title: e.title, kind: `커리어 · ${KIND_LABEL[e.kind]}`, hint: e.hint })),
   ...per('t', '진 엔딩', c => `${CHARACTERS[c].name} · 진 엔딩`),
   ...per('n', '노멀 엔딩', c => `${CHARACTERS[c].name} · 노멀 엔딩`),
   ...per('r', '차인 엔딩', c => `${CHARACTERS[c].name}에게 차였다`),

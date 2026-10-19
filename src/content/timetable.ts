@@ -40,7 +40,7 @@ export const NIGHT: TimetableOption[] = [
     lines: ['세포 분열 그림을 백 번쯤 그렸다. 꿈에서도 그렸다.'] },
   { id: 'vocal',    name: '보컬 레슨',        place: '신사동 스튜디오',   days: [2, 4],    delta: { vocal: 0.8, sense: 0.3, hp: -4, stress: 1, money: -8000 }, heavy: true, desc: '호흡, 발성, 고음. 수·금.',
     lines: ['처음으로 고음에서 목이 아니라 배가 울렸다.', '녹음해 들어 본 내 목소리가 낯설었다.'] },
-  { id: 'dance',    name: '댄스 아카데미',    place: '홍대 스튜디오',     days: [1, 3],    delta: { dance: 0.8, fit: 0.3, hp: -5, stress: -1, money: -8000 }, heavy: true, desc: '커버 댄스와 무대 매너. 화·목.',
+  { id: 'dance',    name: '댄스 아카데미',    place: '홍대 스튜디오',     days: [1, 3],    delta: { dance: 0.8, fit: 0.3, style: 0.2, hp: -5, stress: -1, money: -8000 }, heavy: true, desc: '커버 댄스와 무대 매너. 화·목.',
     lines: ['거울 속 동작이 처음으로 박자와 맞았다.', '발목에 파스를 붙이고 잤다.'] },
   { id: 'acting',   name: '연기 학원',        place: '대학로 연기 학원',  days: [1, 3],    delta: { acting: 0.7, voice: 0.7, sense: 0.3, hp: -4, stress: 1, money: -8000 }, heavy: true, who: 'seoha', desc: '독백과 화술. 화·목.',
     lines: ['독백 대사를 지하철에서 중얼거리다 눈이 마주쳤다.'] },
@@ -48,6 +48,8 @@ export const NIGHT: TimetableOption[] = [
     lines: ['반론 시간 30초. 처음으로 끝까지 말했다.'] },
   { id: 'dokseo',   name: '독서실',           place: '동네 독서실',       days: ALL,       delta: { int: 0.4, science: 0.2, hp: -3, stress: 2, money: -1500 }, desc: '싸고 조용하다. 대신 외롭다.',
     lines: ['칸막이 너머로 누군가 훌쩍이는 소리가 들렸다.', '독서실 총무 언니가 귤을 하나 놓고 갔다.'] },
+  { id: 'selfcare', name: '자기관리',        place: '우리 집',           days: ALL,       delta: { style: 0.6, hp: 1, stress: -2, money: -3000 }, desc: '스킨케어와 홈트. 일찍 씻고 일찍 잔다.',
+    lines: ['유튜브 홈트 영상 속 강사가 "할 수 있어요!"라고 했다. 할 수 없었다. 그래도 했다.', '팩을 붙이고 단어장을 외웠다. 효율 두 배.'] },
   { id: 'rest',     name: '휴식',             place: '우리 집',           days: ALL,       delta: { hp: 6, stress: -3 }, desc: '일찍 잔다.',
     lines: ['알람 없이 눈을 떴는데 아직 아침이었다.', '오랜만에 꿈도 없이 푹 잤다.'] },
   // ── 실력이 쌓이면 열리는 일정
@@ -80,6 +82,7 @@ export const WEEK_LINES = {
   doze: ['3교시 수학 시간, 정신을 차려 보니 칠판이 다 지워져 있었다.', '필기한 줄 알았는데 노트에 지렁이만 기어갔다.'],
   broke: ['카드 잔액 부족. 학원 앞에서 발길을 돌렸다.', '지갑을 열었다 닫았다. 이번 주는 여기까지.'],
   calm: ['특별할 것 없는 한 주였다. 그게 나쁘지 않았다.', '시간표대로 한 주를 보냈다.'],
+  puffy: ['월요일 아침, 거울 속에 처음 보는 사람이 있었다. 라면의 신이 보낸 얼굴이었다.', '눈이 반쯤 감겨 있었다. 졸려서가 아니라 부어서.'],
 };
 
 /** 이 값들은 Delta 타입 확인용 (편집할 필요 없음) */

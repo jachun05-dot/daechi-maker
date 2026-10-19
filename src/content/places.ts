@@ -31,7 +31,7 @@ export const PLACES: Place[] = [
     { label: '자습실', delta: { int: 2, science: 1, hp: -4, stress: 3, money: -8000 }, line: '독서실 칸막이 안에서 몇 시간을 버텼다.' },
     { label: '조교 알바', unlock: 3, delta: { int: 1, money: 70000, hp: -8, stress: 3 }, line: '채점을 하다 보니 남의 실수가 내 공부가 됐다.' }] },
   { id: 'gangnam', name: '강남역', district: '강남', bg: 'gangnam', pos: [37, 93], hint: '번화가 · 대형 서점과 영화관', actions: [
-    { label: '쇼핑·영화', delta: { cha: 1, sense: 1, stress: -8, money: -30000 }, line: '사람에 떠밀려 걷다가 영화관 맨 뒷줄에 앉았다. 두 시간 동안 아무 생각도 안 했다.' },
+    { label: '쇼핑·영화', delta: { cha: 1, sense: 1, style: 2, stress: -8, money: -30000 }, line: '사람에 떠밀려 걷다가 영화관 맨 뒷줄에 앉았다. 두 시간 동안 아무 생각도 안 했다.' },
     { label: '대형 서점', delta: { int: 1, language: 1, sense: 1, stress: -3, money: -10000 }, line: '서가 사이에 쪼그려 앉아 책 세 권을 반쯤씩 읽었다.' },
     { label: '연습실 대관', unlock: 3, delta: { vocal: 1, dance: 2, hp: -5, money: -15000 }, line: '거울 벽 연습실을 한 시간 빌렸다. 아무도 안 보니까 마음껏 틀렸다.' }] },
   { id: 'schoolgym', name: '이화고 체육관', district: '강남', bg: 'gym', pos: [82, 85], actions: [
@@ -39,6 +39,7 @@ export const PLACES: Place[] = [
     { label: '코치 보조', unlock: 3, delta: { fit: 3, cha: 1, money: 30000, hp: -8 }, line: '초등부 아이들 줄넘기를 세다가 목이 쉬었다.' }] },
   { id: 'cheongdam', name: '청담동', district: '강남', bg: 'cheongdam', pos: [79, 60], open: { turn: 1 }, hint: '라운지와 편집숍이 모인 거리', actions: [
     { label: '라운지', delta: { cha: 3, sense: 1, money: -40000, stress: -3 }, line: '상류층의 대화는 무겁고 반짝였다. 견뎌냈다.' },
+    { label: '헤어숍·편집숍', delta: { style: 4, sense: 1, money: -45000, stress: -5 }, line: '디자이너 선생님이 "얼굴형에 맞춰 볼게요"라고 했다. 내 얼굴형에 대해 처음으로 진지하게 생각해 봤다.' },
     { label: '브런치 카페 알바', long: true, delta: { cha: 2, money: 60000, hp: -8, stress: 3 }, line: '에그 베네딕트 서른 접시. 팔이 떨어질 것 같다.' }] },
   { id: 'bongeunsa', name: '봉은사·코엑스', district: '강남', bg: 'palace', pos: [72, 76], outdoor: true, actions: [
     { label: '산책과 명상', delta: { spirit: 3, stress: -8, hp: 2 }, line: '풍경 소리에 눈을 감았다. 아주 먼 곳에서 북소리가 들린 것 같았다.' },
@@ -73,7 +74,7 @@ export const PLACES: Place[] = [
 
   /* ---------- 성동 ---------- */
   { id: 'seongsu', name: '성수동', district: '성동', bg: 'seongsu', pos: [90, 41], hint: '카페 거리 · 팝업스토어 · 서울숲', actions: [
-    { label: '카페 거리·팝업', delta: { sense: 2, cha: 1, stress: -6, money: -25000 }, line: '붉은 벽돌 공장을 고친 카페에서 줄을 섰다. 팝업스토어 굿즈는 결국 안 샀다.' },
+    { label: '카페 거리·팝업', delta: { sense: 2, cha: 1, style: 2, stress: -6, money: -25000 }, line: '붉은 벽돌 공장을 고친 카페에서 줄을 섰다. 팝업스토어 굿즈는 결국 안 샀다.' },
     { label: '서울숲 산책', delta: { fit: 1, spirit: 1, stress: -8, hp: -2 }, line: '사슴 우리 앞에서 한참 서 있었다. 도시 한가운데인데 숲 냄새가 났다.' },
     { label: '팝업 스태프 알바', unlock: 3, long: true, delta: { cha: 2, money: 55000, hp: -8, stress: 2 }, line: '하루 종일 "줄은 이쪽입니다"를 외쳤다. 목은 쉬었는데 지갑은 두꺼워졌다.' }] },
 

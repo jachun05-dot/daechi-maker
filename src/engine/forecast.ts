@@ -140,7 +140,8 @@ export function monthGoal(st: GameState, T: Turn, f: Forecast | null): Goal {
       return { title: '이달 말 체육대회', ratio: Math.min(1, fit / need), tone: fit >= need ? 'good' : 'warn', lines: [`근력 ${fit} / 우승하려면 ${need}`, fit >= need ? '이대로면 우리 반이 이긴다.' : '체육관 운동·운동부로 근력을 올리자.'] };
     }
     case 'festival': {
-      const pairs: [string, number][] = [['밴드 공연', (st.skill.vocal + st.skill.dance) / 2], ['연극 무대', (st.skill.acting + st.skill.voice) / 2], ['축제 MC', (st.skill.debate + st.skill.language) / 2]];
+      const look = st.stat.style * BALANCE.festival.styleBonus;
+      const pairs: [string, number][] = [['밴드 공연', (st.skill.vocal + st.skill.dance) / 2 + look], ['연극 무대', (st.skill.acting + st.skill.voice) / 2 + look], ['축제 MC', (st.skill.debate + st.skill.language) / 2]];
       const [stage, sc] = pairs.sort((a, b) => b[1] - a[1])[0];
       const need = Math.ceil(BALANCE.festival.base + st.turn * BALANCE.festival.perTurn);
       return { title: '이달 말 이화제', ratio: Math.min(1, sc / need), tone: sc >= need ? 'good' : 'warn', lines: [`무대 · ${stage} (실력 ${Math.floor(sc)} / 성공하려면 ${need})`, '가장 자란 특기로 무대에 선다.'] };

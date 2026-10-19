@@ -22,7 +22,7 @@ import { finale } from './finale';
 import { computePresence, runWeekend } from './weekend';
 import { runWeekdays } from './weekday';
 import { autoMainEvent } from './people';
-import { sihyunRescue, slump } from './crisis';
+import { sihyunRescue, slump, snackNight } from './crisis';
 import { dreamSequence, pickDream } from './dreams';
 import { beginMonthLog } from './progress';
 import { showReport } from './report';
@@ -106,6 +106,7 @@ export async function runMonth() {
       if (st.stress >= 70 && !st.flags[`ch_stress${st.turn}`]) { st.flags[`ch_stress${st.turn}`] = true; emit(st, 'stress'); }
       if (st.hp < hpMax(st) * 0.25 && !st.flags[`ch_tired${st.turn}`]) { st.flags[`ch_tired${st.turn}`] = true; emit(st, 'tired'); }
       if (st.stress >= 100 && !slumped) { slumped = true; await slump(st); }
+      else if (st.stress >= BALANCE.snack.minStress && Math.random() < BALANCE.snack.chance) await snackNight(st);
       await ui.runWait('주말 계획');
       ui.runClose();
       await runWeekend(st, T, week, st.turn);

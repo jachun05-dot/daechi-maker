@@ -1,6 +1,6 @@
 /* 대사 치환자({name} 등)와 조건식([if aff.ian>=30]) 처리 */
 import type { CareerId, GameState } from '../types';
-import { CAREERS } from '@/content/careers';
+import { BASE_KEYS, CAREERS, SKILL_KEYS } from '@/content/careers';
 import { CHAR_ORDER } from '@/content/characters';
 import { TURNS } from '@/content/calendar';
 
@@ -50,8 +50,8 @@ export function fill(text: string, ctx: StoryCtx): string {
 }
 
 /* ---------- 조건식 ---------- */
-const BASE = ['int', 'sense', 'cha', 'fit', 'spirit'];
-const SKILL = ['science', 'medicine', 'vocal', 'dance', 'acting', 'voice', 'language', 'debate'];
+const BASE: string[] = BASE_KEYS;
+const SKILL: string[] = SKILL_KEYS;
 
 function resolve(key: string, ctx: StoryCtx): string | number | boolean | undefined {
   const S = ctx.state;

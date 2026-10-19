@@ -19,7 +19,9 @@ const { runMonth } = await import('@/engine/month');
 const { TURNS } = await import('@/content/calendar');
 const { recommendTimetable } = await import('@/engine/forecast');
 const { recommendPlan } = await import('@/engine/weekend');
-const { careerResult, careerFit, optionsFor, clubAt } = await import('@/engine/timetable');
+const { careerFit, optionsFor, clubAt } = await import('@/engine/timetable');
+const { judgeCareer } = await import('@/engine/career');
+const allEndings: Record<string, number> = {};
 const { onTrigger } = await import('@/engine/triggers');
 const { month } = await import('@/engine/progress');
 const { reqMet } = await import('@/engine/progress');
@@ -113,7 +115,9 @@ async function playOne(): Promise<Run> {
     await runMonth();
     if (lastTurn) break;
   }
-  const r = careerResult(st);
+  const v = judgeCareer(st);
+  const r = { career: v.ending.key, kind: v.ending.kind === 'dream' || v.ending.kind === 'great' ? (st.goal === v.ending.dream ? 'dream' : 'other') : v.ending.kind === 'base' ? 'none' : 'other' };
+  allEndings[v.ending.key] = (allEndings[v.ending.key] ?? 0) + 1;
   Object.assign(cur, {
     int: Math.floor(st.stat.int), career: r.career, kind: r.kind, goal: st.goal,
     goalFit: st.goal ? careerFit(st, st.goal) : 0,
@@ -136,6 +140,14 @@ for (const s of STRATS) {
   console.log(`  꿈 이룸 ${pct(runs.filter(r => r.kind === 'dream').length, N)} · 다른 길 ${pct(runs.filter(r => r.kind === 'other').length, N)} · 진로 없음 ${pct(runs.filter(r => r.kind === 'none').length, N)} · 꿈 적합도 평균 ${Math.round(avg(runs.map(r => r.goalFit)) * 100)}%`);
   console.log(`  진로: ${Object.keys(CAREERS).concat('none').map(c => `${c} ${runs.filter(r => r.career === c).length}`).join(' · ')}`);
   console.log(`  노린 꿈 이룸: ${targets.map((t, i) => `${t} ${pct(runs.filter((r, k) => k % 4 === i && r.kind === 'dream' && r.goal === t).length, runs.filter((_, k) => k % 4 === i).length)}`).join(' · ')}`);
+  const dist: Record<string, number> = {};
+  for (const r of runs) dist[r.career] = (dist[r.career] ?? 0) + 1;
+  if (process.env.STATS) {
+    const keys = Object.keys(runs[0].vals);
+    const q = (k: string) => { const s = runs.map(r => Math.round(r.vals[k])).sort((a, b) => a - b); return `${s[Math.floor(s.length * .1)]}/${s[Math.floor(s.length * .5)]}/${s[Math.floor(s.length * .9)]}`; };
+    console.log(`    졸업 능력치 p10/중앙/p90: ${keys.map(k => `${k} ${q(k)}`).join(' · ')}`);
+  }
+  console.log(`  엔딩: ${Object.entries(dist).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}`).join(' · ')}`);
   if (process.env.DETAIL) for (const [i, t] of targets.entries()) {
     const rs = runs.filter((_, k) => k % 4 === i);
     const req = (await import('@/config/balance')).BALANCE.careers[t];
@@ -153,4 +165,7 @@ for (const s of STRATS) {
   console.log(`  슬럼프 평균 ${avg(runs.map(r => r.slumps)).toFixed(1)}회 · 최고 스트레스 평균 ${Math.round(avg(runs.map(r => r.stressMax)))} · 한 달 평균 졸음 ${(avg(runs.map(r => r.doze)) / 27).toFixed(1)}일 쓰러짐 ${(avg(runs.map(r => r.collapse)) / 27).toFixed(1)}일 돈없음 ${(avg(runs.map(r => r.broke)) / 27).toFixed(1)}번`);
   console.log(`  성적표: 優 ${pct(count(verd, '優'), verd.length)} · 良 ${pct(count(verd, '良'), verd.length)} · 可 ${pct(count(verd, '可'), verd.length)} · 亂 ${pct(count(verd, '亂'), verd.length)} · 새 일정 해금 평균 ${avg(runs.map(r => r.unlocks)).toFixed(1)}개 · 최저 용돈 평균 ${Math.round(avg(runs.map(r => r.moneyMin)) / 1000)}천원`);
 }
+const { CAREER_ENDINGS } = await import('@/content/careerEndings');
+const never = CAREER_ENDINGS.filter(e => !allEndings[e.key]).map(e => e.key);
+console.log(`\n■ 전체 엔딩 ${Object.keys(allEndings).length}/${CAREER_ENDINGS.length}종 나옴 · 한 번도 안 나온 것: ${never.join(', ')}`);
 realSetTimeout(() => process.exit(0), 10);

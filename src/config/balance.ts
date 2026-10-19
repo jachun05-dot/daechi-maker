@@ -7,7 +7,7 @@ import type { BaseStat, CareerId, Season, SkillKey, SubjectKey } from '@/engine/
 export const BALANCE = {
   /** 시작 상태 */
   start: {
-    stat: { int: 10, sense: 10, cha: 10, fit: 10, spirit: 5 } as Record<BaseStat, number>,
+    stat: { int: 10, sense: 10, cha: 10, fit: 10, style: 10, spirit: 5 } as Record<BaseStat, number>,
     hp: 100,
     stress: 10,
     money: 150_000,
@@ -81,6 +81,9 @@ export const BALANCE = {
   /** 방학 */
   vacation: { invites: 2, declineBonus: 0.3 },
 
+  /** 야식 — 스트레스가 이만큼 쌓인 주에 이 확률로 */
+  snack: { minStress: 35, chance: 0.3 },
+
   /** 위기 */
   slump: { statPenalty: 3 },
 
@@ -107,7 +110,7 @@ export const BALANCE = {
     ] as { min: number; tier: 'top' | 'high' | 'mid' | 'low'; rank: string; eff: Record<string, number> }[],
   },
   sports: { base: 12, perTurn: 1.2 },      // 우승에 필요한 근력 = base + 턴 × perTurn
-  festival: { base: 6, perTurn: 2.4 },     // 무대 성공에 필요한 특기 = base + 턴 × perTurn
+  festival: { base: 6, perTurn: 2.4, styleBonus: 0.15 },     // 무대 성공에 필요한 특기 = base + 턴 × perTurn (+ 스타일 × styleBonus)
   suneung: { intFull: 200 },
 
   /* ---------- 진로 ---------- */
@@ -115,7 +118,7 @@ export const BALANCE = {
   careers: {
     // npm run sim 으로 맞춤: 꿈을 정하고 그쪽으로 꾸준히 키우면 대부분 닿고, 이것저것 하면 아슬아슬
     med:    { int: 180, science: 160, medicine: 170 },
-    idol:   { sense: 70, vocal: 120, dance: 100 },
+    idol:   { sense: 70, style: 60, vocal: 120, dance: 100 },
     actor:  { sense: 60, acting: 130, voice: 75 },
     leader: { cha: 65, language: 160, debate: 150 },
   } as Record<CareerId, Partial<Record<BaseStat | SkillKey, number>>>,

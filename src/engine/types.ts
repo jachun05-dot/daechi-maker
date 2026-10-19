@@ -1,7 +1,7 @@
 /* 게임 전체에서 쓰는 타입 정의 */
 
 /** 기초 능력 5개 (지성 · 감성 · 사교 · 근력 · 감응) */
-export type BaseStat = 'int' | 'sense' | 'cha' | 'fit' | 'spirit';
+export type BaseStat = 'int' | 'sense' | 'cha' | 'fit' | 'spirit' | 'style';
 /** 특기 8개 — 진로별 2개씩 */
 export type SkillKey = 'science' | 'medicine' | 'vocal' | 'dance' | 'acting' | 'voice' | 'language' | 'debate';
 export type ResKey = 'hp' | 'stress' | 'money';
@@ -119,6 +119,8 @@ export interface GameState {
   placeVisits: Record<string, number>;
   /** 주말 약속 기록 */
   promiseLog: Partial<Record<CharId, { kept: number; broken: number; declined: number }>>;
+  /** 3년 동안의 생활 기록 (일정별 횟수·이벤트 결과·야식 …) — 커리어 엔딩 판정에 쓴다 */
+  tally: Record<string, number>;
   savedAt: number;
 }
 

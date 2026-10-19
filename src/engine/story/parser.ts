@@ -8,7 +8,7 @@ export class StoryError extends Error {
   constructor(public file: string, public line: number, msg: string) { super(`${file}:${line} — ${msg}`); }
 }
 
-const STAT_KEYS = ['int', 'sense', 'cha', 'fit', 'spirit'];
+const STAT_KEYS = ['int', 'sense', 'cha', 'fit', 'spirit', 'style'];
 const SKILL_KEYS = ['science', 'medicine', 'vocal', 'dance', 'acting', 'voice', 'language', 'debate'];
 const RES_KEYS = ['hp', 'stress', 'money'];
 

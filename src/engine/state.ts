@@ -48,7 +48,7 @@ export function newState(name: string): GameState {
     aff: perChar(() => 0), met: {}, mainStep: perChar(() => 0), vacStage: perChar(() => ({ summer: 0, winter: 0 })),
     sightings: {}, memories: { self1: true }, flags: {},
     timetable: Array(10).fill(null), lastTimetable: null, club: null, clubTerm: -1, focus: null,
-    chats: {}, unread: {}, pending: {}, chatQueue: [], day: 0, phoneTime: BALANCE.phone.callsPerMonth, presence: {}, promiseNext: [], newMemory: false, placeVisits: {}, promiseLog: {}, savedAt: Date.now(),
+    chats: {}, unread: {}, pending: {}, chatQueue: [], day: 0, phoneTime: BALANCE.phone.callsPerMonth, presence: {}, promiseNext: [], newMemory: false, placeVisits: {}, promiseLog: {}, tally: {}, savedAt: Date.now(),
   };
 }
 

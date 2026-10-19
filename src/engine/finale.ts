@@ -6,7 +6,7 @@ import { BALANCE } from '@/config/balance';
 import { ENDINGS } from '@/content/endings';
 import { CHARACTERS, ROMANCEABLE } from '@/content/characters';
 import { ui, useUI } from '@/store/ui';
-import { careerResult } from './timetable';
+import { judgeCareer } from './career';
 import { DREAMS, getScene, hasScene } from './story/library';
 import { game, recordEnding, S, saves } from './state';
 import { dreamSequence } from './dreams';
@@ -26,10 +26,10 @@ export async function finale() {
   const self3 = DREAMS.find(d => d.id === 'self3');
   if (self3 && !st.memories.self3) await dreamSequence(self3);
 
-  // ① 커리어
-  const career = careerResult(st);
-  await play(`career.${career.career}`, got, { kind: career.kind });
-  const careerOk = career.kind !== 'none';
+  // ① 커리어 — 꿈을 못 이뤄도 키운 대로 다른 길이 열린다 (engine/career.ts)
+  const career = judgeCareer(st);
+  await play(`career.${career.ending.key}`, got, { kind: career.kind });
+  const careerOk = !['near', 'base'].includes(career.ending.kind);
 
   // ② 마지막 선택 — 만난 인물 중 플레이어가 직접 고른다
   const cands = ROMANCEABLE.filter(c => st.met[c]);
@@ -77,7 +77,12 @@ export async function finale() {
   const list = got.map(id => ENDINGS.find(e => e.id === id)).filter((e): e is (typeof ENDINGS)[number] => !!e);
   await ui.modal({
     title: `${st.name}의 이번 생`,
-    text: `해금한 전생 기억 ${Object.keys(game.meta.memories).length}/${DREAMS.length} · 엔딩 ${Object.keys(game.meta.endings).length}/${ENDINGS.length}\n전생의 기억과 엔딩은 다음 생에도 남습니다.`,
+    text: [
+      `해금한 전생 기억 ${Object.keys(game.meta.memories).length}/${DREAMS.length} · 엔딩 ${Object.keys(game.meta.endings).length}/${ENDINGS.length}`,
+      career.also.length ? `이런 길도 열려 있었어요 · ${career.also.map(e => e.title).join(', ')}` : '',
+      career.close.length ? `조금만 더 했으면 · ${career.close.map(e => e.title).join(', ')}` : '',
+      '전생의 기억과 엔딩은 다음 생에도 남습니다.',
+    ].filter(Boolean).join('\n'),
     endings: list.map(e => ({ title: e.title, kind: e.kind })),
     buttons: [{ label: '타이틀로', value: true, primary: true }],
   });

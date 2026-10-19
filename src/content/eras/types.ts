@@ -4,6 +4,7 @@
    새 시대 만들기: docs/ARCHITECTURE.md 「전생 시대 바꾸기」
    ========================================================= */
 import type { CareerId, CharId } from '@/engine/types';
+import type { CareerEnding } from '../careerEndings';
 
 export interface EraPast {
   /** 밤(전생) 장면 이름표에 뜨는 이름 */
@@ -34,4 +35,6 @@ export interface EraPack {
   careers: Record<CareerId, EraCareer>;
   /** 밤(전생) 배경. 이미지는 src/assets/images/eras/{id}/bg/{key}.jpg 또는 공용 bg/ */
   backgrounds: Record<string, { label: string; color: string; focus?: string }>;
+  /** 전생과 이어진 커리어 엔딩 (kind: 'past') — 장면은 이 팩 stories/ 의 career.{key} */
+  careerEndings: CareerEnding[];
 }

@@ -1,5 +1,12 @@
-# 엔딩 1순위 — 커리어. ending = 엔딩 컬렉션 id (src/content/endings.ts)
-# var.kind = dream(정한 꿈을 이룸) / other(다른 길을 찾음)
+# 커리어 엔딩 — 꿈 4개와 새내기. 목록·조건은 src/content/careerEndings.ts
+# 다른 길: career_paths.story · 대성공: career_great.story · 아쉬운: career_near.story · 웃픈: career_fun.story
+# 전생과 이어진 길: src/content/eras/{시대}/stories/endings_past.story
+# var.kind = dream(정한 꿈을 이룸) / other(다른 길을 찾음) / none
+
+# 다른 길 엔딩 앞에 붙는 한 줄 — 정했던 꿈이 있었다면
+=== career._other
+[if goal!=none]
+  정했던 꿈과는 다른 길이었다. 그런데 걷다 보니, 발이 먼저 알고 있었다. 여기가 내 자리라고.
 === career.med ending=c_med
 [bg hospital]
 [fx sakura]
@@ -50,12 +57,12 @@
 이번 생의 나는, 국경이 없는 깃발을 든다.
 
 === career.none ending=c_none
-[bg school]
+[bg campus]
 [fx petal]
-[card ENDING · 꿈 | 아직 꿈을 찾는 중 | {name}의 이야기]
-수능이 끝났다. 원하던 곳은 아니었지만, 서울의 한 대학에 합격했다.
-꿈은… 아직 이루지 못했다. 솔직히 말하면 조금 많이 아쉽다.
-그래도 괜찮다. 열아홉의 나는 대치동의 밤을 견뎌냈고, 사백 년 전의 꿈과 마주했다.
-꿈은 기한이 정해진 시험이 아니니까.
-캠퍼스의 배나무 아래에서, 나는 다이어리의 새 장을 펼쳤다. 다시, 꿈을 적기 위해.
-
+[card ENDING · 새내기 | 반짝이는 새내기 | {name}의 이야기]
+수능이 끝났다. 원하던 곳은 아니었지만, 서울의 한 대학에 붙었다. 학과는… 솔직히 점수 맞춰 썼다.
+OT에서 자기소개를 하는데 "꿈이 뭐예요?"라는 질문에 3초쯤 멍해졌다.
+"아직 찾는 중이에요." 그렇게 말했더니 옆자리 애가 "나도!" 하고 웃었다. 의외로 그런 애가 반이었다.
+대치동의 밤을 3년 견뎠고, 사백 년 전의 꿈과도 마주했다. 그거면 시작으로는 충분하다.
+캠퍼스 배나무 아래에서 다이어리 새 장을 펼쳤다. '나의 꿈' 칸은 여전히 비어 있다.
+이번엔 그게 하나도 무섭지 않았다.
