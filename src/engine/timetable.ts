@@ -4,16 +4,21 @@ import { BALANCE } from '@/config/balance';
 import { AFTER_SCHOOL, NIGHT, CLUBS } from '@/content/timetable';
 import { BASE_LABEL, CAREERS, CAREER_ORDER, SKILL_LABEL } from '@/content/careers';
 import { clamp, hpMax } from './state';
+import { reqMet } from './progress';
 
 export type Delta = Partial<Record<BaseStat | SkillKey | ResKey, number>>;
 
 export interface TimetableOption {
   id: string; name: string; place: string; days: number[]; delta: Delta; desc: string;
   heavy?: boolean; who?: CharId;
+  /** 이 능력·특기가 되면 열린다 */
+  req?: Partial<Record<BaseStat | SkillKey, number>>;
+  /** 한 주를 정리할 때 가끔 나오는 생활 한 줄 */
+  lines?: string[];
 }
 export interface Club {
   id: string; name: string; days: number[]; delta: Delta; desc: string;
-  who?: CharId; whoYears?: number[];
+  who?: CharId; whoYears?: number[]; lines?: string[];
 }
 
 export const SLOT_LABEL = ['방과후', '야간'] as const;
@@ -33,7 +38,7 @@ export function timetableReady(st: GameState) {
   for (let d = 0; d < 5; d++) for (const s of [0, 1] as const) {
     if (clubAt(st, d, s)) continue;
     const o = findOption(s, st.timetable[d * 2 + s]);
-    if (!o || !o.days.includes(d)) return false;
+    if (!o || !o.days.includes(d) || !reqMet(st, o.req)) return false;
   }
   return true;
 }
@@ -101,33 +106,4 @@ export function topTalent(st: GameState): CareerId {
   return [...CAREER_ORDER].sort((a, b) => score(b) - score(a))[0];
 }
 
-/* ---------- 시간표 추천 ---------- */
-export function recommendTimetable(st: GameState): (string | null)[] {
-  const target = st.goal ?? topTalent(st);
-  const want = new Set<string>([...CAREERS[target].skills]);
-  const result: (string | null)[] = Array(10).fill(null);
-  let heavyRun = 0;
-  for (let d = 0; d < 5; d++) {
-    for (const s of [0, 1] as const) {
-      if (clubAt(st, d, s)) continue;
-      const opts = optionsFor(s).filter(o => o.days.includes(d));
-      let best = opts[0], bestScore = -Infinity;
-      for (const o of opts) {
-        let sc = 0;
-        for (const [k, v] of Object.entries(o.delta)) {
-          if (want.has(k)) sc += v * 6;
-          else if (isBase(k) || isSkill(k)) sc += v * 1.5;
-        }
-        if ((o.delta.money ?? 0) < 0 && st.money < 100_000) sc += (o.delta.money ?? 0) / 5000;
-        if (o.heavy && heavyRun >= 2) sc -= 4;
-        if (o.id === 'rest' || o.id === 'home') sc += st.hp < hpMax(st) * 0.5 ? 4 : 0.5;
-        sc += Math.random() * 0.5;
-        if (sc > bestScore) { bestScore = sc; best = o; }
-      }
-      result[d * 2 + s] = best.id;
-    }
-    const heavyToday = [0, 1].some(s => findOption(s as 0 | 1, result[d * 2 + s])?.heavy || (s === 0 && clubAt(st, d, 0)));
-    heavyRun = heavyToday ? heavyRun + 1 : 0;
-  }
-  return result;
-}
+/* 시간표 추천·예측은 forecast.ts */

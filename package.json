@@ -14,7 +14,8 @@
     "cap:android": "npm run build && cap sync android && cap open android",
     "cap:ios": "npm run build && cap sync ios && cap open ios",
     "images": "vite-node scripts/images.ts",
-    "save-ids": "vite-node scripts/save-ids.ts"
+    "save-ids": "vite-node scripts/save-ids.ts",
+    "sim": "vite-node scripts/sim.ts --"
   },
   "dependencies": {
     "@capacitor/app": "7.1.2",

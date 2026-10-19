@@ -11,8 +11,8 @@ export const shortMoney = (v: number) => {
   return s + (a >= 10000 ? `${+(a / 10000).toFixed(1)}만` : a.toLocaleString('ko-KR'));
 };
 export const won = (n: number) => `${Math.round(n).toLocaleString('ko-KR')}원`;
-/** 소수 스탯 표시: 1 이상은 정수, 그 아래는 소수 한 자리 */
-export const num = (v: number) => (Math.abs(v) >= 1 ? String(Math.round(v)) : (Math.round(v * 10) / 10).toString());
+/** 스탯 표시 — 화면에는 정수만 (안에서는 소수로 쌓인다) */
+export const num = (v: number) => String(Math.floor(v + 1e-9));
 
 const ORDER = ['hp', 'stress', 'money', ...BASE_KEYS, ...SKILL_KEYS] as (keyof Delta)[];
 const LABEL: Record<string, string> = { hp: '체력', stress: '스트레스', money: '용돈', ...BASE_LABEL, ...SKILL_LABEL };
@@ -22,7 +22,9 @@ export function deltaChips(d: Delta): Chip[] {
     const v = d[k]!;
     if (k === 'money') return { label: `용돈 ${shortMoney(v)}`, tone: 'money' };
     const good = k === 'stress' ? v < 0 : v > 0;
-    return { label: `${LABEL[k]} ${v > 0 ? '+' : '−'}${num(Math.abs(v))}`, tone: good ? 'up' : 'down' };
+    // 0.5 미만은 숫자 대신 화살표 (소수점을 보이지 않는다)
+    const n = Math.round(Math.abs(v));
+    return { label: `${LABEL[k]} ${n ? `${v > 0 ? '+' : '−'}${n}` : v > 0 ? '▲' : '▼'}`, tone: good ? 'up' : 'down' };
   });
 }
 

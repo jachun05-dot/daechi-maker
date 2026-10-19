@@ -11,7 +11,7 @@ import { CHARACTERS, CHAR_ORDER } from '@/content/characters';
 import { CLUBS } from '@/content/timetable';
 import { ui, useUI } from '@/store/ui';
 import { findClub, topTalent } from './timetable';
-import { deltaChips, won } from './chips';
+import { deltaChips } from './chips';
 import { S, clamp, game, hpMax, refresh, saves } from './state';
 import { DREAMS } from './story/library';
 import { dayOf, dayTick } from './phone';
@@ -24,6 +24,8 @@ import { runWeekdays } from './weekday';
 import { autoMainEvent } from './people';
 import { sihyunRescue, slump } from './crisis';
 import { dreamSequence, pickDream } from './dreams';
+import { beginMonthLog } from './progress';
+import { showReport } from './report';
 
 /* =========================================================
    달 시작
@@ -84,6 +86,7 @@ export async function runMonth() {
   ui.setBusy(true);
   game.midMonth = true;
   st.lastTimetable = [...st.timetable];
+  beginMonthLog(st);
 
   if (T.summer) {
     await runVacation(st, 'summer');
@@ -103,22 +106,19 @@ export async function runMonth() {
       if (st.stress >= 70 && !st.flags[`ch_stress${st.turn}`]) { st.flags[`ch_stress${st.turn}`] = true; emit(st, 'stress'); }
       if (st.hp < hpMax(st) * 0.25 && !st.flags[`ch_tired${st.turn}`]) { st.flags[`ch_tired${st.turn}`] = true; emit(st, 'tired'); }
       if (st.stress >= 100 && !slumped) { slumped = true; await slump(st); }
-      await ui.runWait('주말로');
+      await ui.runWait('주말 계획');
       ui.runClose();
       await runWeekend(st, T, week, st.turn);
     }
-    ui.runOpen(`${T.label} · 한 달 정리`, `${SEASON_LABEL[T.season]} · ${T.title}`);
-    ui.runLog({
-      title: '한 달이 끝났다', tone: 'sum', mark: '終',
-      chips: [{ label: `체력 ${Math.round(st.hp)}/${hpMax(st)}`, tone: 'plain' }, { label: `스트레스 ${Math.round(st.stress)}`, tone: 'plain' }, { label: won(st.money), tone: 'money' }],
-    });
-    await ui.runWait('이달의 일정');
+    ui.runClose();
     await sihyunRescue(st, T);
     await monthEvent(st, T);
     if (T.winterAfter) { ui.runClose(); await runVacation(st, 'winter'); await dayTick(st, dayOf(st.turn, 3, 6), false); }
   }
 
-  if (st.turn === TURNS.length - 1) { ui.runClose(); game.midMonth = false; ui.setBusy(false); return finale(); }
+  const last = st.turn === TURNS.length - 1;
+  await showReport(st, T, last ? '졸업식으로' : '밤이 깊었다');
+  if (last) { ui.runClose(); game.midMonth = false; ui.setBusy(false); return finale(); }
 
   const dream = pickDream(st);
   ui.runClose();

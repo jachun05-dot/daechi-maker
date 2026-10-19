@@ -1,5 +1,5 @@
-/* 주간 진행 · 모달 · 암전 · 크레딧 · 토스트 */
-import { useEffect, useRef, useState } from 'react';
+/* 모달 · 암전 · 크레딧 · 토스트 (진행 화면은 Run.tsx) */
+import { useEffect, useState } from 'react';
 import { useUI, ui } from '@/store/ui';
 import { useGame } from '@/store/game';
 import { CHARACTERS, CHAR_ORDER } from '@/content/characters';
@@ -7,33 +7,6 @@ import { CAREERS } from '@/content/careers';
 import { CREDITS_QUOTE } from '@/content/endings';
 import { ERA } from '@/content/eras';
 import { Chips } from '../common/Chips';
-import { Mono } from '../common/Mono';
-
-export function RunOverlay() {
-  const run = useUI(s => s.run);
-  const ls = useRef<HTMLDivElement>(null);
-  useEffect(() => { ls.current?.scrollTo({ top: ls.current.scrollHeight, behavior: 'smooth' }); }, [run?.logs.length, run?.button]);
-  if (!run) return null;
-  return (
-    <div className="layer run">
-      <div className="run-h"><h2>{run.title}</h2><span>{run.sub}</span></div>
-      <div className="run-ls" ref={ls}>
-        {run.logs.map(l => (
-          <div key={l.id} className={`log ${l.tone ?? ''}`}>
-            <Mono src={l.image} text={l.mark ?? '·'} color={l.color} />
-            <div className="log-tx">
-              {l.tag && <div className="log-tag">{l.tag}</div>}
-              <b>{l.title}</b>
-              {l.body && <p>{l.body}</p>}
-              {l.chips && <Chips chips={l.chips} />}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="run-f">{run.button && <button className="btn primary block" onClick={() => ui.runPress()}>{run.button}</button>}</div>
-    </div>
-  );
-}
 
 export function Modal() {
   const m = useUI(s => s.modal);

@@ -11,15 +11,15 @@ import { deltaChips } from './chips';
 import { emit } from './triggers';
 import { refresh } from './state';
 import { getScene } from './story/library';
+import { month } from './progress';
 
-/** 장면을 보여 준 뒤 진행 화면에 결과 한 줄을 남긴다 */
-async function showEvent(T: Turn, scene: string | StoryNode[], vars: Record<string, string | number>, after?: () => Chip[]) {
+/** 장면을 보여 주고 결과를 월말 성적표에 남긴다 */
+async function showEvent(T: Turn, scene: string | StoryNode[], vars: Record<string, string | number>, after?: () => Chip[], result?: string) {
   ui.runClose();
   const value = await ui.playScene(scene, { theme: 'day', vars });
   ui.setTheme('day');
   const chips = after?.() ?? [];
-  ui.runOpen(`${T.label} · ${T.title}`, '이달의 일정');
-  ui.runLog({ title: T.title, mark: '月', chips });
+  month.event = { title: T.title, result: result ?? '', chips };
   refresh();
   return value;
 }
@@ -29,7 +29,7 @@ export async function monthEvent(st: GameState, T: Turn) {
     case 'exam': return exam(st, T);
     case 'sports': {
       const win = st.stat.fit >= BALANCE.sports.base + st.turn * BALANCE.sports.perTurn;
-      await showEvent(T, 'event.sports', { win: win ? 1 : 0 }, () => deltaChips(applyDelta(st, win ? { cha: 2, stress: -8 } : { stress: -4 })));
+      await showEvent(T, 'event.sports', { win: win ? 1 : 0 }, () => deltaChips(applyDelta(st, win ? { cha: 2, stress: -8 } : { stress: -4 })), win ? '우리 반 우승' : '아쉬운 패배');
       emit(st, win ? 'sports:win' : 'sports:lose');
       return;
     }
@@ -42,14 +42,14 @@ export async function monthEvent(st: GameState, T: Turn) {
       const [kind, stage, score, skills] = kinds.sort((a, b) => b[2] - a[2])[0];
       const ok = score >= BALANCE.festival.base + st.turn * BALANCE.festival.perTurn;
       const delta: Delta = ok ? { sense: 3, cha: 3, stress: -10, [skills[0]]: 3 } : { cha: 1, stress: -3 };
-      await showEvent(T, 'event.festival', { kind, stage, ok: ok ? 1 : 0 }, () => deltaChips(applyDelta(st, delta)));
+      await showEvent(T, 'event.festival', { kind, stage, ok: ok ? 1 : 0 }, () => deltaChips(applyDelta(st, delta)), `${stage} ${ok ? '대성공' : '아쉬운 무대'}`);
       emit(st, ok ? 'festival:ok' : 'festival:fail');
       return;
     }
     case 'counsel': return T.year === 1 ? counselHint(st, T) : counselDecide(st, T);
     case 'suneung': {
       const r = st.stat.int / BALANCE.suneung.intFull;
-      await showEvent(T, 'event.suneung', { result: r >= 1 ? 'great' : r >= 0.6 ? 'ok' : 'bad' }, () => deltaChips(applyDelta(st, { stress: -20 })));
+      await showEvent(T, 'event.suneung', { result: r >= 1 ? 'great' : r >= 0.6 ? 'ok' : 'bad' }, () => deltaChips(applyDelta(st, { stress: -20 })), r >= 1 ? '만족스러운 결과' : r >= 0.6 ? '평소만큼' : '아쉬운 결과');
       emit(st, 'suneung');
       return;
     }
@@ -64,7 +64,7 @@ async function exam(st: GameState, T: Turn) {
   await showEvent(T, 'event.exam', {
     exam: T.title.split(' · ')[0], rank: tier.rank, tier: tier.tier,
     hasFocus: st.focus ? 1 : 0, focus: st.focus ? SUBJECT_LABEL[st.focus] : '',
-  }, () => deltaChips(applyDelta(st, tier.eff as Delta)));
+  }, () => deltaChips(applyDelta(st, tier.eff as Delta)), tier.rank);
   emit(st, `exam:${tier.tier}`);
 }
 
@@ -72,7 +72,7 @@ async function exam(st: GameState, T: Turn) {
 async function counselHint(st: GameState, T: Turn) {
   const hint = topTalent(st);
   st.goalHint = hint;
-  await showEvent(T, 'event.counsel.hint', { hint: CAREERS[hint].short });
+  await showEvent(T, 'event.counsel.hint', { hint: CAREERS[hint].short }, undefined, `꿈의 후보 · ${CAREERS[hint].short}`);
   emit(st, 'counsel:hint');
 }
 

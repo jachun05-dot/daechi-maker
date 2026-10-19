@@ -14,7 +14,7 @@ export const BALANCE = {
   },
 
   /** 매 턴(월) 시작 시 */
-  perTurn: { allowance: 100_000, stressDecay: 3 },
+  perTurn: { allowance: 120_000, stressDecay: 3 },
 
   /** 최대 체력 = base + 근력 / fitPerHp (최대 cap) */
   hpMax: { base: 100, fitPerHp: 5, cap: 160 },
@@ -36,7 +36,7 @@ export const BALANCE = {
     kor: ['debate'], eng: ['language'], math: ['science'], sci: ['science', 'medicine'], arts: ['vocal', 'dance', 'acting'],
   } as Record<SubjectKey, SkillKey[]>,
   /** 스트레스가 높을 때 성장 효율 */
-  growth: { scale: 0.55, stressHigh: 80, multHigh: 0.6, stressMid: 60, multMid: 0.8 },  // scale: 모든 성장량에 곱하는 전체 배율
+  growth: { scale: 0.35, stressHigh: 80, multHigh: 0.6, stressMid: 60, multMid: 0.8 },  // scale: 모든 성장량에 곱하는 전체 배율
   /** 한 달에 일어나는 평일 돌발 사건 수 */
   incidentsPerMonth: 2,
 
@@ -97,25 +97,27 @@ export const BALANCE = {
 
   /* ---------- 월말 이벤트 ---------- */
   exam: {
-    base: 15, perTurn: 4, focusBonus: 0.1,
+    // 시험 기준 = base + 턴 × perTurn (지성이 이 값이면 중위권과 상위권 사이). npm run sim 으로 맞춘 값
+    base: 21, perTurn: 6.8, focusBonus: 0.1,
     tiers: [
-      { min: 1.5,  tier: 'top',  rank: '전교 1등',    eff: { stress: -10, money: 100_000 } },
+      { min: 1.4,  tier: 'top',  rank: '전교 1등',    eff: { stress: -10, money: 100_000 } },
       { min: 1.15, tier: 'high', rank: '전교 상위권', eff: { stress: -5,  money: 50_000 } },
       { min: 0.8,  tier: 'mid',  rank: '중위권',      eff: { stress: 3 } },
       { min: 0,    tier: 'low',  rank: '하위권',      eff: { stress: 10 } },
     ] as { min: number; tier: 'top' | 'high' | 'mid' | 'low'; rank: string; eff: Record<string, number> }[],
   },
-  sports: { base: 15, perTurn: 2 },
-  festival: { base: 8, perTurn: 2.5 },
-  suneung: { intFull: 160 },
+  sports: { base: 12, perTurn: 1.2 },      // 우승에 필요한 근력 = base + 턴 × perTurn
+  festival: { base: 6, perTurn: 2.4 },     // 무대 성공에 필요한 특기 = base + 턴 × perTurn
+  suneung: { intFull: 200 },
 
   /* ---------- 진로 ---------- */
   /** 진로별 마지막 관문 조건 (기초 능력 + 특기) */
   careers: {
-    med:    { int: 150, science: 150, medicine: 80 },
-    idol:   { sense: 90, vocal: 130, dance: 130 },
-    actor:  { sense: 100, acting: 140, voice: 100 },
-    leader: { cha: 100, language: 130, debate: 120 },
+    // npm run sim 으로 맞춤: 꿈을 정하고 그쪽으로 꾸준히 키우면 대부분 닿고, 이것저것 하면 아슬아슬
+    med:    { int: 180, science: 160, medicine: 170 },
+    idol:   { sense: 70, vocal: 120, dance: 100 },
+    actor:  { sense: 60, acting: 130, voice: 75 },
+    leader: { cha: 65, language: 160, debate: 150 },
   } as Record<CareerId, Partial<Record<BaseStat | SkillKey, number>>>,
   /** 꿈을 정한 뒤 바꿀 때의 대가 */
   goalChangeStress: 30,
@@ -125,6 +127,9 @@ export const BALANCE = {
     acceptAff: 50,         // 마지막 선택에서 받아들여지는 최소 호감도 (미만이면 차임)
     ihyunAff: 60,          // 이현 엔딩 최소 호감도 (+ 메인 이벤트 완주)
   },
+
+  /** 월말 성적표 평가 — 이달에 오른 숫자(기초 능력 + 특기 셋)의 합 */
+  report: { great: 36, good: 28 },
 
   /** 스탯 등급 표기 */
   grades: [[15, 'F'], [35, 'E'], [60, 'D'], [90, 'C'], [120, 'B'], [150, 'A']] as [number, string][],

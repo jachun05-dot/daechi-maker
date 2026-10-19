@@ -12,6 +12,7 @@
 | `npm run dev` | 개발 서버. 파일을 저장하면 바로 반영 (휴대폰에서도 같은 와이파이로 접속 가능) |
 | `npm test` | **스토리·스케줄 오타 검사** + 문법 테스트. 내용을 고친 뒤 꼭 돌리세요 |
 | `npm run images` | 넣어야 할 이미지 목록과 이미 넣은 이미지 확인 |
+| `npm run sim` | 밸런스 확인 — 실제 엔진을 화면 없이 여러 판 돌려 전략별 결과 (`npm run sim -- 40 talent,balance`) |
 | `npm run save-ids` | 새 버전을 낼 때 — 세이브에 들어가는 id 목록 갱신 ([설명](docs/ARCHITECTURE.md#세이브와-업데이트)) |
 | `npm run build` | `dist/` 생성 (앱 패키징용) |
 | `npm run build:single` | `dist-single/index.html` 한 파일 생성 (링크 공유용) |

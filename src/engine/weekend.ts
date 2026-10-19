@@ -24,6 +24,7 @@ import { dayOf, dayTick, pushMsg } from './phone';
 import { emit } from './triggers';
 import { basicMeet, logAff, nextMain, playMain } from './people';
 import { slump } from './crisis';
+import { checkMilestones, gainChips, snap } from './progress';
 import type { MainEvent } from './story/library';
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
@@ -124,7 +125,7 @@ export function recommendPlan(st: GameState, spec: WeekendSpec, plan: Plan): Pla
         if ((a.delta.money ?? 0) < 0 && st.money < 80_000) sc += (a.delta.money ?? 0) / 4000;
         if ((a.delta.money ?? 0) > 0 && st.money < 50_000) sc += 6;
         if (id === 'home') sc += tired ? 30 : -4;
-        if (used.has(id)) sc -= 4;
+        if (used.has(id)) sc -= 12;   // 주말 네 칸을 한 곳에서 보내지 않게
         if (p.outdoor && spec.weather[i >> 1] !== 'sun' && spec.weather[i >> 1] !== 'cloud') sc -= 3;
         if (a.long) sc *= 1.4;
         sc += Math.random();
@@ -240,11 +241,12 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
   st.promiseNext = [];
   refresh();
 
-  const played = new Set<string>(), metNow = new Set<CharId>();
+  // 토·일을 한 화면에 — 요일 구분선 아래로 그날 한 일이 쌓인다
+  const played = new Set<string>(), metNow = new Set<CharId>(), done = new Set<string>();
+  ui.runOpen(`${T.label} · ${week + 1}주차 주말`, weather.map((w, i) => `${DAY_NAMES[i].slice(0, 1)} ${WEATHER_ICON[w]} ${WEATHER_LABEL[w]}`).join('  ·  '));
+  const before = snap(st);
   for (let day = 0; day < 2; day++) {
-    const head = `${T.label} · ${week + 1}주차 ${DAY_NAMES[day]}`;
-    const wsub = `${WEATHER_ICON[weather[day]]} ${WEATHER_LABEL[weather[day]]}`;
-    ui.runOpen(head, wsub);
+    ui.runLog({ kind: 'day', title: DAY_NAMES[day], tag: `${WEATHER_ICON[weather[day]]} ${WEATHER_LABEL[weather[day]]}` });
     const { moves, route } = dayMoves(r.plan, day);
     if (moves) {
       const d = applyDelta(st, { money: -moves * W().fare, hp: moves * W().moveHp });
@@ -253,20 +255,28 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
     for (const s of [0, 1]) {
       const pickS = r.plan[day * 2 + s] ?? { place: 'home', action: 0 };
       if (pickS.cont) continue;
-      await visitSlot(st, T, day * 2 + s, pickS, weather[day], { presence, mains, promises, played, metNow, head, wsub });
+      await visitSlot(st, T, day * 2 + s, pickS, weather[day], { presence, mains, promises, played, metNow, done });
     }
     const w = weather[day];
     if (w === 'rain' || w === 'snow') emit(st, `weather:${w}`);
     await dayTick(st, dayOf(turn, week, 5 + day), true);
-    await ui.runWait(day === 0 ? '일요일' : week < 3 ? '다음 주' : '한 달 정리');
-    ui.runClose();
   }
+  const total = gainChips(before, snap(st));
+  if (total.length) ui.runLog({ title: '이번 주말', chips: total, tone: 'sum', mark: '週' });
+  for (const m of checkMilestones(st)) ui.runLog({ kind: 'grade', title: m.title, body: m.body, mark: m.mark });
+  refresh();
+  await ui.runWait(week < 3 ? '다음 주' : '한 달 정리');
+  ui.runClose();
 }
 
 interface Ctx {
   presence: Record<string, CharId[]>; mains: Record<string, MainEvent>; promises: Record<number, CharId>;
-  played: Set<string>; metNow: Set<CharId>; head: string; wsub: string;
+  played: Set<string>; metNow: Set<CharId>;
+  /** 이번 주말에 이미 한 일 (같은 일을 또 하면 다른 문장) */
+  done: Set<string>;
 }
+
+const AGAIN = ['같은 곳에서 한 번 더. 아까보다 손에 익었다.', '자리를 옮기지 않았다. 하던 걸 마저 했다.', '같은 곳, 다른 시간. 아까 못 본 것들이 보였다.'];
 
 async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, weather: Weather, x: Ctx) {
   const place = placeById(sp.place)!;
@@ -281,7 +291,9 @@ async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, wea
     ui.runLog({ title: `${when} · ${place.name}`, body: '용돈이 모자라 그냥 돌아왔다.', tone: 'warn', mark: place.name[0] });
   } else {
     const got = applyDelta(st, d, growthMult(st) * regMult * (bad ? W().badWeather : 1));
-    const notes = [a.line];
+    const key = `${place.id}:${sp.action}`;
+    const notes = [x.done.has(key) ? pick(AGAIN) : a.line];
+    x.done.add(key);
     if (bad) notes.push(weather === 'rain' ? '비 때문에 반은 처마 밑에 서 있었다.' : '눈발이 굵어져 일찍 접었다.');
     ui.runLog({ title: `${when} · ${place.name}`, tag: a.label + (lv > 1 ? ` · 단골 Lv.${lv}` : ''), body: notes.join(' '), chips: deltaChips(got), mark: place.name[0] });
   }
@@ -294,19 +306,20 @@ async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, wea
   }
   refresh();
 
-  const reopen = () => ui.runOpen(x.head, x.wsub);
+  // 장면을 보는 동안만 진행 화면을 숨긴다 (그날 기록은 그대로)
+  const reopen = () => ui.runShow();
   let met = false;
   // 1. 메인 이벤트
   const main = x.mains[place.id];
   if (main && !x.played.has(main.id) && nextMain(st, main.ch as CharId)?.id === main.id) {
     x.played.add(main.id);
-    ui.runClose(); await playMain(st, main, 'day', place.name); reopen();
+    ui.runHide(); await playMain(st, main, 'day', place.name); reopen();
     x.metNow.add(main.ch as CharId); met = true;
   }
   // 2. 약속
   const pc = x.promises[slot];
   if (pc) {
-    ui.runClose(); await promiseMeet(st, pc, place, x.metNow.has(pc)); reopen();
+    ui.runHide(); await promiseMeet(st, pc, place, x.metNow.has(pc)); reopen();
     x.metNow.add(pc); met = true;
   }
   // 3. 출몰 — 이번 주말 아직 못 본 사람
@@ -314,7 +327,7 @@ async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, wea
   if (!met && here.length) {
     const c = pick(here);
     const wid = `weather.${c}.${weather}`;
-    ui.runClose();
+    ui.runHide();
     if (hasScene(wid)) await weatherMeet(st, c, place, wid);
     else await basicMeet(st, c, place.name, place.bg);
     reopen();
@@ -327,7 +340,7 @@ async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, wea
     if (pool.length) {
       const s = pick(pool);
       st.flags[`st_${s.id}`] = true;
-      ui.runClose();
+      ui.runHide();
       await ui.playScene(s.id, { theme: 'day', bg: place.bg });
       ui.setTheme('day');
       reopen();

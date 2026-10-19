@@ -11,7 +11,26 @@ import type { WeekendResult, WeekendSpec } from '@/engine/weekend';
 
 export type Tab = 'schedule' | 'stats' | 'phone' | 'codex' | 'system';
 export interface Chip { label: string; tone: 'up' | 'down' | 'money' | 'heart' | 'plain' }
-export interface RunLog { id: number; title: string; tag?: string; body?: string; chips?: Chip[]; tone?: 'warn' | 'sum' | 'char'; mark?: string; color?: string; image?: string }
+/** 주간 카드의 하루 */
+export interface WeekDayView {
+  label: string; school: 'ok' | 'doze' | 'sleep'; collapse: boolean; strain: boolean; met: string | null;
+  slots: { name: string; state: 'ok' | 'club' | 'broke' | 'collapse' | 'empty' }[];
+}
+/** 월말 성적표 */
+export interface ReportView {
+  title: string; verdict: string; verdictMark: string;
+  bars: { label: string; from: number; to: number; grade?: string }[];
+  res: { label: string; value: string; tone?: 'up' | 'down' | 'money' }[];
+  highlights: string[];
+  event: { title: string; result: string; chips: Chip[] } | null;
+}
+/** 진행 화면 한 줄. kind: week 주간 카드 · day 요일 구분선 · grade 이정표 · report 월말 성적표 */
+export interface RunLog {
+  id: number; title: string; tag?: string; body?: string; chips?: Chip[]; tone?: 'warn' | 'sum' | 'char'; mark?: string; color?: string; image?: string;
+  kind?: 'week' | 'day' | 'grade' | 'report';
+  week?: { days: WeekDayView[]; notes: string[] };
+  report?: ReportView;
+}
 export interface ModalButton { label: string; value: unknown; primary?: boolean }
 export interface ModalOption { label: string; desc?: string; value: unknown; chips?: Chip[]; disabled?: boolean }
 /** area: 긴 글 칸 (백업 코드 등). readOnly 면 보여 주기만, 아니면 버튼을 누를 때 입력한 글이 value 로 돌아온다 */
@@ -26,7 +45,8 @@ interface UIState {
   phoneRoom: string | null;
   codexSeg: 'memories' | 'album' | 'endings' | 'people';
   vn: { player: ScenePlayer; view: View } | null;
-  run: { title: string; sub: string; logs: RunLog[]; button: string | null } | null;
+  /** 진행 화면 — hidden: 장면을 보는 동안 잠깐 숨김 (기록은 그대로) */
+  run: { title: string; sub: string; logs: RunLog[]; button: string | null; hidden?: boolean } | null;
   modal: ModalSpec | null;
   map: WeekendSpec | null;
   ink: { text: string; mode: Theme; on: boolean } | null;
@@ -132,6 +152,10 @@ export const ui = {
   },
   runPress() { const run = get().run; if (run) set({ run: { ...run, button: null } }); const r = runResolve; runResolve = null; r?.(); },
   runClose() { set({ run: null }); },
+  /** 장면(VN)을 보는 동안 진행 화면을 숨겼다가 같은 기록 그대로 다시 보인다 */
+  runHide() { const run = get().run; if (run) set({ run: { ...run, hidden: true } }); },
+  runShow() { const run = get().run; if (run) set({ run: { ...run, hidden: false } }); },
+  runHeader(title: string, sub: string) { const run = get().run; if (run) set({ run: { ...run, title, sub } }); },
 
   /* ---------- 주말 계획판 ---------- */
   planWeekend(spec: WeekendSpec): Promise<WeekendResult> {

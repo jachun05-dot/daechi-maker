@@ -12,7 +12,10 @@ content/       데이터 — 인물·진로·장소·시간표·메신저 설정
     stories/       프롤로그(죽음의 순간 · 손의 장면) · 전생 꿈 dreams/
 engine/        규칙
   month.ts       한 달 흐름 (달 시작 → 평일·주말 × 4주 → 월말 → 꿈 → 다음 달)
-  weekday.ts     평일 5일 자동 진행
+  weekday.ts     평일 5일 자동 진행 (weekdayStep = 하루 계산, 예측과 공유)
+  forecast.ts    시간표 한 달 예측 · 추천 4종 · 이달의 목표
+  progress.ts    정수 성장 표시(스냅샷 비교) · 이정표(등급·특기·새 일정) · 이달의 기록
+  report.ts      월말 성적표
   weekend.ts     주말 계획판 (약속·장소·날씨·이동비)
   people.ts      인물 메인 이벤트 · 짧은 만남 · 호감도 기록
   dreams.ts      밤의 꿈 고르기 · 재생
@@ -67,7 +70,8 @@ platform/      웹과 앱이 다른 부분 — storage.ts (저장 위치) · nat
 | 톡 추가 | `stories/chat/{방}.story` 에 `=== chat.{방}.{이름} on=사건` |
 | 새 사건(톡 트리거) | `engine/triggers.ts` 의 `TRIGGERS` 와 `Trigger` 에 한 줄 → 엔진에서 `emit(st, '키')` |
 | 사건을 듣는 새 기능 (업적·SNS 등) | `onTrigger((st, key) => { … })` 를 새 모듈에서 등록 |
-| 수치 조정 | `config/balance.ts` |
+| 수치 조정 | `config/balance.ts` → `npm run sim` 으로 전략별 결과 확인 |
+| 평일 일정 추가 | `content/timetable.ts` — `req` 로 잠금 조건, `lines` 로 생활 한 줄 |
 | 장소 추가 | `content/places.ts` (지도 핀 `pos` 는 `ui/map.jpg` 기준 %) · 배경은 `content/backgrounds.ts` |
 | 인물 추가 | `engine/types.ts` CharId → `content/characters.ts` → 모든 시대 팩 `chars` → `content/phone.ts` (HABIT·IGNORE) → `basic.` `main.` `vac.` `call.` 장면 (테스트가 빠진 것을 알려 줌) |
 | 화면 | `ui/` 컴포넌트 · 색과 글꼴은 `styles/tokens.css` |
