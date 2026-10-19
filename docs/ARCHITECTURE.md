@@ -16,6 +16,7 @@ engine/        규칙
   forecast.ts    시간표 한 달 예측 · 추천 4종 · 이달의 목표
   progress.ts    정수 성장 표시(스냅샷 비교) · 이정표(등급·특기·새 일정) · 이달의 기록
   report.ts      월말 성적표
+  career.ts      커리어 엔딩 판정 (꿈 → 다른 길 → 아쉬운 → 웃픈 → 새내기)
   weekend.ts     주말 계획판 (약속·장소·날씨·이동비)
   people.ts      인물 메인 이벤트 · 짧은 만남 · 호감도 기록
   dreams.ts      밤의 꿈 고르기 · 재생
@@ -72,6 +73,9 @@ platform/      웹과 앱이 다른 부분 — storage.ts (저장 위치) · nat
 | 사건을 듣는 새 기능 (업적·SNS 등) | `onTrigger((st, key) => { … })` 를 새 모듈에서 등록 |
 | 수치 조정 | `config/balance.ts` → `npm run sim` 으로 전략별 결과 확인 |
 | 평일 일정 추가 | `content/timetable.ts` — `req` 로 잠금 조건, `lines` 로 생활 한 줄 |
+| 커리어 엔딩 추가 | `content/careerEndings.ts` 에 한 줄(req·max·need·hint) + `stories/endings/*.story` 에 `=== career.{key} ending={id}` → `tests/career.test.ts` SETUP 에 도달 조건 |
+| 전생과 이어진 엔딩 | 시대 팩 `careerEndings` + 그 팩 `stories/endings_past.story` |
+| 새 생활 기록 | `bump(st, '키')` (engine/progress.ts) → 엔딩 조건에서 `h.t('키')` |
 | 장소 추가 | `content/places.ts` (지도 핀 `pos` 는 `ui/map.jpg` 기준 %) · 배경은 `content/backgrounds.ts` |
 | 인물 추가 | `engine/types.ts` CharId → `content/characters.ts` → 모든 시대 팩 `chars` → `content/phone.ts` (HABIT·IGNORE) → `basic.` `main.` `vac.` `call.` 장면 (테스트가 빠진 것을 알려 줌) |
 | 화면 | `ui/` 컴포넌트 · 색과 글꼴은 `styles/tokens.css` |

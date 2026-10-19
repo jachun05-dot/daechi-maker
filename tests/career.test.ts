@@ -17,7 +17,7 @@ const SETUP: Record<string, (st: GameState) => void> = {
   webnovel: st => { st.tally['o:library'] = 20; },
   director: st => { st.placeVisits.seongsu = 5; st.placeVisits.hongdae = 5; },
   composer: st => { st.placeVisits.nakwon = 5; },
-  cafe: st => { st.tally['o:cafe'] = 30; st.money = 250_000; },
+  cafe: st => { st.tally['o:cafe'] = 90; st.money = 250_000; },
   creator: st => { st.skill.dance = 40; st.skill.vocal = 30; },
   startup: st => { st.money = 500_000; },
   pe: st => { st.tally.sportsWin = 2; },
@@ -31,16 +31,16 @@ const SETUP: Record<string, (st: GameState) => void> = {
   leader_near: st => { st.goal = 'leader'; Object.assign(st.stat, { cha: 60 }); Object.assign(st.skill, { language: 150, debate: 140 }); },
   burnout: st => { st.tally.slump = 2; },
   gymtuber: st => { st.stat.fit = 95; },
-  psychic: st => { st.stat.spirit = 105; },
-  albaking: st => { st.tally['o:cafe'] = 50; },
-  dokseo: st => { st.tally['o:dokseo'] = 45; },
+  psychic: st => { st.stat.spirit = 270; },
+  albaking: st => { st.tally['o:cafe'] = 160; },
+  dokseo: st => { st.tally['o:dokseo'] = 160; },
   wonjang: st => { st.money = 350_000; },
   foodmap: st => { for (const p of ['home', 'daechi', 'gangnam', 'schoolgym', 'cheongdam', 'bongeunsa', 'hannam', 'palace', 'daehakro', 'nakwon', 'hospital', 'seongsu', 'hongdae', 'hangang']) st.placeVisits[p] = 1; st.money = 0; },
   civil: st => { Object.assign(st.stat, { int: 80, sense: 70, cha: 75, fit: 70, style: 65 }); },
   neet: st => { st.stress = 10; },
-  facecafe: st => { st.stat.style = 110; },
+  facecafe: st => { st.stat.style = 90; },
   casting: st => { st.tally.casting = 3; },
-  tteokbokki: st => { st.tally.snack = 12; },
+  tteokbokki: st => { st.tally.snack = 7; },
   historian: st => { st.placeVisits.palace = 6; },
   hanui: st => { st.pastRole = 'med'; },
   gugak: st => { st.pastRole = 'idol'; },
@@ -83,7 +83,7 @@ describe('커리어 엔딩', () => {
     st.placeVisits.hospital = 6; st.stat.sense = 70;   // 간호사 조건도 함께 넘김
     expect(judgeCareer(st).ending.key).toBe('med');
     expect(judgeCareer(st).also.map(e => e.key)).toContain('nurse');
-    st.stat.int *= 1.4; st.skill.science *= 1.4; st.skill.medicine *= 1.4;
+    st.stat.int *= 1.3; st.skill.science *= 1.3; st.skill.medicine *= 1.3;
     expect(judgeCareer(st).ending.key).toBe('med_great');
   });
 

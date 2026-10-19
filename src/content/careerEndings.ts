@@ -60,13 +60,13 @@ export const CAREER_ENDINGS: CareerEnding[] = [
   stat('webnovel', '웹소설 작가', '도서관 창가 자리의 주인', { sense: 80, int: 100 }, { max: { cha: 70 }, need: h => h.t('o:library') >= 16 }),
   stat('director', '영상감독', '골목마다 카메라 앵글이 보이는 아이', { sense: 95 }, { need: h => h.visits('seongsu') + h.visits('hongdae') >= 8 }),
   stat('composer', '작곡가·프로듀서', '낙원상가 단골의 귀', { vocal: 80, sense: 85 }, { need: h => h.visits('nakwon') >= 4 }),
-  stat('cafe', '성수동 카페 사장', '라떼 아트가 손에 익은 아이', { cha: 70 }, { need: h => h.t('o:cafe') >= 24 && h.money >= 200_000 }),
+  stat('cafe', '성수동 카페 사장', '라떼 아트가 손에 익은 아이', { cha: 70 }, { need: h => h.t('o:cafe') >= 80 && h.money >= 200_000 }),
   /* ── 사교 */
-  stat('announcer', '아나운서', '또박또박, 그러나 다정하게', { voice: 80, language: 90, cha: 75, style: 50 }),
+  stat('announcer', '아나운서', '또박또박, 그러나 다정하게', { voice: 80, language: 90, cha: 75, style: 40 }),
   stat('creator', '크리에이터', '카메라 앞에서 더 신나는 아이', { cha: 90, sense: 70 }, { need: h => h.v('dance') + h.v('vocal') >= 60 }),
   stat('diplomat', '외교관', '세 나라 말로 싸우지 않는 법', { language: 140, debate: 110 }),
   stat('startup', '스타트업 창업가', '통장과 배짱이 함께 두꺼운 아이', { cha: 90, debate: 80 }, { need: h => h.money >= 400_000 }),
-  stat('crew', '승무원·호텔리어', '구름 위의 미소', { language: 90, cha: 70, fit: 50, style: 55 }),
+  stat('crew', '승무원·호텔리어', '구름 위의 미소', { language: 90, cha: 70, fit: 50, style: 45 }),
   /* ── 근력 */
   stat('pe', '체육교사', '체육대회의 전설', { fit: 90 }, { need: h => h.t('sportsWin') >= 2 }),
   stat('police', '경찰대 합격', '뛰는 머리, 생각하는 다리', { fit: 80, int: 130 }),
@@ -78,11 +78,11 @@ export const CAREER_ENDINGS: CareerEnding[] = [
   stat('voiceactor', '성우', '얼굴보다 목소리가 먼저 기억되는 아이', { voice: 100, acting: 70 }, { max: { cha: 75 } }),
   stat('interpreter', '통역사', '두 언어 사이의 다리', { language: 170 }),
   /* ── 스타일 */
-  stat('model', '모델', '런웨이의 마지막 한 걸음', { style: 110, fit: 70 }),
-  stat('beauty', '뷰티 크리에이터', '파우치 속의 작은 우주', { style: 90, cha: 80, sense: 60 }),
-  stat('hairmake', '헤어·메이크업 아티스트', '청담동 의자에 앉아 본 아이', { style: 90, sense: 80 }, { need: h => h.visits('cheongdam') >= 5 }),
-  stat('fashion', '패션 디자이너', '성수동 팝업을 다 돌아본 아이', { style: 90, sense: 90 }, { need: h => h.visits('seongsu') >= 5 }),
-  stat('stylist', '아이돌 스타일리스트', '무대 옆에서 옷을 고르는 손', { style: 80, sense: 60 }, { need: h => h.goal === 'idol' }),
+  stat('model', '모델', '런웨이의 마지막 한 걸음', { style: 80, fit: 60 }),
+  stat('beauty', '뷰티 크리에이터', '파우치 속의 작은 우주', { style: 70, cha: 70, sense: 55 }),
+  stat('hairmake', '헤어·메이크업 아티스트', '청담동 의자에 앉아 본 아이', { style: 70, sense: 70 }, { need: h => h.visits('cheongdam') >= 5 }),
+  stat('fashion', '패션 디자이너', '성수동 팝업을 다 돌아본 아이', { style: 70, sense: 80 }, { need: h => h.visits('seongsu') >= 5 }),
+  stat('stylist', '아이돌 스타일리스트', '무대 옆에서 옷을 고르는 손', { style: 60, sense: 50 }, { need: h => h.goal === 'idol' }),
 
   /* ── 아쉬운 엔딩 */
   near('med', '재수 학원 등록', '같은 학원, 같은 자리, 다른 해'),
@@ -92,18 +92,18 @@ export const CAREER_ENDINGS: CareerEnding[] = [
   { key: 'burnout', id: 'cn_burnout', title: '쉬어 가는 해', kind: 'near', hint: '너무 오래 달린 아이에게', need: h => h.t('slump') >= 2 },
 
   /* ── 웃픈 엔딩 — 능력치가 한쪽으로 쏠렸을 때 */
-  fun('gymtuber', '헬스 유튜버', '근육은 배신하지 않는다…?', { req: { fit: 90 }, max: { int: 120 }, need: h => h.top === 'fit' }),
-  fun('psychic', '전생 보는 언니', '손님 전생이 다 의병인 점집', { req: { spirit: 100 }, need: h => h.top === 'spirit' }),
-  fun('albaking', '알바왕', '사장님이 열쇠를 건네는 날', { need: h => h.t('o:cafe') + h.t('o:tutor') + h.t('o:extra') >= 44 }),
-  fun('dokseo', '독서실 총무', '칸막이 너머의 3년', { need: h => h.t('o:dokseo') >= 40 }),
-  fun('wonjang', '대치동 학원 원장', '공부는 못했다. 시키는 건 잘했다', { req: { cha: 80 }, max: { int: 120 }, need: h => h.money >= 300_000 }),
+  fun('gymtuber', '헬스 유튜버', '근육은 배신하지 않는다…?', { req: { fit: 90 }, max: { int: 160 }, need: h => h.top === 'fit' || h.v('fit') >= h.v('int') * 0.8 }),
+  fun('psychic', '전생 보는 언니', '손님 전생이 다 의병인 점집', { req: { spirit: 260 }, need: h => h.v('spirit') >= h.maxBase * 2.2 }),
+  fun('albaking', '알바왕', '사장님이 열쇠를 건네는 날', { need: h => h.t('o:cafe') + h.t('o:tutor') + h.t('o:extra') >= 150 }),
+  fun('dokseo', '독서실 총무', '칸막이 너머의 3년', { need: h => h.t('o:dokseo') >= 150 }),
+  fun('wonjang', '대치동 학원 원장', '공부는 못했다. 시키는 건 잘했다', { req: { cha: 80 }, max: { int: 160 }, need: h => h.money >= 300_000 }),
   fun('foodmap', '서울 맛집 지도 작가', '통장은 배신했다', { need: h => h.places >= 14 && h.money < 30_000 }),
-  fun('civil', '9급 공무원 수험생', '엄마가 제일 좋아한 엔딩', { need: h => h.spread <= 1.5 && h.minBase >= 50 && h.maxBase <= 130 }),
+  fun('civil', '9급 공무원 수험생', '엄마가 제일 좋아한 엔딩', { need: h => h.minBase >= 45 && h.spread <= 2.2 && h.maxSkill < 80 }),
   fun('manager', '아이돌 매니저', '무대 옆에서 제일 크게 박수 치는 사람', { req: { cha: 80, fit: 70 }, max: { vocal: 40, dance: 40 } }),
-  fun('neet', '행복한 동네 백수', '아무것도 되지 않았는데 이상하게 행복한', { max: { int: 90, sense: 90, cha: 90, fit: 90, style: 90 }, need: h => h.stress <= 25 && h.t('slump') === 0 }),
-  fun('facecafe', '얼굴 천재 카페 사장', '손님 절반은 커피를 보러 오지 않는다', { req: { style: 100 }, need: h => h.top === 'style' }),
-  fun('casting', '캐스팅 명함 수집가', '지갑이 명함으로 두꺼워진 아이', { req: { style: 60 }, need: h => h.t('casting') >= 2 }),
-  fun('tteokbokki', '떡볶이 맛집 사장', '3년간의 야식이 헛되지 않았다', { need: h => h.t('snack') >= 10 }),
+  fun('neet', '행복한 동네 백수', '아무것도 되지 않았는데 이상하게 행복한', { max: { int: 130, sense: 70, cha: 70, fit: 70, style: 70 }, need: h => h.stress <= 25 && h.t('slump') === 0 && h.maxSkill < 60 }),
+  fun('facecafe', '얼굴 천재 카페 사장', '손님 절반은 커피를 보러 오지 않는다', { req: { style: 85 }, need: h => h.top === 'style' }),
+  fun('casting', '캐스팅 명함 수집가', '지갑이 명함으로 두꺼워진 아이', { req: { style: 45 }, need: h => h.t('casting') >= 2 }),
+  fun('tteokbokki', '떡볶이 맛집 사장', '3년간의 야식이 헛되지 않았다', { need: h => h.t('snack') >= 6 }),
 
   /* ── 아무 길도 안 맞을 때 */
   { key: 'none', id: 'c_none', title: '반짝이는 새내기', kind: 'base', hint: '아직 아무것도 정하지 않은 봄' },

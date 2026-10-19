@@ -118,7 +118,7 @@ export const BALANCE = {
   careers: {
     // npm run sim 으로 맞춤: 꿈을 정하고 그쪽으로 꾸준히 키우면 대부분 닿고, 이것저것 하면 아슬아슬
     med:    { int: 180, science: 160, medicine: 170 },
-    idol:   { sense: 70, style: 60, vocal: 120, dance: 100 },
+    idol:   { sense: 70, style: 45, vocal: 120, dance: 100 },
     actor:  { sense: 60, acting: 130, voice: 75 },
     leader: { cha: 65, language: 160, debate: 150 },
   } as Record<CareerId, Partial<Record<BaseStat | SkillKey, number>>>,

@@ -52,7 +52,7 @@ function act() {
   else if (s.chatRoom) ui.closeChat();
   else if (s.map) {
     const accepted = s.map.invites.filter(() => Math.random() < 0.5).map(i => i.id);
-    const plan = recommendPlan(game.state!, s.map, [null, null, null, null]);
+    const plan = strat === 'wild' ? wildWeekend(s.map) : recommendPlan(game.state!, s.map, [null, null, null, null]);
     ui.planDone({ plan, accepted });
   } else if (s.run?.button) ui.runPress();
   else if (s.credits) ui.creditsDone();
@@ -60,10 +60,39 @@ function act() {
 useUI.subscribe(() => setImmediate(act));
 setInterval(act, 1);
 
+/* wild — 판마다 좋아하는 능력 한두 개를 정해 그것만 판다 (쏠린 빌드·웃픈 엔딩 확인용) */
+const FAV_KEYS = ['int', 'sense', 'cha', 'fit', 'style', 'science', 'medicine', 'vocal', 'dance', 'acting', 'voice', 'language', 'debate', 'money'];
+let fav: string[] = [];
+let wildPlaces: string[] = [];
+const favScore = (d: Record<string, number>) => fav.reduce((n, k) => n + (k === 'money' ? (d.money ?? 0) / 10000 : (d[k] ?? 0)), 0);
+function wildWeekend(spec: any) {
+  const { PLACES } = placesMod;
+  const plan: any[] = [];
+  for (let i = 0; i < 4; i++) {
+    const cands = PLACES.filter((p: any) => spec.visible.includes(p.id) && (!wildPlaces.length || wildPlaces.includes(p.id) || Math.random() < 0.3))
+      .flatMap((p: any) => p.actions.map((a: any, ai: number) => ({ p, a, ai }))).filter((x: any) => !x.a.long && !x.a.unlock);
+    if (!cands.length) { plan.push({ place: 'home', action: 0 }); continue; }
+    const best = cands.sort((x: any, y: any) => favScore(y.a.delta) - favScore(x.a.delta) + (Math.random() - 0.5) * 2)[0];
+    plan.push({ place: best.p.id, action: best.ai });
+  }
+  return plan;
+}
+const placesMod = await import('@/content/places');
+
 function planMonth() {
   const st = game.state!;
   if (!st) return;
   const goal = st.goal ?? st.goalHint;
+  if (strat === 'wild') {
+    st.timetable = Array.from({ length: 10 }, (_, i) => {
+      const s = (i % 2) as 0 | 1, d = i >> 1;
+      if (clubAt(st, d, s)) return null;
+      const opts = optionsFor(s).filter(o => o.days.includes(d) && reqMet(st, o.req));
+      if (st.hp < hpMax(st) * 0.4 && d % 2 === 1) return (opts.find(o => o.id === 'rest' || o.id === 'home') ?? opts[0]).id;
+      return opts.sort((a, b) => favScore(b.delta as any) - favScore(a.delta as any) + (Math.random() - 0.5) * 0.4)[0].id;
+    });
+    return;
+  }
   if (strat === 'random') {
     st.timetable = Array.from({ length: 10 }, (_, i) => {
       const s = (i % 2) as 0 | 1, d = i >> 1;
@@ -107,6 +136,8 @@ ui.runLog = (l: any) => {
 async function playOne(): Promise<Run> {
   cur = { int: 0, top: 0, career: '', kind: '', goal: null, goalFit: 0, exams: [], sports: [], festival: [], slumps: 0, doze: 0, collapse: 0, broke: 0, verdicts: [], moneyMin: Infinity, stressMax: 0, unlocks: 0, vals: {}, growth: [], fit: [], fest: [], intAt: {} };
   useUI.setState({ busy: false });
+  fav = [pick(FAV_KEYS), ...(Math.random() < 0.5 ? [pick(FAV_KEYS)] : [])];
+  wildPlaces = Math.random() < 0.5 ? [pick(placesMod.PLACES).id, pick(placesMod.PLACES).id] : [];
   await newGame();
   const st = game.state!;  // 졸업 뒤 game.state 가 비워지므로 붙잡아 둔다
   for (let guard = 0; guard < 40; guard++) {

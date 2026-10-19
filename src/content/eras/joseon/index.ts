@@ -63,13 +63,13 @@ export const joseon: EraPack = {
     palace_n:   { label: '밤의 임금 막사',       color: '#1a1420' },
   },
 
-  // 감응이 높으면 열린다. 전생의 꿈(pastRole)과 같은 재능이면 그 길로
+  // 감응이 아주 높으면(졸업 때 상위 ¼쯤) 열린다. 전생의 꿈(pastRole)과 같은 재능이면 그 길로
   careerEndings: [
     { key: 'historian', id: 'cp_historian', title: '역사학자 — 임진년을 연구하다', kind: 'past', hint: '고궁 돌담을 자꾸 쓰다듬는 아이',
-      req: { spirit: 80, int: 110 }, need: h => h.visits('palace') + h.visits('palace_night') >= 5 },
-    { key: 'pastnovel', id: 'cp_pastnovel', title: '전생을 쓰는 소설가', kind: 'past', hint: '꿈을 받아 적는 아이', req: { spirit: 80, sense: 90 } },
-    { key: 'hanui', id: 'cp_hanui', title: '한의사', kind: 'past', hint: '약초 냄새가 그리운 손', req: { spirit: 70, medicine: 80 }, need: h => h.past === 'med' },
-    { key: 'gugak', id: 'cp_gugak', title: '국악 명창', kind: 'past', hint: '사백 년 묵은 가락', req: { spirit: 70, vocal: 80 }, need: h => h.past === 'idol' },
-    { key: 'madang', id: 'cp_madang', title: '마당극 배우', kind: 'past', hint: '탈을 쓰면 더 자유로운 아이', req: { spirit: 70, acting: 80 }, need: h => h.past === 'actor' },
+      req: { spirit: 260, int: 150 }, need: h => h.visits('palace') + h.visits('palace_night') >= 5 },
+    { key: 'pastnovel', id: 'cp_pastnovel', title: '전생을 쓰는 소설가', kind: 'past', hint: '꿈을 받아 적는 아이', req: { spirit: 270, sense: 90 } },
+    { key: 'hanui', id: 'cp_hanui', title: '한의사', kind: 'past', hint: '약초 냄새가 그리운 손', req: { spirit: 250, medicine: 100 }, need: h => h.past === 'med' },
+    { key: 'gugak', id: 'cp_gugak', title: '국악 명창', kind: 'past', hint: '사백 년 묵은 가락', req: { spirit: 250, vocal: 100 }, need: h => h.past === 'idol' },
+    { key: 'madang', id: 'cp_madang', title: '마당극 배우', kind: 'past', hint: '탈을 쓰면 더 자유로운 아이', req: { spirit: 250, acting: 100 }, need: h => h.past === 'actor' },
   ],
 };

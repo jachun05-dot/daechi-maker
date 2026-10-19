@@ -106,7 +106,8 @@ me| 주인공 대사         ← 플레이어가 정한 이름으로 표시
 | `vac.{인물}.summer1~3`, `winter1~2` | 방학 이벤트. 그 인물의 제안을 받아들인 횟수 = 단계 | `title=` |
 | `{인물}{번호}` (시대 팩 dreams/) | 밤 — 전생의 기억 | `ch=` 인물 · `title=` · `ep=` 순서 · `aff=` · `spirit=` · `hidden=1` · `requires=a,b` · `auto=1` |
 | `true.` `normal.` `reject.{인물}` | 마지막 선택의 결과 | `ending=` 엔딩 컬렉션 id (`content/endings.ts`) |
-| `career.{진로}` | 커리어 엔딩 | `ending=` · 엔진이 `var.kind`(dream / other)를 넘긴다 |
+| `career.{key}` | 커리어 엔딩 59종 (목록·조건 `content/careerEndings.ts`) | `ending=` · 꿈 4종은 `var.kind`(dream / other). 다른 길 장면 첫 줄 `[call career._other]` = 정했던 꿈이 있었다면 한 줄 |
+| `event.snack.{1~3}` | 야식 — 스트레스 쌓인 주 밤 | 선택지 `value:ramen / tteok / none` |
 
 | `promise.{인물}` (weekend/) | 주말 약속 장소에서. 한 줄 무작위 | `pick=random` |
 | `weather.{인물}.{rain\|snow}` (weekend/) | 비·눈 오는 주말에 그 인물을 만나면 기본 이벤트 대신 | — |

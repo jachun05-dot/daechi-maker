@@ -39,6 +39,11 @@ describe.each(Object.values(ERAS))('전생 시대 팩 $id', era => {
     expect(empty).toEqual([]);
   });
 
+  it('전생과 이어진 커리어 엔딩마다 장면이 있다', () => {
+    expect(era.careerEndings.filter(e => book.scenes[`career.${e.key}`]?.attrs.ending !== e.id).map(e => e.key)).toEqual([]);
+    expect(era.careerEndings.every(e => e.kind === 'past')).toBe(true);
+  });
+
   it('장면이 쓰는 배경이 공용 또는 이 시대 팩에 있다', () => {
     const known = { ...BASE_BACKGROUNDS, ...era.backgrounds };
     const missing = Object.values(book.scenes).flatMap(s => bgs(s.nodes).filter(b => !known[b]).map(b => `${s.id}: ${b}`));

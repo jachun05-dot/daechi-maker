@@ -17,10 +17,12 @@ export interface Hist {
   money: number; stress: number;
   goal: CareerId | null; goalFit: number;
   past: CareerId | null;
-  /** 가장 높은 기초 능력 (감응 포함) */
+  /** 가장 높은 기초 능력 (감응 제외 — 감응은 꿈과 만남으로 저절로 크게 자란다) */
   top: BaseStat;
   /** 감응을 뺀 기초 능력의 최대/최소, 그 비율 */
   maxBase: number; minBase: number; spread: number;
+  /** 가장 높은 특기 */
+  maxSkill: number;
 }
 
 export function hist(st: GameState): Hist {
@@ -32,8 +34,9 @@ export function hist(st: GameState): Hist {
     places: Object.values(st.placeVisits).filter(n => n > 0).length,
     money: st.money, stress: st.stress,
     goal: st.goal, goalFit: st.goal ? careerFit(st, st.goal) : 0, past: st.pastRole,
-    top: [...BASE_KEYS].sort((a, b) => st.stat[b] - st.stat[a])[0],
+    top: BASE_KEYS.filter(k => k !== 'spirit').sort((a, b) => st.stat[b] - st.stat[a])[0],
     maxBase, minBase, spread: maxBase / Math.max(1, minBase),
+    maxSkill: Math.max(...Object.values(st.skill)),
   };
 }
 
@@ -80,7 +83,7 @@ export function judgeCareer(st: GameState): CareerVerdict {
     if (e.kind === 'great' || e.kind === 'dream') {
       // 정한 꿈을 이뤘으면 꿈, 다른 꿈의 관문을 넘었으면 그 꿈 엔딩(다른 길)
       const fit = careerFit(st, e.dream!);
-      if (e.kind === 'great' ? st.goal === e.dream && fit >= 1.3 : fit >= 1) pool.push(e);
+      if (e.kind === 'great' ? st.goal === e.dream && fit >= 1.25 : fit >= 1) pool.push(e);
     } else if (e.kind !== 'base' && eligible(e, h)) pool.push(e);
   }
   // 정한 꿈이 아닌 4대 진로는 다른 길 점수로 내린다
