@@ -13,10 +13,12 @@ import { addAff, refresh } from './state';
 import { pushMsg } from './phone';
 import { emit } from './triggers';
 import { hasScene } from './story/library';
+import { setClock } from './clock';
 
 const STAGES = { summer: 3, winter: 2 } as const;
 
 export async function runVacation(st: GameState, season: 'summer' | 'winter') {
+  setClock({ turn: st.turn, span: season === 'summer' ? '여름방학' : '겨울방학', time: '' });
   await ui.playScene('vacation.start', { theme: 'day', vars: { season } });
   ui.setTheme('day');
 

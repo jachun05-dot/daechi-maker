@@ -17,9 +17,10 @@ import { MAIN_EVENTS } from '@/engine/story/library';
 import { INVITES, TRACES, INVITE_REPLY, DECLINE_REPLY } from '@/content/weekend';
 import { isBase, isSkill } from '@/engine/timetable';
 import { TRIGGER_RE } from '@/engine/triggers';
+import { TIME_ORDER, timeRank } from '@/engine/clock';
 
 const FX = ['none', 'petal', 'sakura', 'leaf', 'snow', 'rain', 'ember'];
-const CMDS = ['bg', 'fx', 'stand', 'cg', 'shake', 'flash', 'card'];
+const CMDS = ['bg', 'fx', 'stand', 'cg', 'shake', 'flash', 'card', 'move'];
 
 function walk(nodes: StoryNode[], fn: (n: StoryNode) => void) {
   for (const n of nodes) {
@@ -40,7 +41,7 @@ describe('스토리 파일', () => {
         if (n.t === 'cmd') {
           const chat = s.id.startsWith('chat.') || s.id.startsWith('call.');
           if (!CMDS.includes(n.name) && !(chat && ['photo', 'promise'].includes(n.name))) problems.push(`${at} 알 수 없는 명령 [${n.name}]`);
-          if (n.name === 'bg' && !BACKGROUNDS[n.args[0]]) problems.push(`${at} 배경 "${n.args[0]}"이 backgrounds.ts에 없음`);
+          if ((n.name === 'bg' || n.name === 'move') && !BACKGROUNDS[n.args[0]]) problems.push(`${at} 배경 "${n.args[0]}"이 backgrounds.ts에 없음`);
           if (n.name === 'fx' && !FX.includes(n.args[0])) problems.push(`${at} 효과 "${n.args[0]}" 없음 (${FX.join('/')})`);
           if (n.name === 'stand' && n.args[0] !== 'off' && !(CHAR_ORDER as string[]).includes(n.args[0])) problems.push(`${at} 인물 "${n.args[0]}" 없음`);
         }
@@ -50,6 +51,14 @@ describe('스토리 파일', () => {
       });
     }
     expect(problems).toEqual([]);
+  });
+
+  it('장면 머리말 when= 은 이야기 시계가 아는 시간대다', () => {
+    const bad = Object.values(SCENES).filter(s => s.attrs.when && timeRank(s.attrs.when) >= TIME_ORDER.length)
+      .map(s => `${s.file} ${s.id} when="${s.attrs.when}"`);
+    expect(bad).toEqual([]);
+    const day = Object.values(SCENES).filter(s => s.attrs.day && !'월화수목금토일'.includes(s.attrs.day)).map(s => s.id);
+    expect(day).toEqual([]);
   });
 
   it('엔진이 찾는 장면이 모두 있다', () => {

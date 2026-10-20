@@ -21,6 +21,7 @@ import { dayOf, dayTick } from './phone';
 import { basicMeet } from './people';
 import { bump, checkMilestones, gainChips, month, snap, styleNow, tally } from './progress';
 import { shortMoney } from './chips';
+import { setClock } from './clock';
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 const R = () => BALANCE.roll;
@@ -227,6 +228,7 @@ export async function runWeekdays(st: GameState, T: Turn, week: number, incident
       }
     }
     // 4) 돌발 만남 (인물 이야기) · 메신저
+    setClock({ turn: st.turn, week, day, time: '방과후' });
     met.push(incidents.has(`${week}-${day}`) ? await incident(st, T, day) : null);
     await dayTick(st, dayOf(st.turn, week, day), true);
   }
@@ -298,7 +300,7 @@ async function incident(st: GameState, T: Turn, day: number): Promise<string | n
   const p = pick(cands.filter(x => st.met[x.c]));
   if (!p) return null;
   ui.runHide();
-  await basicMeet(st, p.c, `${DAY_LABEL[day]}요일 ${p.where}`, p.bg);
+  await basicMeet(st, p.c, p.where, p.bg);
   ui.runShow();
   return p.c;
 }

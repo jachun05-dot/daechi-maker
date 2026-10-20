@@ -6,6 +6,7 @@ import { game, newState, refresh, saves } from './state';
 import { migrate } from './save';
 import { resetSessions } from './phone';
 import { beginTurn } from './month';
+import { setClock } from './clock';
 
 export const DEFAULT_NAME = '서단비';
 
@@ -43,6 +44,7 @@ export async function newGame() {
 
   await ui.playScene('wakeup.after', { theme: 'day', bg: 'room_night' });
 
+  setClock({ turn: 0, week: 0, day: 0, time: '아침' });
   await ui.playScene('opening.1', { theme: 'day' });
   ui.setTheme('day');
   game.state.flags.open1 = true;

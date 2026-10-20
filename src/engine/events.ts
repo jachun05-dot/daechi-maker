@@ -2,7 +2,7 @@
    월말 학사 이벤트 — 판정은 여기, 대사는 stories/events/school.story
    ========================================================= */
 import type { CareerId, GameState, SkillKey, StoryNode } from './types';
-import type { Turn } from '@/content/calendar';
+import { TURNS, type Turn } from '@/content/calendar';
 import { BALANCE } from '@/config/balance';
 import { CAREERS, SUBJECT_LABEL } from '@/content/careers';
 import { ui, type Chip } from '@/store/ui';
@@ -12,10 +12,12 @@ import { emit } from './triggers';
 import { hpMax, refresh } from './state';
 import { getScene } from './story/library';
 import { bump, month, styleNow } from './progress';
+import { setClock } from './clock';
 
 /** 장면을 보여 주고 결과를 월말 성적표에 남긴다 */
 async function showEvent(T: Turn, scene: string | StoryNode[], vars: Record<string, string | number>, after?: () => Chip[], result?: string) {
   ui.runClose();
+  setClock({ turn: TURNS.indexOf(T), week: 3, day: 4, time: T.title });
   const value = await ui.playScene(scene, { theme: 'day', vars });
   ui.setTheme('day');
   const chips = after?.() ?? [];

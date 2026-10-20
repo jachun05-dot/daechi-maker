@@ -8,9 +8,14 @@ import { ScenePlayer, type PlayOptions, type View } from '@/engine/story/player'
 import { getScene } from '@/engine/story/library';
 import { applyEffect, game, refresh, unlockAlbum } from '@/engine/state';
 import type { WeekendResult, WeekendSpec } from '@/engine/weekend';
+import { clock, dateLabel } from '@/engine/clock';
+import { BACKGROUNDS } from '@/content/backgrounds';
 
 export type Tab = 'schedule' | 'stats' | 'phone' | 'codex' | 'system';
 export interface Chip { label: string; tone: 'up' | 'down' | 'money' | 'heart' | 'plain' }
+/** 장면 앞 "언제 · 어디서" */
+export interface Intro { when: string; where: string; key: number }
+
 /* ---------- 평일 실시간 진행 (월~금이 하루씩) ---------- */
 export type SlotState = 'wait' | 'great' | 'ok' | 'fail' | 'broke' | 'collapse' | 'empty' | 'skip';
 export interface LiveSlot { id: string | null; name: string; cat: string; state: SlotState; line?: string; gains?: string[]; immerse?: boolean; club?: boolean }
@@ -54,7 +59,8 @@ interface UIState {
   sheetSlot: number | null;
   phoneRoom: string | null;
   codexSeg: 'memories' | 'album' | 'endings' | 'people';
-  vn: { player: ScenePlayer; view: View } | null;
+  /** intro: 장면 앞 전환 자막 · closing: 장면이 끝나 사라지는 중 */
+  vn: { player: ScenePlayer; view: View; intro: Intro | null; closing?: boolean } | null;
   /** 진행 화면 — hidden: 장면을 보는 동안 잠깐 숨김 (기록은 그대로) */
   run: { title: string; sub: string; logs: RunLog[]; button: string | null; hidden?: boolean } | null;
   modal: ModalSpec | null;
@@ -91,6 +97,22 @@ let mapResolve: ((r: WeekendResult) => void) | null = null;
 let noticeResolve: ((open: boolean) => void) | null = null;
 let chatResolve: (() => void) | null = null;
 let choiceResolve: ((i: number) => void) | null = null;
+let introKey = 0;
+/** 장면 앞 자막을 띄울 이야기 장면 (메신저·꿈·프롤로그·야식은 빼고) */
+const INTRO_RE = /^(main|basic|vac|weather|street|promise|event|opening)\./;
+function makeIntro(scene: string | StoryNode[], nodes: StoryNode[], opts: PlayOptions): Intro | null {
+  if (opts.intro === false || opts.replay) return null;
+  const id = typeof scene === 'string' ? scene : '';
+  if (!opts.intro && (!INTRO_RE.test(id) || id.startsWith('event.snack'))) return null;
+  const attrs = id ? getScene(id).attrs : {};
+  const firstBg = nodes.find(n => n.t === 'cmd' && (n.name === 'bg' || n.name === 'move')) as { args: string[] } | undefined;
+  const bgKey = firstBg?.args[0] ?? opts.bg ?? '';
+  const where = (opts.intro && opts.intro.where) || attrs.where || BACKGROUNDS[bgKey]?.label || '';
+  const date = dateLabel(attrs.day);
+  const when = attrs.when ? `${date} · ${attrs.when}` : (opts.intro && opts.intro.when) || `${date}${clock.time ? ` · ${clock.time}` : ''}`;
+  return { when, where, key: ++introKey };
+}
+
 let logId = 0, toastTimer: ReturnType<typeof setTimeout> | undefined;
 
 export const ui = {
@@ -107,11 +129,12 @@ export const ui = {
     const ctx = { state: st, name: st?.name ?? (game.meta.lastName || '나'), vars: opts.vars ?? {} };
     const player = new ScenePlayer(nodes, ctx, opts, e => { if (game.state) { applyEffect(e); refresh(); } });
     set({ theme: opts.theme ?? 'day' });
+    const intro = makeIntro(scene, nodes, opts);
     return new Promise(res => {
       vnResolve = res;
       const view = player.next();
       if (view.mode === 'done') { vnResolve = null; res(player.result); return; }
-      set({ vn: { player, view } });
+      set({ vn: { player, view, intro } });
     });
   },
   vnAdvance() {
@@ -126,9 +149,10 @@ export const ui = {
   vnShow(view: View) {
     const vn = get().vn!;
     if (view.mode === 'done') {
-      set({ vn: null });
-      const r = vnResolve; vnResolve = null; r?.(vn.player.result);
-    } else set({ vn: { player: vn.player, view } });
+      // 장면이 끝나면 잠깐 어두워지며 사라진 뒤 다음으로
+      set({ vn: { ...vn, closing: true } });
+      setTimeout(() => { set({ vn: null }); const r = vnResolve; vnResolve = null; r?.(vn.player.result); }, 260);
+    } else set({ vn: { ...vn, view } });
   },
 
   /* ---------- 모달 ---------- */

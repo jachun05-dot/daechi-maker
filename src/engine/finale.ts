@@ -11,6 +11,7 @@ import { DREAMS, getScene, hasScene } from './story/library';
 import { game, recordEnding, S, saves } from './state';
 import { dreamSequence } from './dreams';
 import { mainDone } from './people';
+import { setClock } from './clock';
 
 async function play(sceneId: string, got: string[], vars: Record<string, string | number> = {}) {
   await ui.playScene(sceneId, { theme: 'day', vars });
@@ -22,6 +23,7 @@ export async function finale() {
   const st = S(), E = BALANCE.ending;
   const got: string[] = [];
 
+  setClock({ turn: st.turn, span: '졸업식 날', time: '' });
   await ui.playScene('event.graduation', { theme: 'day' });
   const self3 = DREAMS.find(d => d.id === 'self3');
   if (self3 && !st.memories.self3) await dreamSequence(self3);

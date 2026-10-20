@@ -101,7 +101,7 @@ function parseBlock(L: Line[], pos: { i: number }, level: number, file: string):
       const rest = sp < 0 ? '' : inner.slice(sp + 1).trim();
       if (name === 'effect') nodes.push({ t: 'effect', eff: parseEffect(rest.split(/\s+/).filter(Boolean), file, l.line), line: l.line });
       else if (name === 'call') nodes.push({ t: 'call', id: rest, line: l.line });
-      else if (name === 'card') nodes.push({ t: 'cmd', name, args: rest.split('|').map(s => unescape(s.trim())), line: l.line });
+      else if (name === 'card' || name === 'move') nodes.push({ t: 'cmd', name, args: rest.split('|').map(s => unescape(s.trim())), line: l.line });
       else nodes.push({ t: 'cmd', name, args: rest.split(/\s+/).filter(Boolean), line: l.line });
       continue;
     }

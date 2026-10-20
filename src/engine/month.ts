@@ -16,6 +16,7 @@ import { S, clamp, game, hpMax, refresh, saves } from './state';
 import { DREAMS } from './story/library';
 import { dayOf, dayTick } from './phone';
 import { emit } from './triggers';
+import { setClock } from './clock';
 import { monthEvent } from './events';
 import { runVacation } from './vacation';
 import { finale } from './finale';
@@ -33,6 +34,7 @@ import { showReport } from './report';
 export async function beginTurn() {
   const st = S();
   const T = TURNS[st.turn];
+  setClock({ turn: st.turn, week: 0, day: 0, time: '아침' });
   if (T.month === 3 && !st.flags[`open${T.year}`]) {
     st.flags[`open${T.year}`] = true;
     if (T.year > 1) { await ui.playScene(`opening.${T.year}`, { theme: 'day' }); ui.setTheme('day'); }

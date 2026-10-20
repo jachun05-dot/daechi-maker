@@ -18,6 +18,8 @@ export interface View {
   speakerColor: string | null;
   text: string;
   card: { kicker: string; title: string; sub: string } | null;
+  /** 장면 안에서 장소가 바뀜 — [move 배경 | 자막] */
+  move: { text: string; key: number } | null;
   choices: { text: string; special: boolean }[];
   shake: number;      // 값이 바뀔 때마다 흔들림
   flash: { color: string; key: number } | null;
@@ -33,6 +35,8 @@ export interface PlayOptions {
   replay?: boolean;                 // true면 효과를 적용하지 않음(도감 다시보기)
   /** 재생기가 모르는 명령을 넘겨받는다 (메신저의 [promise] 등). replay 중에도 불린다 */
   onCmd?: (name: string, args: string[], replay: boolean) => void;
+  /** 장면 앞 "언제 · 어디서" 자막. false 면 안 띄운다. 비워 두면 장면 머리말(when= where=)과 이야기 시계(engine/clock.ts)로 만든다 */
+  intro?: { when?: string; where?: string } | false;
 }
 
 export class ScenePlayer {
@@ -47,7 +51,7 @@ export class ScenePlayer {
     const theme = opts.theme ?? 'day';
     this.view = {
       theme, bg: opts.bg ?? (theme === 'night' ? 'dream' : 'room'), fx: opts.fx ?? 'none', stand: null, cg: null,
-      mode: 'say', speaker: null, speakerColor: null, text: '', card: null, choices: [], shake: 0, flash: null, photo: null,
+      mode: 'say', speaker: null, speakerColor: null, text: '', card: null, move: null, choices: [], shake: 0, flash: null, photo: null,
     };
   }
 
@@ -102,6 +106,7 @@ export class ScenePlayer {
     const v = this.view;
     switch (name) {
       case 'bg': this.view = { ...v, bg: a[0] }; return false;
+      case 'move': this.view = { ...v, bg: a[0] || v.bg, move: { text: fill(a[1] ?? '', this.ctx), key: (v.move?.key ?? 0) + 1 } }; return false;
       case 'fx': this.view = { ...v, fx: (a[0] ?? 'none') as FxType }; return false;
       case 'stand': this.view = { ...v, stand: !a[0] || a[0] === 'off' ? null : { id: a[0], expr: a[1] ?? 'default' } }; return false;
       case 'cg': this.view = { ...v, cg: !a[0] || a[0] === 'off' ? null : a[0] }; return false;

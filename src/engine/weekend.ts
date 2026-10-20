@@ -24,6 +24,7 @@ import { dayOf, dayTick, pushMsg } from './phone';
 import { emit } from './triggers';
 import { basicMeet, logAff, nextMain, playMain } from './people';
 import { slump } from './crisis';
+import { setClock } from './clock';
 import { bump, checkMilestones, gainChips, snap } from './progress';
 import type { MainEvent } from './story/library';
 
@@ -255,7 +256,7 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
     for (const s of [0, 1]) {
       const pickS = r.plan[day * 2 + s] ?? { place: 'home', action: 0 };
       if (pickS.cont) continue;
-      await visitSlot(st, T, day * 2 + s, pickS, weather[day], { presence, mains, promises, played, metNow, done });
+      await visitSlot(st, T, day * 2 + s, pickS, weather[day], { presence, mains, promises, played, metNow, done, week });
     }
     const w = weather[day];
     if (w === 'rain' || w === 'snow') emit(st, `weather:${w}`);
@@ -272,6 +273,7 @@ export async function runWeekend(st: GameState, T: Turn, week: number, turn: num
 interface Ctx {
   presence: Record<string, CharId[]>; mains: Record<string, MainEvent>; promises: Record<number, CharId>;
   played: Set<string>; metNow: Set<CharId>;
+  week: number;
   /** 이번 주말에 이미 한 일 (같은 일을 또 하면 다른 문장) */
   done: Set<string>;
 }
@@ -280,6 +282,7 @@ const AGAIN = ['같은 곳에서 한 번 더. 아까보다 손에 익었다.', '
 
 async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, weather: Weather, x: Ctx) {
   const place = placeById(sp.place)!;
+  setClock({ turn: st.turn, week: x.week, day: 5 + (slot >> 1), time: slot & 1 ? '저녁' : '낮' });
   const a = place.actions[sp.action] ?? place.actions[0];
   const lv = regularLevel(st, place.id);
   const regMult = W().regularMult[lv - 1];
@@ -342,7 +345,7 @@ async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, wea
       st.flags[`st_${s.id}`] = true;
       if (s.id.endsWith('.cast')) bump(st, 'casting');
       ui.runHide();
-      await ui.playScene(s.id, { theme: 'day', bg: place.bg });
+      await ui.playScene(s.id, { theme: 'day', bg: place.bg, intro: { where: place.name } });
       ui.setTheme('day');
       reopen();
       ui.runLog({ title: s.attrs.title ?? '길에서 생긴 일', body: place.name, mark: '路' });
@@ -362,7 +365,7 @@ async function promiseMeet(st: GameState, c: CharId, place: Place, already: bool
   if (!already) {
     const lead: StoryNode = { t: 'say', text: `약속한 ${place.name}. ${josa(CHARACTERS[c].name, '이/가')} 먼저 와 있었다.`, line: 0 };
     const nodes = hasScene(`promise.${c}`) ? [lead, pick(getScene(`promise.${c}`).nodes)] : [lead];
-    await ui.playScene(nodes, { theme: 'day', bg: place.bg });
+    await ui.playScene(nodes, { theme: 'day', bg: place.bg, intro: { where: place.name } });
     ui.setTheme('day');
   }
   logAff(st, before, `${josa(CHARACTERS[c].name, '과/와')}의 약속`, c, place.name);
@@ -377,7 +380,7 @@ async function weatherMeet(st: GameState, c: CharId, place: Place, scene: string
   const lead: StoryNode = { t: 'say', text: `${place.name}에서 ${josa(CHARACTERS[c].name, '과/와')} 마주쳤다.`, line: 0 };
   unlockAlbum(`scene:${scene}`);
   emit(st, `meet:${c}`);
-  await ui.playScene([lead, ...getScene(scene).nodes], { theme: 'day', bg: place.bg });
+  await ui.playScene([lead, ...getScene(scene).nodes], { theme: 'day', bg: place.bg, intro: { where: place.name } });
   ui.setTheme('day');
   logAff(st, before, `${josa(CHARACTERS[c].name, '을/를')} 만났다`, c, place.name);
 }

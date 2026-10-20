@@ -33,7 +33,7 @@ input { font: inherit; user-select: text; -webkit-user-select: text; }
 .bar.stress > i { background: var(--accent); }
 
 /* 본문 */
-.view { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px 14px 24px; position: relative; z-index: 2; }
+.view { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px 14px 24px; position: relative; z-index: 2; animation: fade .3s; }
 .view::-webkit-scrollbar { display: none; }
 .stack { display: grid; gap: 12px; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); }

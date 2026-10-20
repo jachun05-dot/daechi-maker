@@ -11,6 +11,7 @@ import { affChips } from './chips';
 import { addAff, addSighting, refresh } from './state';
 import { getScene, mainEventsOf, type MainEvent } from './story/library';
 import { josa } from './story/context';
+import { timeRank } from './clock';
 import { emit } from './triggers';
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
@@ -55,7 +56,7 @@ export async function basicMeet(st: GameState, c: CharId, where: string, bg: str
   addSighting(st, c, where);
   const small = getScene(`basic.${c}`).nodes;
   const nodes: StoryNode[] = [{ t: 'say', text: `${where}에서 ${josa(CHARACTERS[c].name, '과/와')} 마주쳤다.`, line: 0 }, pick(small)];
-  await ui.playScene(nodes, { theme: 'day', bg });
+  await ui.playScene(nodes, { theme: 'day', bg, intro: { where } });
   ui.setTheme('day');
   emit(st, `meet:${c}`);
   logAff(st, before, `${josa(CHARACTERS[c].name, '을/를')} 만났다`, c, where);
@@ -63,10 +64,10 @@ export async function basicMeet(st: GameState, c: CharId, where: string, bg: str
 
 /** 자동 발생형 메인 이벤트 — 첫 만남(1번)은 조건이 되면 모두, 그 밖에는 한 달에 하나 */
 export async function autoMainEvent(st: GameState) {
-  for (const c of CHAR_ORDER) {
-    const e = nextMain(st, c);
-    if (e && e.auto && e.step === 1) await playMain(st, e, 'day');
-  }
+  // 첫 만남이 여럿이면 같은 날 시간대 순(아침 → 쉬는 시간 → 점심 → 방과후)으로 이어 붙인다 — 장면 머리말 when=
+  const firsts = CHAR_ORDER.map(c => nextMain(st, c)).filter((e): e is MainEvent => !!e && e.auto && e.step === 1)
+    .sort((a, b) => timeRank(getScene(a.id).attrs.when) - timeRank(getScene(b.id).attrs.when));
+  for (const e of firsts) await playMain(st, e, 'day');
   for (const c of CHAR_ORDER) {
     const e = nextMain(st, c);
     if (e && e.auto) { await playMain(st, e, 'day'); return; }
