@@ -13,29 +13,33 @@ import { CAREERS, BASE_LABEL, SKILL_LABEL } from '@/content/careers';
 import { placeById } from '@/content/places';
 import { applyDelta, careerFit, clubAt, findOption, isBase, isSkill, optionsFor, topTalent, bestCareers, type TimetableOption } from './timetable';
 import { hpMax } from './state';
-import { weekdayStep } from './weekday';
+import { newFlow, weekdayStep } from './weekday';
 import { gainChips, reqMet, shown, snap } from './progress';
 
 export interface Forecast {
   hpEnd: number; hpMin: number; hpMax: number; stressEnd: number; moneyEnd: number;
   doze: number; collapse: number; broke: number; strain: number;
+  /** 몰입이 걸리는 날 · 리듬이 맞는 날 (한 달) */
+  immerse: number; rhythm: number;
   gains: Chip[]; intEnd: number;
 }
 
-/** 지금(또는 주어진) 시간표로 한 달을 미리 돌려 본다 — 상태는 바꾸지 않는다 */
+/** 지금(또는 주어진) 시간표로 한 달을 미리 돌려 본다 — 상태는 바꾸지 않는다. 판정은 기대값으로 */
 export function forecastMonth(st: GameState, timetable: (string | null)[] = st.timetable): Forecast {
   const sim: GameState = JSON.parse(JSON.stringify(st));
   sim.timetable = [...timetable];
   const rest = placeById('home')?.actions[0].delta ?? { hp: 18, stress: -10 };
-  const f: Forecast = { hpEnd: 0, hpMin: sim.hp, hpMax: hpMax(sim), stressEnd: 0, moneyEnd: 0, doze: 0, collapse: 0, broke: 0, strain: 0, gains: [], intEnd: 0 };
-  let streak = 0;
+  const f: Forecast = { hpEnd: 0, hpMin: sim.hp, hpMax: hpMax(sim), stressEnd: 0, moneyEnd: 0, doze: 0, collapse: 0, broke: 0, strain: 0, immerse: 0, rhythm: 0, gains: [], intEnd: 0 };
+  const flow = newFlow();
   for (let w = 0; w < 4; w++) {
+    flow.streak = [{ id: null, n: 0 }, { id: null, n: 0 }];
     for (let d = 0; d < 5; d++) {
-      const { res, heavyStreak } = weekdayStep(sim, d, streak);
-      streak = heavyStreak;
+      const res = weekdayStep(sim, d, flow, { roll: false });
       if (res.school !== 'ok') f.doze++;
       if (res.collapse) f.collapse++;
       if (res.strain) f.strain++;
+      if (res.rhythm) f.rhythm++;
+      if (res.slots.some(s => s.immerse)) f.immerse++;
       f.broke += res.slots.filter(s => s.state === 'broke').length;
       f.hpMin = Math.min(f.hpMin, sim.hp);
     }

@@ -107,10 +107,10 @@ export const month = {
   start: null as Snap | null,
   turn: -1,
   highlights: [] as string[],
-  doze: 0, collapse: 0, broke: 0, heavy: 0,
+  doze: 0, collapse: 0, broke: 0, heavy: 0, greats: 0, fails: 0,
   /** 이달의 학사 이벤트 결과 (시험 등급 등) */
   event: null as { title: string; result: string; chips: Chip[] } | null,
 };
 export function beginMonthLog(st: GameState) {
-  Object.assign(month, { start: snap(st), turn: st.turn, highlights: [], doze: 0, collapse: 0, broke: 0, heavy: 0, event: null });
+  Object.assign(month, { start: snap(st), turn: st.turn, highlights: [], doze: 0, collapse: 0, broke: 0, heavy: 0, greats: 0, fails: 0, event: null });
 }

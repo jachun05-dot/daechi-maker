@@ -20,7 +20,7 @@ import { monthEvent } from './events';
 import { runVacation } from './vacation';
 import { finale } from './finale';
 import { computePresence, runWeekend } from './weekend';
-import { runWeekdays } from './weekday';
+import { newFlow, runWeekdays } from './weekday';
 import { autoMainEvent } from './people';
 import { sihyunRescue, slump, snackNight } from './crisis';
 import { dreamSequence, pickDream } from './dreams';
@@ -95,14 +95,14 @@ export async function runMonth() {
     // 이번 달 돌발 사건이 일어날 (주, 요일)
     const incidents = new Set<string>();
     while (incidents.size < BALANCE.incidentsPerMonth) incidents.add(`${Math.floor(Math.random() * 4)}-${Math.floor(Math.random() * 5)}`);
-    let heavyStreak = 0;
+    const flow = newFlow();   // 몰입·리듬·피로가 요일을 넘어 이어진다
     let slumped = false;
     for (let week = 0; week < 4; week++) {
       if (week > 0) computePresence(st, T, st.turn);
       // 근황 톡 — 만난 사람과 지유가 가끔 먼저 연락한다
       for (const r of [...CHAR_ORDER.filter(c => st.met[c]), 'jiyu' as const]) if (Math.random() < BALANCE.phone.idleChance) emit(st, 'idle', { room: r });
       ui.runOpen(`${T.label} · ${week + 1}주차`, `${SEASON_LABEL[T.season]} · ${T.title}`);
-      heavyStreak = await runWeekdays(st, T, week, incidents, heavyStreak);
+      await runWeekdays(st, T, week, incidents, flow);
       if (st.stress >= 70 && !st.flags[`ch_stress${st.turn}`]) { st.flags[`ch_stress${st.turn}`] = true; emit(st, 'stress'); }
       if (st.hp < hpMax(st) * 0.25 && !st.flags[`ch_tired${st.turn}`]) { st.flags[`ch_tired${st.turn}`] = true; emit(st, 'tired'); }
       if (st.stress >= 100 && !slumped) { slumped = true; await slump(st); }

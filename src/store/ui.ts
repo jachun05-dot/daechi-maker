@@ -11,10 +11,20 @@ import type { WeekendResult, WeekendSpec } from '@/engine/weekend';
 
 export type Tab = 'schedule' | 'stats' | 'phone' | 'codex' | 'system';
 export interface Chip { label: string; tone: 'up' | 'down' | 'money' | 'heart' | 'plain' }
+/* ---------- 평일 실시간 진행 (월~금이 하루씩) ---------- */
+export type SlotState = 'wait' | 'great' | 'ok' | 'fail' | 'broke' | 'collapse' | 'empty' | 'skip';
+export interface LiveSlot { id: string | null; name: string; cat: string; state: SlotState; line?: string; gains?: string[]; immerse?: boolean; club?: boolean }
+export interface LiveDay {
+  label: string; school: 'wait' | 'ok' | 'doze' | 'sleep'; slots: LiveSlot[]; tags: string[];
+  event?: { icon: string; title: string; text: string; ok?: boolean };
+}
+export interface ChoiceView { icon: string; title: string; text: string; day: number; options: { label: string; hint: string }[] }
+export interface LiveWeek { title: string; tag: string; days: LiveDay[]; cur: { day: number; slot: number } | null; choice: ChoiceView | null }
+
 /** 주간 카드의 하루 */
 export interface WeekDayView {
   label: string; school: 'ok' | 'doze' | 'sleep'; collapse: boolean; strain: boolean; met: string | null;
-  slots: { name: string; state: 'ok' | 'club' | 'broke' | 'collapse' | 'empty' }[];
+  slots: { name: string; state: 'ok' | 'great' | 'fail' | 'skip' | 'club' | 'broke' | 'collapse' | 'empty' }[];
 }
 /** 월말 성적표 */
 export interface ReportView {
@@ -58,11 +68,15 @@ interface UIState {
   notice: { room: string; name: string; time: string; text: string } | null;
   /** 메신저 — 진행 화면 위에 띄운 대화방 */
   chatRoom: string | null;
+  /** 평일 실시간 진행 */
+  week: LiveWeek | null;
+  /** 진행 화면을 눌러 빨리 감는 중 */
+  fast: boolean;
 }
 
 export const useUI = create<UIState>(() => ({
   theme: 'day', tab: 'schedule', titleOpen: true, busy: false, sheetSlot: null, phoneRoom: null, codexSeg: 'memories',
-  vn: null, run: null, modal: null, map: null, ink: null, credits: false, toast: null, typing: null, notice: null, chatRoom: null,
+  vn: null, run: null, modal: null, map: null, ink: null, credits: false, toast: null, typing: null, notice: null, chatRoom: null, week: null, fast: false,
 }));
 
 const set = useUI.setState;
@@ -76,6 +90,7 @@ let creditsResolve: (() => void) | null = null;
 let mapResolve: ((r: WeekendResult) => void) | null = null;
 let noticeResolve: ((open: boolean) => void) | null = null;
 let chatResolve: (() => void) | null = null;
+let choiceResolve: ((i: number) => void) | null = null;
 let logId = 0, toastTimer: ReturnType<typeof setTimeout> | undefined;
 
 export const ui = {
@@ -156,6 +171,25 @@ export const ui = {
   runHide() { const run = get().run; if (run) set({ run: { ...run, hidden: true } }); },
   runShow() { const run = get().run; if (run) set({ run: { ...run, hidden: false } }); },
   runHeader(title: string, sub: string) { const run = get().run; if (run) set({ run: { ...run, title, sub } }); },
+
+  /* ---------- 평일 실시간 진행 ---------- */
+  weekOpen(w: LiveWeek) { set({ week: w, fast: false }); },
+  /** 진행 중인 주를 고친다 (fn 안에서 바꾸면 화면이 다시 그려진다) */
+  weekPatch(fn: (w: LiveWeek) => void) { const w = get().week; if (!w) return; fn(w); set({ week: { ...w, days: [...w.days] } }); },
+  weekClose() { set({ week: null }); },
+  /** 연출 대기 — 텍스트 속도 설정을 따르고, 화면을 누르면(빨리 감기) 기다리지 않는다 */
+  pace(ms: number) {
+    if (get().fast) return Promise.resolve();
+    return sleep(ms * [1.6, 1, 0.5][game.settings.textSpeed]);
+  },
+  setFast: (fast: boolean) => set({ fast }),
+  /** 작은 선택 — 진행을 멈추고 고른 번호를 돌려준다 */
+  weekChoice(view: ChoiceView): Promise<number> {
+    ui.weekPatch(w => { w.choice = view; });
+    set({ fast: false });
+    return new Promise(res => { choiceResolve = res; });
+  },
+  weekChoose(i: number) { ui.weekPatch(w => { w.choice = null; }); const r = choiceResolve; choiceResolve = null; r?.(i); },
 
   /* ---------- 주말 계획판 ---------- */
   planWeekend(spec: WeekendSpec): Promise<WeekendResult> {

@@ -141,6 +141,7 @@ function ForecastPanel({ st, f }: { st: GameState; f: Forecast }) {
       {row('스트레스', st.stress, f.stressEnd, 100, f.stressEnd >= 70)}
       {row('용돈', st.money, f.moneyEnd, Math.max(st.money, f.moneyEnd, 1), f.broke > 0, v => won(v))}
       {warns.length > 0 && <ul className="fc-warn">{warns.map(w => <li key={w}>{w}</li>)}</ul>}
+      {(f.immerse > 0 || f.rhythm > 0) && <p className="fc-flow">{f.immerse > 0 && <span>몰입 {f.immerse}일 · 같은 일정을 3일째 이어 하면 대성공↑ 성장↑</span>}{f.rhythm > 0 && <span>리듬 {f.rhythm}일 · 할 일 + 쉬는 일을 섞은 날</span>}</p>}
       <div className="fc-gain"><span>예상 성장 (수업 포함)</span>{f.gains.length ? <Chips chips={f.gains} /> : <small className="muted">거의 없음</small>}</div>
     </div>
   );

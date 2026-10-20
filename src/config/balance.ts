@@ -36,7 +36,25 @@ export const BALANCE = {
     kor: ['debate'], eng: ['language'], math: ['science'], sci: ['science', 'medicine'], arts: ['vocal', 'dance', 'acting'],
   } as Record<SubjectKey, SkillKey[]>,
   /** 스트레스가 높을 때 성장 효율 */
-  growth: { scale: 0.35, stressHigh: 80, multHigh: 0.6, stressMid: 60, multMid: 0.8 },  // scale: 모든 성장량에 곱하는 전체 배율
+  growth: { scale: 0.33, stressHigh: 80, multHigh: 0.6, stressMid: 60, multMid: 0.8 },  // scale: 모든 성장량에 곱하는 전체 배율
+  /** 평일 일정 판정 — 대성공 · 성공 · 실수
+   *  그달 기준 = base + 턴 × perTurn. 일정의 주 능력(가장 많이 오르는 능력)이 기준과 같으면 보통 확률 */
+  roll: {
+    base: 10, perTurn: 4,
+    great: { base: 0.12, slope: 0.15, min: 0.04, max: 0.35 },   // 기준 대비 능력이 높을수록 ↑
+    fail: { base: 0.12, slope: 0.15, min: 0.03, max: 0.30 },    // 낮을수록 ↑
+    mult: { great: 1.6, ok: 1, fail: 0.5 },                     // 그 칸 성장 배율 (기준에 맞는 능력이면 평균 ≈ 1)
+    tired: { fail: 0.12, great: -0.05 },                        // 체력 30% 미만
+    stressed: { fail: 0.08 },                                    // 스트레스 70 이상
+    doze: 0.10, fresh: 0.08,                                     // 전날 선택(밤샘·꿀잠)의 영향
+    immerse: { days: 3, great: 0.06, mult: 1.1 },               // 같은 칸에 같은 일정 3일째부터 몰입
+    rhythm: { great: 0.04, stress: -0.5 },                         // 하루에 할 일 + 쉬는 일 → 그날 스트레스 −, 다음 날 대성공 ↑
+    restGreat: 0.2, restBonus: { hp: 3, stress: -2 },            // 쉬는 일정은 실수 없음, 가끔 꿀잠
+    failStress: 3, greatStress: -1,
+  },
+  /** 평일 사건 — [한 주 기본 횟수, 한 번 더 일어날 확률] */
+  dayEvents: { school: [1, 0.4] as [number, number], choice: [1, 0.3] as [number, number] },
+
   /** 한 달에 일어나는 평일 돌발 사건 수 */
   incidentsPerMonth: 2,
 
@@ -132,7 +150,7 @@ export const BALANCE = {
   },
 
   /** 월말 성적표 평가 — 이달에 오른 숫자(기초 능력 + 특기 셋)의 합 */
-  report: { great: 36, good: 28 },
+  report: { great: 40, good: 30 },
 
   /** 스탯 등급 표기 */
   grades: [[15, 'F'], [35, 'E'], [60, 'D'], [90, 'C'], [120, 'B'], [150, 'A']] as [number, string][],
