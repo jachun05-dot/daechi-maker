@@ -10,22 +10,25 @@ import { hpMax } from '@/engine/state';
 import { won } from '@/engine/chips';
 import { Chips } from '../common/Chips';
 import { Mono } from '../common/Mono';
+import { LiveWeek } from './LiveWeek';
 
 export function RunOverlay() {
   const run = useUI(s => s.run);
   const ls = useRef<HTMLDivElement>(null);
   const [instant, setInstant] = useState(false);
-  useEffect(() => { ls.current?.scrollTo({ top: ls.current.scrollHeight, behavior: 'smooth' }); }, [run?.logs.length, run?.button]);
+  const live = useUI(s => !!s.week);
+  useEffect(() => { ls.current?.scrollTo({ top: ls.current.scrollHeight, behavior: 'smooth' }); }, [run?.logs.length, run?.button, live]);
   useEffect(() => setInstant(false), [run?.title]);
   if (!run || run.hidden) return null;
   return (
-    <div className={`layer run${instant ? ' instant' : ''}`} onClick={() => setInstant(true)}>
+    <div className={`layer run${instant ? ' instant' : ''}`} onClick={() => { setInstant(true); ui.setFast(true); }}>
       <div className="run-h">
         <div><h2>{run.title}</h2><span>{run.sub}</span></div>
         <RunMeter />
       </div>
       <div className="run-ls" ref={ls}>
         {run.logs.map(l => <LogItem key={l.id} l={l} />)}
+        <LiveWeek />
       </div>
       <div className="run-f">{run.button && <button className="btn primary block" onClick={e => { e.stopPropagation(); ui.runPress(); }}>{run.button}</button>}</div>
     </div>
@@ -67,7 +70,7 @@ function LogItem({ l }: { l: RunLog }) {
 }
 
 const SCHOOL = { ok: ['수업', ''], doze: ['졸음', 'warn'], sleep: ['잠듦', 'bad'] } as const;
-const SLOT_STATE: Record<string, string> = { broke: '돈 없음', collapse: '쓰러짐', empty: '빈칸' };
+const SLOT_STATE: Record<string, string> = { broke: '돈 없음', collapse: '쓰러짐', empty: '빈칸', skip: '빠짐' };
 
 /** 주간 카드 — 월~금이 하루씩 켜지고, 마지막에 한 주 성장이 올라온다 */
 function WeekCard({ l, days, notes }: { l: RunLog; days: WeekDayView[]; notes: string[] }) {

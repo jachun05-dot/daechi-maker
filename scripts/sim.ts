@@ -48,7 +48,8 @@ function act() {
     if (m.options?.length) ui.closeModal(pick(m.options.filter(o => !o.disabled)).value);
     else if (m.input !== undefined) ui.closeModal('시뮬');
     else ui.closeModal(m.buttons[m.buttons.length - 1]?.value);
-  } else if (s.notice) ui.noticeDone(false);
+  } else if (s.week?.choice) ui.weekChoose(Math.floor(Math.random() * s.week.choice.options.length));
+  else if (s.notice) ui.noticeDone(false);
   else if (s.chatRoom) ui.closeChat();
   else if (s.map) {
     const accepted = s.map.invites.filter(() => Math.random() < 0.5).map(i => i.id);

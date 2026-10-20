@@ -72,7 +72,8 @@ platform/      웹과 앱이 다른 부분 — storage.ts (저장 위치) · nat
 | 새 사건(톡 트리거) | `engine/triggers.ts` 의 `TRIGGERS` 와 `Trigger` 에 한 줄 → 엔진에서 `emit(st, '키')` |
 | 사건을 듣는 새 기능 (업적·SNS 등) | `onTrigger((st, key) => { … })` 를 새 모듈에서 등록 |
 | 수치 조정 | `config/balance.ts` → `npm run sim` 으로 전략별 결과 확인 |
-| 평일 일정 추가 | `content/timetable.ts` — `req` 로 잠금 조건, `lines` 로 생활 한 줄 |
+| 평일 일정 추가 | `content/timetable.ts` — `req` 로 잠금 조건, `lines` 로 생활 한 줄 → `content/rolls.ts` 에 갈래·대성공/실수 문장 (테스트가 빠진 것을 알려 줌) |
+| 학교 사건 · 작은 선택 추가 | `content/dayEvents.ts` SCHOOL / CHOICES 에 한 덩어리 (`when` 으로 시기, `check` 로 판정, `skip`·`next` 로 선택의 대가) |
 | 커리어 엔딩 추가 | `content/careerEndings.ts` 에 한 줄(req·max·need·hint) + `stories/endings/*.story` 에 `=== career.{key} ending={id}` → `tests/career.test.ts` SETUP 에 도달 조건 |
 | 전생과 이어진 엔딩 | 시대 팩 `careerEndings` + 그 팩 `stories/endings_past.story` |
 | 새 생활 기록 | `bump(st, '키')` (engine/progress.ts) → 엔딩 조건에서 `h.t('키')` |

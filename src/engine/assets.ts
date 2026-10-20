@@ -35,5 +35,8 @@ export const bgImage = (key: string) => byKey[`bg/${key}`];
 export const cgImage = (key: string) => byKey[`cg/${key}`];
 export const avatarImage = (id: string) => byKey[`chars/${id}/avatar`];
 export const scheduleImage = (id: string) => byKey[`schedule/${id}`];
+/** 평일 장면 — 판정별 그림(schedule/{id}_great · _fail)이 있으면 그것, 없으면 보통 그림 */
+export const scheduleShot = (id: string, state: string) =>
+  (state === 'great' || state === 'fail' ? byKey[`schedule/${id}_${state}`] : undefined) ?? byKey[`schedule/${id}`];
 export const uiImage = (key: string) => byKey[`ui/${key}`];
 export const photoImage = (id: string) => byKey[`photo/${id}`];
