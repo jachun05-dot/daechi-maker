@@ -23,6 +23,7 @@ import { finale } from './finale';
 import { computePresence, runWeekend } from './weekend';
 import { newFlow, runWeekdays } from './weekday';
 import { autoMainEvent } from './people';
+import { loveMonth } from './love';
 import { sihyunRescue, slump, snackNight } from './crisis';
 import { dreamSequence, pickDream } from './dreams';
 import { beginMonthLog } from './progress';
@@ -47,6 +48,8 @@ export async function beginTurn() {
   }
   if (!T.summer && st.clubTerm !== T.term) await pickClub(st, T);
   await autoMainEvent(st);
+  // 연애 — 연인 소홀 · 고백 · 질투
+  await loveMonth(st);
   // 메신저 — 달이 바뀌면 생기는 대화
   emit(st, `turn:${st.turn}`);
   emit(st, `month:${T.month}`);

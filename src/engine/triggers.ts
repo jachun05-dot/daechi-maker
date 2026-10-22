@@ -18,7 +18,11 @@ export const TRIGGERS: { key: string; re: string; desc: string }[] = [
   { key: 'festival:ok|fail',          re: 'festival:(ok|fail)',              desc: '축제 공연 결과' },
   { key: 'counsel:hint|decide',       re: 'counsel:(hint|decide)',           desc: '진로 상담 (힌트 / 결정)' },
   { key: 'suneung',                   re: 'suneung',                         desc: '수능 날' },
-  { key: 'jealous:ian|mujin',         re: 'jealous:(ian|mujin)',             desc: '한쪽 호감도가 크게 올라 다른 쪽이 질투 (한 달에 한 번)' },
+  { key: 'jealous:{인물}',            re: 'jealous:\\w+',                    desc: '소문 때문에 그 인물이 질투했다 (질투 장면 뒤)' },
+  { key: 'stage:{인물}',              re: 'stage:\\w+',                      desc: '그 인물과 관계 단계가 올랐다 (친구 · 썸 · 연인 …)' },
+  { key: 'key:{인물}',                re: 'key:\\w+',                        desc: '그 인물의 속마음 열쇠가 열렸다' },
+  { key: 'confess:yes|wait|no:{인물}', re: 'confess:(yes|wait|no):\\w+',      desc: '그 인물의 고백에 답했다' },
+  { key: 'breakup:{인물}',            re: 'breakup:\\w+',                    desc: '연인과 헤어졌다' },
   { key: 'dream:{꿈 id}',             re: 'dream:\\w+',                      desc: '전생 꿈을 처음 봤다 (예: dream:ian1)' },
   { key: 'turn:{번호}',               re: 'turn:\\d+',                       desc: '그 턴(달)이 시작될 때 (0 = 1학년 3월)' },
   { key: 'month:{월}',                re: 'month:\\d+',                      desc: '매년 그 달이 시작될 때' },
@@ -39,7 +43,7 @@ export type Trigger =
   | `exam:${'top' | 'high' | 'mid' | 'low'}`
   | 'sports:win' | 'sports:lose' | 'festival:ok' | 'festival:fail'
   | 'counsel:hint' | 'counsel:decide' | 'suneung'
-  | 'jealous:ian' | 'jealous:mujin'
+  | `jealous:${CharId}` | `stage:${CharId}` | `key:${CharId}` | `confess:${'yes' | 'wait' | 'no'}:${CharId}` | `breakup:${CharId}`
   | `dream:${string}` | `turn:${number}` | `month:${number}` | `year:${1 | 2 | 3}`
   | 'allowance' | 'idle' | 'stress' | 'tired' | 'slump'
   | `vac:${CharId}`;

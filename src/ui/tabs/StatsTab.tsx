@@ -13,6 +13,7 @@ import { num } from '@/engine/chips';
 import { josa } from '@/engine/story/context';
 import type { CareerId } from '@/engine/types';
 import { Mono } from '../common/Mono';
+import { BondBadge, KeyRow } from '../common/Bond';
 import { NeedGame } from '../common/NeedGame';
 
 const grade = (v: number) => (BALANCE.grades.find(([max]) => v < max)?.[1] ?? 'S');
@@ -76,7 +77,7 @@ export function StatsTab() {
       </section>
 
       <section className="card">
-        <div className="card-h"><h3>인연</h3><small>호감도 · 이야기 · 전생 기억</small></div>
+        <div className="card-h"><h3>인연</h3><small>관계 · 속마음 · 전생 기억</small></div>
         {CHAR_ORDER.map(k => {
           const c = CHARACTERS[k];
           if (!st.met[k]) return (
@@ -89,9 +90,9 @@ export function StatsTab() {
               <Mono src={avatarImage(k)} text={c.hanja[0]} color={c.color} round />
               <div className="person-tx">
                 <b>{c.name}</b><span>{c.role}{c.romanceable ? '' : ' · 공략 불가'}</span>
-                <span>이야기 {st.mainStep[k]}/{mainEventsOf(k).length} · 전생 기억 {Math.min(seen, total)}/{total}</span>
+                <span>이야기 {st.mainStep[k]}/{mainEventsOf(k).length} · 전생 기억 {Math.min(seen, total)}/{total} <KeyRow st={st} c={k} /></span>
               </div>
-              <div className="aff"><div className="bar heart"><i style={{ width: `${st.aff[k]}%`, background: c.color }} /></div><b>{Math.round(st.aff[k])}</b></div>
+              <BondBadge st={st} c={k} />
             </div>
           );
         })}

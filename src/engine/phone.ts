@@ -301,7 +301,7 @@ export function topicsFor(st: GameState, c: CharId): { topic: Topic; ok: boolean
   const out: { topic: Topic; ok: boolean; why?: string }[] = [];
   const add = (topic: Topic, why: string | null) => { if (has(topic)) out.push({ topic, ok: !why, why: why ?? undefined }); };
   add('hello', null);
-  add('promise', st.aff[c] < 15 ? '호감도 15 이상' : st.promiseNext.some(p => p.c === c) ? '이미 약속이 있다' : st.promiseNext.length >= 2 ? '주말이 꽉 찼다' : null);
+  add('promise', st.aff[c] < 15 ? '조금 더 친해지면' : st.promiseNext.some(p => p.c === c) ? '이미 약속이 있다' : st.promiseNext.length >= 2 ? '주말이 꽉 찼다' : null);
   add('worry', st.stress < 50 ? '스트레스 50 이상일 때' : null);
   add('dream', !st.memories[`${c}1`] ? '그 사람의 전생 기억을 봐야' : null);
   return out;

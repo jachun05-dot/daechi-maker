@@ -69,7 +69,7 @@ export type Topic = 'hello' | 'promise' | 'worry' | 'dream';
 /** polite: 선배(도윤)에게 보낼 때 */
 export const TOPICS: Record<Topic, { label: string; text: string; polite: string; desc: string }> = {
   hello:   { label: '안부',          text: '뭐 해?', polite: '선배, 뭐 해요?', desc: '근황을 묻는다' },
-  promise: { label: '주말 약속',     text: '이번 주말에 시간 돼?', polite: '이번 주말에 시간 돼요?', desc: '호감도 15 이상 · 수락하면 주말 약속이 잡힌다' },
+  promise: { label: '주말 약속',     text: '이번 주말에 시간 돼?', polite: '이번 주말에 시간 돼요?', desc: '조금 친해지면 · 수락하면 주말 약속(데이트)이 잡힌다' },
   worry:   { label: '고민 털어놓기', text: '나 요즘 좀 힘들어…', polite: '저 요즘 좀 힘들어요…', desc: '스트레스 50 이상 · 반응은 사람마다 다르다' },
   dream:   { label: '꿈 얘기',       text: '나 요즘 이상한 꿈을 꿔. 옛날 꿈인데, 너도 나와.', polite: '요즘 이상한 꿈을 꿔요. 옛날 꿈인데, 선배도 나와요.', desc: '그 사람의 전생 기억을 봤을 때' },
 };

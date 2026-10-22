@@ -45,6 +45,7 @@ function act() {
     else ui.vnAdvance();
   } else if (s.modal) {
     const m = s.modal;
+    if (m.endings && cur) cur.love.end = m.endings.filter(e => !e.kind.startsWith('커리어')).map(e => e.kind).join('+') || '없음';
     if (m.options?.length) ui.closeModal(pick(m.options.filter(o => !o.disabled)).value);
     else if (m.input !== undefined) ui.closeModal('시뮬');
     else ui.closeModal(m.buttons[m.buttons.length - 1]?.value);
@@ -116,6 +117,8 @@ interface Run {
   exams: string[]; sports: string[]; festival: string[]; slumps: number; doze: number; collapse: number; broke: number;
   verdicts: string[]; moneyMin: number; stressMax: number; unlocks: number;
   vals: Record<string, number>; growth: number[]; fit: number[]; fest: number[]; intAt: Record<number, number>;
+  /** 연애 — 고백 답 · 이별 · 질투 · 데이트 · 최고 단계 · 인연 엔딩 */
+  love: { confess: string[]; breakup: number; jealous: number; dates: Record<string, number>; maxStage: number; lover: string | null; end: string };
 }
 let cur: Run;
 onTrigger((st, key) => {
@@ -124,6 +127,9 @@ onTrigger((st, key) => {
   if (key.startsWith('festival:')) { cur.festival.push(key.slice(9)); cur.fest.push(Math.round(Math.max((st.skill.vocal + st.skill.dance) / 2, (st.skill.acting + st.skill.voice) / 2, (st.skill.debate + st.skill.language) / 2))); }
   if (key.startsWith('exam:')) cur.intAt[st.turn] = Math.round(st.stat.int);
   if (key === 'slump') cur.slumps++;
+  if (key.startsWith('confess:')) cur.love.confess.push(key.split(':')[1]);
+  if (key.startsWith('breakup:')) cur.love.breakup++;
+  if (key.startsWith('jealous:')) cur.love.jealous++;
   cur.moneyMin = Math.min(cur.moneyMin, st.money);
   cur.stressMax = Math.max(cur.stressMax, st.stress);
 });
@@ -135,7 +141,7 @@ ui.runLog = (l: any) => {
 };
 
 async function playOne(): Promise<Run> {
-  cur = { int: 0, top: 0, career: '', kind: '', goal: null, goalFit: 0, exams: [], sports: [], festival: [], slumps: 0, doze: 0, collapse: 0, broke: 0, verdicts: [], moneyMin: Infinity, stressMax: 0, unlocks: 0, vals: {}, growth: [], fit: [], fest: [], intAt: {} };
+  cur = { int: 0, top: 0, career: '', kind: '', goal: null, goalFit: 0, exams: [], sports: [], festival: [], slumps: 0, doze: 0, collapse: 0, broke: 0, verdicts: [], moneyMin: Infinity, stressMax: 0, unlocks: 0, vals: {}, growth: [], fit: [], fest: [], intAt: {}, love: { confess: [], breakup: 0, jealous: 0, dates: {}, maxStage: 0, lover: null, end: '' } };
   useUI.setState({ busy: false });
   fav = [pick(FAV_KEYS), ...(Math.random() < 0.5 ? [pick(FAV_KEYS)] : [])];
   wildPlaces = Math.random() < 0.5 ? [pick(placesMod.PLACES).id, pick(placesMod.PLACES).id] : [];
@@ -156,6 +162,8 @@ async function playOne(): Promise<Run> {
     top: Math.max(...Object.values(st.skill).map(Math.floor)),
     vals: { ...st.stat, ...st.skill },
   });
+  for (const b of Object.values(st.bond)) { cur.love.maxStage = Math.max(cur.love.maxStage, b.stage); for (const [k, n] of Object.entries(b.dates)) cur.love.dates[k] = (cur.love.dates[k] ?? 0) + n; }
+  cur.love.lover = st.lover;
   return cur;
 }
 
@@ -195,6 +203,14 @@ for (const s of STRATS) {
   console.log(`  시험 ${exams.length}회: 1등 ${pct(count(exams, 'top'), exams.length)} · 상위 ${pct(count(exams, 'high'), exams.length)} · 중위 ${pct(count(exams, 'mid'), exams.length)} · 하위 ${pct(count(exams, 'low'), exams.length)}`);
   console.log(`  체육대회 우승 ${pct(runs.flatMap(r => r.sports).filter(x => x === 'win').length, runs.flatMap(r => r.sports).length)} · 축제 성공 ${pct(runs.flatMap(r => r.festival).filter(x => x === 'ok').length, runs.flatMap(r => r.festival).length)}`);
   console.log(`  슬럼프 평균 ${avg(runs.map(r => r.slumps)).toFixed(1)}회 · 최고 스트레스 평균 ${Math.round(avg(runs.map(r => r.stressMax)))} · 한 달 평균 졸음 ${(avg(runs.map(r => r.doze)) / 27).toFixed(1)}일 쓰러짐 ${(avg(runs.map(r => r.collapse)) / 27).toFixed(1)}일 돈없음 ${(avg(runs.map(r => r.broke)) / 27).toFixed(1)}번`);
+  {
+    const L = runs.map(r => r.love), conf = L.flatMap(l => l.confess), dates = L.reduce((a, l) => { for (const [k, n] of Object.entries(l.dates)) a[k] = (a[k] ?? 0) + n; return a; }, {} as Record<string, number>);
+    const dn = (dates.great ?? 0) + (dates.ok ?? 0) + (dates.fail ?? 0);
+    const ends: Record<string, number> = {};
+    for (const l of L) ends[l.end || '?'] = (ends[l.end || '?'] ?? 0) + 1;
+    console.log(`  연애: 최고 단계 ${[0, 1, 2, 3, 4, 5].map(n => `${n}:${L.filter(l => l.maxStage === n).length}`).join(' ')} · 고백 ${conf.length}번 (받음 ${count(conf, 'yes')} · 기다림 ${count(conf, 'wait')} · 거절 ${count(conf, 'no')}) · 졸업 때 연인 ${pct(L.filter(l => l.lover).length, N)} · 이별 ${L.reduce((a, l) => a + l.breakup, 0)} · 질투 평균 ${avg(L.map(l => l.jealous)).toFixed(1)}`);
+    console.log(`  데이트 ${dn}번: 대성공 ${pct(dates.great ?? 0, dn)} · 실수 ${pct(dates.fail ?? 0, dn)} · 인연 엔딩: ${Object.entries(ends).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}`).join(' · ')}`);
+  }
   console.log(`  성적표: 優 ${pct(count(verd, '優'), verd.length)} · 良 ${pct(count(verd, '良'), verd.length)} · 可 ${pct(count(verd, '可'), verd.length)} · 亂 ${pct(count(verd, '亂'), verd.length)} · 새 일정 해금 평균 ${avg(runs.map(r => r.unlocks)).toFixed(1)}개 · 최저 용돈 평균 ${Math.round(avg(runs.map(r => r.moneyMin)) / 1000)}천원`);
 }
 const { CAREER_ENDINGS } = await import('@/content/careerEndings');

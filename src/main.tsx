@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
-import { saves, game } from './engine/state';
+import { saves, game, refresh } from './engine/state';
 import { loadPersisted } from './engine/save';
 import { initStorage, store } from './platform/storage';
 import { ui, useUI } from './store/ui';
@@ -18,7 +18,7 @@ document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('contextmenu', e => e.preventDefault());
 
 // 테스트 자동화·디버깅용 핸들
-Object.assign(window, { __ehwa: { game, ui: useUI } });
+Object.assign(window, { __ehwa: { game, ui: useUI, act: ui, refresh } });
 
 // 저장소(웹: 브라우저 · 앱: 앱 전용 저장소)를 먼저 읽고 화면을 그린다
 async function start() {

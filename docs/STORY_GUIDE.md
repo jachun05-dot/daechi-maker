@@ -68,6 +68,12 @@ me| 주인공 대사         ← 플레이어가 정한 이름으로 표시
 - `special` — 강조된 선택지
 - `if:조건` — 조건이 맞을 때만 보이기 (공백 없이: `if:met.sihyun&&aff.sihyun>=30`)
 - `value:값` — 엔진에 넘기는 값 (슬럼프·진로 상담처럼 코드가 결과를 처리할 때)
+- **연애** ([romance/README.md](romance/README.md)) — 선택지 `{ }` 나 `[effect …]` 에 씁니다
+  - `key:taejun.1` — 그 사람의 속마음 열쇠 🔑 열기 (열쇠 목록은 `content/romance.ts`)
+  - `lock:taejun.1` — 그 열쇠를 이번 생에 닫기 (잠금 선택지)
+  - `stage:ian.친구` — 관계 단계 올리기 (첫 만남 · 아는 사이 · 친구 · 썸. 연인은 고백으로만, 단계는 내려가지 않음)
+  - `like:taejun.river` — 그 사람 취향 하나를 알게 됨 (도감에 기록)
+  - 열쇠 선택지는 세 갈래로: **열쇠**(`key:`) / **다정한 오답**(호감만 `taejun+3`) / **잠금**(`lock:`)
 
 ## 조건 분기
 
@@ -86,7 +92,8 @@ me| 주인공 대사         ← 플레이어가 정한 이름으로 표시
 | 학년 | `year>=2` |
 | 메인 이벤트 진행 | `main.ian>=2` |
 | 리소스 | `hp<30` `stress>=70` `money>=100000` |
-| 호감도 / 만남 | `aff.ian>=40` `met.saya` |
+| 호감도 / 만남 | `aff.ian>=40` `hearts.ian>=2` (하트 칸) `met.saya` |
+| 연애 | `stage.ian>=3` (0 모르는 사이 … 4 썸 · 5 연인) · `key.taejun>=2` (연 열쇠 수) · `key.taejun.1` (그 열쇠) · `lover=taejun` (`lover=none`) · `rumor.ian>=5` |
 | 전생의 꿈 / 현생의 꿈 | `past=med` · `goal=idol` (아직 안 정했으면 `goal=none`) — med idol actor leader |
 | 플래그 / 기억 | `flag.saya_hope` · `mem.saya4` |
 | 엔진 변수 | `var.tier=top` (이벤트 장면에서 코드가 넘겨줌) |
@@ -109,14 +116,19 @@ me| 주인공 대사         ← 플레이어가 정한 이름으로 표시
 | 장면 id | 어디서 | 속성 |
 |---|---|---|
 | `basic.{인물}` | 출몰 장소·학교에서 짧게 마주칠 때 | `pick=random` — 대사 한 줄이 무작위로 나온다 |
-| `main.{인물}.{번호}` | 인물 메인 이벤트. 번호 순서대로 진행 | `aff=` 최소 호감도 · `year=` 최소 학년 · `spirit=` 최소 감응 · `place=` 지도 장소 id(그 장소에 "!" 표시) 또는 `auto=1`(조건이 되면 달 시작에 자동 재생) |
+| `main.{인물}.{번호}` | 인물 메인 이벤트. 번호 순서대로 진행 | `stage=` 마치면 오르는 관계 단계 (없으면 첫 만남) · `aff=` 최소 호감도 · `year=` 최소 학년 · `spirit=` 최소 감응 · `place=` 지도 장소 id(그 장소에 "!" 표시) 또는 `auto=1`(조건이 되면 달 시작에 자동 재생) |
 | `vac.{인물}.summer1~3`, `winter1~2` | 방학 이벤트. 그 인물의 제안을 받아들인 횟수 = 단계 | `title=` |
 | `{인물}{번호}` (시대 팩 dreams/) | 밤 — 전생의 기억 | `ch=` 인물 · `title=` · `ep=` 순서 · `aff=` · `spirit=` · `hidden=1` · `requires=a,b` · `auto=1` |
 | `true.` `normal.` `reject.{인물}` | 마지막 선택의 결과 | `ending=` 엔딩 컬렉션 id (`content/endings.ts`) |
 | `career.{key}` | 커리어 엔딩 59종 (목록·조건 `content/careerEndings.ts`) | `ending=` · 꿈 4종은 `var.kind`(dream / other). 다른 길 장면 첫 줄 `[call career._other]` = 정했던 꿈이 있었다면 한 줄 |
 | `event.snack.{1~3}` | 야식 — 스트레스 쌓인 주 밤 | 선택지 `value:ramen / tteok / none` |
 
-| `promise.{인물}` (weekend/) | 주말 약속 장소에서. 한 줄 무작위 | `pick=random` |
+| `promise.{인물}` (weekend/) | 주말 약속(데이트) 장소에서. 한 줄 무작위 | `pick=random` |
+| `date.{인물}.{great\|ok\|fail}` | 데이트 판정 결과 장면 (없으면 공용 한 줄) | — |
+| `confess.{인물}` / `confess.common` (events/romance.story) | 그 사람이 먼저 고백 | 선택지 `value:yes / wait / no` (`wait` 는 `if:var.canwait=1`) · `{var.who}` |
+| `jealous.{인물}` / `jealous.common` | 소문 때문에 질투 | `value:explain / honest / ignore` · `{var.who}` 소문 난 사람 · `{var.by}` 질투하는 사람 |
+| `breakup.{인물}` / `breakup.common` | 연인을 오래 못 봤을 때 위기 | `value:stay / go` |
+| `miss.{인물}` / `miss.common` | 엇갈림 엔딩 (썸까지 갔는데 고백을 놓침) | 엔딩 id 는 엔진이 `m_{인물}` 로 기록 |
 | `weather.{인물}.{rain\|snow}` (weekend/) | 비·눈 오는 주말에 그 인물을 만나면 기본 이벤트 대신 | — |
 | `street.{장소id}.{번호}` (street/) | 주말에 아무도 안 만난 칸에서 가끔 | `title=` · `weather=` · `year=` · `if=조건` |
 

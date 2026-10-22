@@ -21,6 +21,11 @@ export interface Effect {
   res?: Partial<Record<ResKey, number>>;
   aff?: Partial<Record<CharId, number>>;
   flags?: string[];
+  /** 연애 — 열쇠 열기·닫기 ("taejun.1"), 단계 올리기, 취향 발견 ("taejun.river") */
+  keys?: string[];
+  locks?: string[];
+  stage?: Partial<Record<CharId, number>>;
+  likes?: string[];
 }
 
 /* ---------- 스토리 스크립트 AST (.story 파일을 파싱한 결과) ---------- */
@@ -63,6 +68,29 @@ export interface PendingChat {
   path: number[];        // 지금까지 고른 답장 번호 (불러오기 후 이어서 진행할 때 씀)
   picked: string[];      // 고른 답장 글 — 업데이트로 선택지 순서가 바뀌어도 글로 찾아간다
 }
+/** 연애 — 인물 한 사람과의 관계 (docs/romance/README.md) */
+export interface Bond {
+  /** 0 모르는 사이 · 1 첫 만남 · 2 아는 사이 · 3 친구 · 4 썸 · 5 연인 */
+  stage: number;
+  /** 연 열쇠 · 이번 생에 닫힌 열쇠 */
+  keys: string[];
+  locked: string[];
+  /** 알아낸 취향 id */
+  likes: string[];
+  /** 학교 소문 (학교 안 인물만) */
+  rumor: number;
+  /** 고백: none 아직 · wait 기다려 달라고 함 · yes 받음 · no 거절함 · broke 헤어짐 */
+  confess: 'none' | 'wait' | 'yes' | 'no' | 'broke';
+  /** 기다려 달라고 한 뒤 다시 고백할 수 있는 턴 */
+  waitUntil: number;
+  /** 마지막으로 같이 시간을 보낸 날 (GameState.day) — 연인 소홀 판정 */
+  lastSeen: number;
+  /** 데이트 기록 */
+  dates: { great: number; ok: number; fail: number };
+  /** 이 턴까지는 다시 질투하지 않는다 */
+  jealousUntil: number;
+}
+
 /** 주말 약속 — 메신저에서 미리 잡힌 것 */
 export interface FixedPromise { c: CharId; place: string; slot: number }
 
@@ -85,6 +113,10 @@ export interface GameState {
   pastRole: CareerId | null;
   aff: Record<CharId, number>;
   met: Partial<Record<CharId, boolean>>;
+  /** 연애 — 인물별 관계 단계 · 열쇠 · 취향 · 소문 */
+  bond: Record<CharId, Bond>;
+  /** 지금 사귀는 사람 */
+  lover: CharId | null;
   /** 인물별 메인 이벤트 진행 단계 */
   mainStep: Record<CharId, number>;
   /** 인물별 방학 이벤트 단계 */

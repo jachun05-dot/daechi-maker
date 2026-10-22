@@ -4,18 +4,19 @@
    - 수정 후 refresh() 를 부르면 화면이 다시 그려진다
    - 저장·불러오기는 save/ (저장 위치는 platform/storage.ts)
    ========================================================= */
-import type { BaseStat, CharId, Effect, GameState, MetaState, Settings, SkillKey } from './types';
+import type { BaseStat, Bond, CharId, Effect, GameState, MetaState, Settings, SkillKey } from './types';
 import { BALANCE } from '@/config/balance';
 import { CHAR_ORDER } from '@/content/characters';
 import { SKILL_KEYS } from '@/content/careers';
 import { ERA } from '@/content/eras';
-import { emit } from './triggers';
 import { SAVE_VERSION } from './save/migrate';
 import { saves } from './save';
+import { applyRomance } from './romance';
 
 export { saves };
 
 const perChar = <T,>(f: () => T) => Object.fromEntries(CHAR_ORDER.map(c => [c, f()])) as Record<CharId, T>;
+export const newBond = (): Bond => ({ stage: 0, keys: [], locked: [], likes: [], rumor: 0, confess: 'none', waitUntil: 0, lastSeen: 0, dates: { great: 0, ok: 0, fail: 0 }, jealousUntil: 0 });
 export const defaultMeta = (): MetaState => ({ memories: {}, album: {}, endings: {}, plays: 0, clears: 0, lastName: '' });
 export const defaultSettings = (): Settings => ({ textSpeed: 1, fx: true, showSlots: true });
 
@@ -45,7 +46,7 @@ export function newState(name: string): GameState {
     stat: { ...BALANCE.start.stat },
     skill: Object.fromEntries(SKILL_KEYS.map(k => [k, 0])) as Record<SkillKey, number>,
     goal: null, goalHint: null, pastRole: null,
-    aff: perChar(() => 0), met: {}, mainStep: perChar(() => 0), vacStage: perChar(() => ({ summer: 0, winter: 0 })),
+    aff: perChar(() => 0), met: {}, bond: perChar(newBond), lover: null, mainStep: perChar(() => 0), vacStage: perChar(() => ({ summer: 0, winter: 0 })),
     sightings: {}, memories: { self1: true }, flags: {},
     timetable: Array(10).fill(null), lastTimetable: null, club: null, clubTerm: -1, focus: null,
     chats: {}, unread: {}, pending: {}, chatQueue: [], day: 0, phoneTime: BALANCE.phone.callsPerMonth, presence: {}, promiseNext: [], newMemory: false, placeVisits: {}, promiseLog: {}, tally: {}, savedAt: Date.now(),
@@ -62,13 +63,9 @@ export function unlockAlbum(key: string) {
   saves.saveMeta();
 }
 
-/** 호감도 변화 — 이안·무진은 한쪽이 크게 오르면(jealousyMin 이상) 다른 쪽이 질투한다 */
+/** 호감도(♥) 변화 — 질투는 자동 감점 대신 소문 사건으로 (engine/romance.ts) */
 export function addAff(st: GameState, c: CharId, v: number) {
   st.aff[c] = clamp(st.aff[c] + v, 0, 100);
-  if (v >= BALANCE.affection.jealousyMin && (c === 'ian' || c === 'mujin')) {
-    const other: CharId = c === 'ian' ? 'mujin' : 'ian';
-    if (st.met[other]) { st.aff[other] = clamp(st.aff[other] - BALANCE.affection.jealousy, 0, 100); emit(st, `jealous:${other as 'ian' | 'mujin'}`); }
-  }
 }
 
 /** 스토리 선택지 등의 효과 적용 (보정 없음) */
@@ -81,6 +78,7 @@ export function applyEffect(e: Effect, st: GameState = S()) {
   if (r.stress) st.stress = clamp(st.stress + r.stress, 0, 100);
   if (r.money) st.money = Math.max(0, st.money + r.money);
   for (const f of e.flags ?? []) st.flags[f] = true;
+  applyRomance(st, e);
 }
 
 export function unlockMemory(id: string) {

@@ -14,6 +14,7 @@ import { pushMsg } from './phone';
 import { emit } from './triggers';
 import { hasScene } from './story/library';
 import { setClock } from './clock';
+import { spentTime } from './romance';
 
 const STAGES = { summer: 3, winter: 2 } as const;
 
@@ -66,6 +67,7 @@ export async function runVacation(st: GameState, season: 'summer' | 'winter') {
     const stage = st.vacStage[c][season] + 1;
     st.vacStage[c][season] = stage;
     addAff(st, c, BALANCE.affection.vacation);
+    spentTime(st, c, 0);
     const id = `vac.${c}.${season}${stage}`;
     if (hasScene(id)) await ui.playScene(id, { theme: 'day' });
     emit(st, `vac:${c}`);

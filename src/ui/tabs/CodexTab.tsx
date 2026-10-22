@@ -13,6 +13,7 @@ import { dreamSequence } from '@/engine/dreams';
 import { avatarImage, cgImage } from '@/engine/assets';
 import { Mono } from '../common/Mono';
 import { Icon } from '../common/Icon';
+import { BondDetail } from '../common/Bond';
 
 export function CodexTab() {
   const { state: st, meta } = useGame();
@@ -27,7 +28,7 @@ export function CodexTab() {
         <span className="mem-ep">{d.hidden ? '히든 · ' : ''}제{d.ep}장</span><b>{d.title}</b>
       </button>
     );
-    const cond = d.auto ? '이야기 진행' : d.hidden ? '숨겨진 기억' : `호감 ${d.aff} · 감응 ${d.spirit}`;
+    const cond = d.auto ? '이야기 진행' : d.hidden ? '숨겨진 기억' : `${d.aff ? `♥ ${Math.ceil(d.aff / 20)}칸 · ` : ''}감응 ${d.spirit}`;
     return <div key={d.id} className="mem locked"><Icon name="lock" size={16} /><span className="mem-ep">제{d.ep}장</span><b>???</b><span className="mem-ep">{cond}</span></div>;
   };
 
@@ -81,6 +82,7 @@ export function CodexTab() {
             {known && <p className="muted">{c.desc}</p>}
             <p className="muted">{pastKnown ? <><b>전생 · {c.past}({c.pastHanja})</b> — {c.pastRole}<br />{c.pastDesc}</> : '전생 · 기억이 아직 깨어나지 않았다.'}</p>
             {known && <p className="muted">자주 보이는 곳 · {st?.sightings[k]?.length ? st.sightings[k]!.join(', ') : '아직 모른다'}</p>}
+            {st?.met[k] && <BondDetail st={st} c={k} />}
           </section>
         );
       })}

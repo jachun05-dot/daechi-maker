@@ -55,7 +55,7 @@ const SKILL: string[] = SKILL_KEYS;
 
 function resolve(key: string, ctx: StoryCtx): string | number | boolean | undefined {
   const S = ctx.state;
-  const [head, sub] = key.split('.');
+  const [head, sub, sub2] = key.split('.');
   if (head === 'var') return ctx.vars[sub];
   if (head === 'past') return pastOf(S);
   if (!S) return undefined;
@@ -73,6 +73,12 @@ function resolve(key: string, ctx: StoryCtx): string | number | boolean | undefi
     case 'main': return S.mainStep[sub as 'ian'];
     case 'flag': return !!S.flags[sub];
     case 'mem': return !!S.memories[sub];
+    // 연애 — stage.ian>=3 · key.taejun>=2 (연 개수) · key.taejun.1 (그 열쇠) · lover=taejun · rumor.ian>=4 · hearts.ian>=3
+    case 'stage': return S.bond?.[sub as 'ian']?.stage;
+    case 'key': return sub2 ? !!S.bond?.[sub as 'ian']?.keys.includes(sub2) : S.bond?.[sub as 'ian']?.keys.length;
+    case 'lover': return S.lover ?? 'none';
+    case 'rumor': return S.bond?.[sub as 'ian']?.rumor;
+    case 'hearts': return Math.floor((S.aff[sub as 'ian'] ?? 0) / 20);
   }
   return undefined;
 }
@@ -84,8 +90,8 @@ export function checkCond(expr: string): string | null {
     const m = /^([\w.]+)\s*(>=|<=|!=|=|>|<)?\s*(.*)$/.exec(a);
     if (!m) return `조건 "${part}"을(를) 읽을 수 없습니다`;
     const [head, sub] = m[1].split('.');
-    const ok = ['var', 'past', 'goal', 'year', 'hp', 'stress', 'money', 'turn', 'flag', 'mem', ...BASE, ...SKILL].includes(head)
-      || (['aff', 'met', 'main'].includes(head) && (CHAR_ORDER as string[]).includes(sub));
+    const ok = ['var', 'past', 'goal', 'year', 'hp', 'stress', 'money', 'turn', 'flag', 'mem', 'lover', ...BASE, ...SKILL].includes(head)
+      || (['aff', 'met', 'main', 'stage', 'key', 'rumor', 'hearts'].includes(head) && (CHAR_ORDER as string[]).includes(sub));
     if (!ok) return `조건 "${part}"의 "${m[1]}"은(는) 알 수 없는 값입니다`;
   }
   return null;

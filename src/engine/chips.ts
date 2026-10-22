@@ -28,8 +28,9 @@ export function deltaChips(d: Delta): Chip[] {
   });
 }
 
+/** 호감 변화 — 숫자는 숨기고 크기만 (♥▲ 조금 · ♥▲▲ 크게) */
 export function affChips(diff: Partial<Record<CharId, number>>): Chip[] {
   return Object.entries(diff).filter(([, v]) => v).map(([k, v]) => ({
-    label: `${CHARACTERS[k as CharId].name} 호감 ${v! > 0 ? '+' : '−'}${Math.abs(v!)}`, tone: v! > 0 ? 'heart' : 'down',
+    label: `${CHARACTERS[k as CharId].name} ♥${v! > 0 ? (v! >= 5 ? '▲▲' : '▲') : (v! <= -5 ? '▼▼' : '▼')}`, tone: v! > 0 ? 'heart' : 'down',
   }));
 }

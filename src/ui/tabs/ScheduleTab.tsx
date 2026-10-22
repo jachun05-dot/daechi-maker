@@ -23,7 +23,7 @@ import { NeedGame } from '../common/NeedGame';
 function hint(st: GameState) {
   const T = TURNS[st.turn];
   if (st.turn === 0) return '요일마다 방과후와 야간 일정을 골라 한 달 시간표를 짜세요. 주말에는 서울 지도에서 갈 곳을 고릅니다.';
-  if (T.summer) return '여름방학. 특강을 하나 고르면 방학이 빠르게 지나갑니다. 호감도가 높은 사람에게서 연락이 올지도 몰라요.';
+  if (T.summer) return '여름방학. 특강을 하나 고르면 방학이 빠르게 지나갑니다. 가까워진 사람에게서 연락이 올지도 몰라요.';
   if (st.hp < hpMax(st) * 0.3) return '체력이 낮으면 수업 중에 졸아서 덜 성장해요. 쉬는 칸을 넣어 주세요.';
   if (st.stress >= 75) return '스트레스가 한계에 가까워요. 100이 되면 슬럼프가 옵니다.';
   return '무거운 일정을 쉬는 칸 없이 사흘 넘게 이으면 피로가 더 쌓여요. 새 일정은 실력이 쌓이면 열려요.';

@@ -92,9 +92,28 @@ export const BALANCE = {
     incident: 2,           // 평일 돌발 사건
     main: 5,               // 메인 이벤트 기본값 (+선택지)
     vacation: 6,           // 방학 이벤트 기본값
-    jealousy: 1,           // 이안·무진: 한쪽 호감이 오를 때 다른 쪽이 잃는 양
-    jealousyMin: 4,        // 이만큼 이상 오를 때만 질투 (메인·약속·방학 같은 큰 순간. 톡·짧은 만남은 제외)
     spiritOnMeet: 0.5,     // 인물을 만날 때마다 감응
+  },
+  /** 연애 — docs/romance/README.md */
+  romance: {
+    hearts: 20,            // 호감 20마다 하트 한 칸 (5칸)
+    /** 데이트 판정 — 평일과 같은 방식. 그 사람이 좋아하는 능력 vs 그달 기준 */
+    date: {
+      mult: { great: 1.6, ok: 1, fail: 0.5 },   // 약속 호감에 곱한다
+      star: 0.12,          // 그 사람이 좋아하는 곳(★)이면 대성공 확률 +
+      style: 0.04,         // 스타일이 그달 기준 이상이면 대성공 +
+    },
+    /** 소문 · 질투 — 학교 안 인물과 같이 있으면 쌓인다 */
+    rumor: { meet: 1, date: 2, main: 1, threshold: 8, decay: 0.7, cooldown: 4, minStage: 3, minAff: 30 },   // 매달 decay 배로 줄어든다 · 같은 사람은 cooldown 달 동안 다시 질투하지 않는다
+    jealousy: {
+      explain: { aff: -1, rumor: 0.3 },   // 해명한다 — 소문이 거의 가라앉는다
+      honest: { aff: -2, rumor: 0.6 },    // 솔직히 말한다
+      ignore: { aff: -4, rumor: 0.9 },    // 모른 척한다
+    },
+    /** 고백 — 썸 + 열쇠 minKeys개 이상 + 호감 minAff, 2학년 12월 ~ 3학년 10월 */
+    confess: { minAff: 55, minKeys: 2, from: [2, 12] as [number, number], to: [3, 10] as [number, number], waitMonths: 3, decline: 10 },
+    /** 연인 — 오래 안 보면 위기 */
+    neglect: { warnDays: 42, crisisDays: 70, holdAff: 50, breakAff: 15 },
   },
   /** 방학 */
   vacation: { invites: 2, declineBonus: 0.3 },

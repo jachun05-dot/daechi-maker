@@ -1,4 +1,4 @@
-# 연애 파트 — 시스템 틀 (확정 · 아직 코드 반영 전)
+# 연애 파트 — 시스템 틀 (확정 · 시스템 구현됨, 인물 이벤트는 플롯 작업 중)
 
 인물 플롯은 이 틀 위에 얹는다. 새 인물을 쓸 때는 [_TEMPLATE.md](_TEMPLATE.md)를 복사해 채우고, 채운 예시는 [taejun.md](taejun.md)를 본다.
 인물 설정 원본은 [../CHARACTERS.md](../CHARACTERS.md) — 한태준만 확정, 나머지는 플롯을 다시 쓰는 중.
@@ -52,3 +52,16 @@
 
 ## 확정한 것
 - 중간 고백 있음 · 하트와 단계만 표시 · 썸 여럿 / 연인 하나 · 류시현 포함
+
+## 구현 위치
+| 무엇 | 파일 |
+|---|---|
+| 인물별 열쇠 · 취향 · 데이트 능력 · 학교 안팎 | `src/content/romance.ts` |
+| 규칙 (단계 · 열쇠 · 소문 · 고백 조건 · 데이트 판정) | `src/engine/romance.ts` |
+| 장면 진행 (데이트 · 고백 · 질투 · 연인 위기) | `src/engine/love.ts` |
+| 공용 장면 [임시] | `src/content/stories/events/romance.story` |
+| 수치 | `src/config/balance.ts` → `romance` |
+| 화면 (하트 · 단계 · 열쇠 · 취향) | `src/ui/common/Bond.tsx` · 주말 계획판 약속 카드의 "어디서 만날까?" |
+| 이야기 문법 (`key:` `lock:` `stage:` `like:` · 조건 `stage.` `key.` `lover=`) | [../STORY_GUIDE.md](../STORY_GUIDE.md) |
+
+새 인물 플롯을 넣을 때: `content/romance.ts` 에 열쇠·취향을 적고 → 메인 이벤트에 `stage=` 와 `key:` 선택지를 넣으면 끝. 열쇠가 이야기에 들어가는 순간부터 그 인물의 고백·진 엔딩 조건에 자동으로 들어간다.

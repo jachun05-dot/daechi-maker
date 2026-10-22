@@ -13,6 +13,8 @@ import { getScene, mainEventsOf, type MainEvent } from './story/library';
 import { josa } from './story/context';
 import { timeRank } from './clock';
 import { emit } from './triggers';
+import { spentTime, stageAfterMain } from './romance';
+import { flushNews } from './love';
 
 const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 const yearOf = (st: GameState) => TURNS[Math.min(st.turn, TURNS.length - 1)].year;
@@ -36,6 +38,9 @@ export async function playMain(st: GameState, e: MainEvent, theme: 'day' = 'day'
   await ui.playScene(e.id, { theme });
   ui.setTheme('day');
   st.mainStep[c] = e.step;
+  // 연애 — 장면 머리말 stage= 로 관계 단계가 오른다 · 같이 보낸 시간 (학교 안이면 소문)
+  stageAfterMain(st, c, e.id);
+  spentTime(st, c, BALANCE.romance.rumor.main);
   emit(st, `main:${c}.${e.step}`);
   logAff(st, before, `${CHARACTERS[c].name} — 이야기가 움직였다`, c);
 }
@@ -44,6 +49,7 @@ export function logAff(st: GameState, before: Record<CharId, number>, title: str
   const diff: Partial<Record<CharId, number>> = {};
   for (const k of CHAR_ORDER) if (st.aff[k] !== before[k]) diff[k] = st.aff[k] - before[k];
   ui.runLog({ title, body, tone: 'char', mark: CHARACTERS[c].hanja[0], color: CHARACTERS[c].color, chips: affChips(diff) });
+  flushNews();
   refresh();
 }
 
@@ -54,6 +60,7 @@ export async function basicMeet(st: GameState, c: CharId, where: string, bg: str
   addAff(st, c, BALANCE.affection.basic);
   st.stat.spirit += BALANCE.affection.spiritOnMeet;
   addSighting(st, c, where);
+  spentTime(st, c, BALANCE.romance.rumor.meet);
   const small = getScene(`basic.${c}`).nodes;
   const nodes: StoryNode[] = [{ t: 'say', text: `${where}에서 ${josa(CHARACTERS[c].name, '과/와')} 마주쳤다.`, line: 0 }, pick(small)];
   await ui.playScene(nodes, { theme: 'day', bg, intro: { where } });

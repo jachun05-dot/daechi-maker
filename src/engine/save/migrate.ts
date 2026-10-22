@@ -13,10 +13,11 @@ import { PLACES } from '@/content/places';
 import { AFTER_SCHOOL, CLUBS, NIGHT } from '@/content/timetable';
 import { RENAMES } from '@/content/renames';
 import { DREAMS, hasScene, mainEventsOf } from '../story/library';
-import { newState } from '../state';
+import { newBond, newState } from '../state';
+import { ROMANCE } from '@/content/romance';
 
 /** 지금 세이브 구조 버전 */
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 
 type Raw = Record<string, any>;
 
@@ -35,6 +36,19 @@ export const MIGRATIONS: { to: number; note: string; run(d: Raw): void }[] = [
       // 스타일은 지금까지 사교·감성으로 꾸며 온 만큼 조금 얹어 시작한다
       if (d.stat && d.stat.style === undefined) d.stat.style = 10 + Math.floor(((d.stat.cha ?? 10) + (d.stat.sense ?? 10) - 20) * 0.2);
       d.tally ??= {};
+    },
+  },
+  {
+    to: 6, note: '연애 — 관계 단계 · 열쇠 · 취향 · 소문 · 연인',
+    run(d) {
+      // 예전 세이브는 본 메인 이벤트 수로 단계를 어림한다 (첫 만남 → 아는 사이 → 친구 → 썸, 마지막 이벤트까지 봤으면 썸)
+      const bond: Raw = (d.bond ??= {});
+      for (const c of CHAR_ORDER) {
+        const step = Number(d.mainStep?.[c] ?? 0), total = mainEventsOf(c).length;
+        const stage = !d.met?.[c] || step < 1 ? 0 : step >= total && total > 1 ? 4 : Math.min(3, step);
+        bond[c] ??= { stage, keys: [], locked: [], likes: [], rumor: 0, confess: 'none', waitUntil: 0, lastSeen: Number(d.day ?? 0), dates: { great: 0, ok: 0, fail: 0 }, jealousUntil: 0 };
+      }
+      d.lover ??= null;
     },
   },
 ];
@@ -61,7 +75,7 @@ export function migrate(raw: unknown): Migrated {
   const base = newState(typeof d.name === 'string' ? d.name : '나') as unknown as Raw;
   for (const [k, v] of Object.entries(base)) {
     if (d[k] === undefined || (v !== null && d[k] !== null && typeof d[k] !== typeof v) || Array.isArray(v) !== Array.isArray(d[k])) d[k] = v;
-    else if (isObj(v) && isObj(d[k]) && ['stat', 'skill', 'aff', 'mainStep', 'vacStage'].includes(k)) d[k] = { ...v, ...d[k] };
+    else if (isObj(v) && isObj(d[k]) && ['stat', 'skill', 'aff', 'mainStep', 'vacStage', 'bond'].includes(k)) d[k] = { ...v, ...d[k] };
   }
   d.version = SAVE_VERSION;
   const st = d as unknown as GameState;
@@ -78,10 +92,24 @@ export function sanitize(st: GameState): string[] {
   const note = (n: number, what: string) => { if (n) notes.push(`${what} ${n}개`); };
 
   // 인물별 기록 — 없는 인물 지우기
-  for (const k of ['aff', 'mainStep', 'vacStage', 'met', 'sightings', 'promiseLog', 'presence'] as const) {
+  for (const k of ['aff', 'mainStep', 'vacStage', 'met', 'sightings', 'promiseLog', 'presence', 'bond'] as const) {
     const rec = st[k] as Raw;
     for (const c of Object.keys(rec)) if (!isCharId(c)) delete rec[c];
   }
+  // 연애 — 모양 맞추기, 없어진 열쇠·취향 정리, 연인이 없는 인물이면 풀기
+  for (const c of CHAR_ORDER) {
+    const b = { ...newBond(), ...(isObj(st.bond[c]) ? st.bond[c] : {}) };
+    const keyIds = new Set(ROMANCE[c].keys.map(k => k.id)), tasteIds = new Set(ROMANCE[c].tastes.map(t => t.id));
+    b.keys = (Array.isArray(b.keys) ? b.keys : []).filter(k => keyIds.has(k));
+    b.locked = (Array.isArray(b.locked) ? b.locked : []).filter(k => keyIds.has(k) && !b.keys.includes(k));
+    b.likes = (Array.isArray(b.likes) ? b.likes : []).filter(k => tasteIds.has(k));
+    b.stage = Math.max(0, Math.min(5, Number(b.stage) || 0));
+    b.dates = { great: 0, ok: 0, fail: 0, ...(isObj(b.dates) ? b.dates : {}) };
+    st.bond[c] = b;
+  }
+  if (st.lover && (!isCharId(st.lover) || st.bond[st.lover].stage !== 5)) st.lover = null;
+  for (const c of CHAR_ORDER) if (st.bond[c].stage === 5 && st.lover !== c) st.bond[c].stage = 4;
+
   // 메인 이벤트 단계가 지금 이벤트 수보다 크면 끝으로
   for (const c of CHAR_ORDER) st.mainStep[c] = Math.max(0, Math.min(st.mainStep[c] ?? 0, mainEventsOf(c).length));
 

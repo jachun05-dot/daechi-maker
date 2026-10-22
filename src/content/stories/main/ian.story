@@ -3,7 +3,7 @@
 # 말투: 여주 ↔ 이안 서로 반말 (동갑 같은 반)
 # [임시] 장면 내용은 기획 확정 후 교체
 
-=== main.ian.1 auto=1 aff=0 year=1 when="1교시 전" where="1학년 3반 교실" title="옆자리"
+=== main.ian.1 stage="첫 만남" auto=1 aff=0 year=1 when="1교시 전" where="1학년 3반 교실" title="옆자리"
 [bg classroom]
 [fx petal]
 입학식이 끝나고, 반 배정표를 따라 올라간 1학년 3반. 교실이 이상하게 조용했다.
@@ -23,7 +23,7 @@ ian| …그래서, 원하는 게 뭔데?
   ian| 돌려줄 필요 없어. 그거 핑계로 말 걸지 말라고.
 그날 창밖으로 배꽃이 날렸다. 이상하게, 아주 오래전에도 이 사람 옆에 앉아 있었던 것 같았다.
 
-=== main.ian.2 aff=15 year=1 place=hannam where="한남동 갤러리" title="피란길 그림"
+=== main.ian.2 stage="아는 사이" aff=15 year=1 place=hannam where="한남동 갤러리" title="피란길 그림"
 [bg gallery]
 엄마 지인이 보내 준 초대장 한 장으로 들어선 한남동 갤러리의 후원 행사. 정장 차림의 어른들 사이에서 이안은 흠잡을 데 없이 웃고 있었다.
 그런데 사람들이 등을 돌릴 때마다, 그 웃음이 스위치처럼 꺼졌다.
@@ -38,7 +38,7 @@ ian| 여기 오는 사람들은 다 뭔가 원해서 와. 우리 집 이름, 인
   ian| 그런 말 하는 애들은 보통 그다음에 부탁을 하던데.
   그래 놓고 그는 다음 날 교실에서, 내 쪽으로 의자를 조금 당겨 앉았다.
 
-=== main.ian.3 aff=35 year=2 place=hannam when="저녁" where="한남동 저택 옥상 정원" title="옥상 정원"
+=== main.ian.3 stage="친구" aff=35 year=2 place=hannam when="저녁" where="한남동 저택 옥상 정원" title="옥상 정원"
 [bg rooftop]
 [fx none]
 이안이 처음으로 먼저 연락했다. ‘지금 잠깐 올 수 있어?’
@@ -56,7 +56,7 @@ ian| …표정이 왜 그래. 내가 이상한 말 했어?
   그는 웃으려다 말고 입을 다물었다.
   ian| …근데 그 말, 어디서 들어 본 것 같아. 아주 오래전에.
 
-=== main.ian.4 aff=60 year=3 auto=1 when="방과후" where="3학년 교실" title="비 오는 빈 교실"
+=== main.ian.4 stage="썸" aff=60 year=3 auto=1 when="방과후" where="3학년 교실" title="비 오는 빈 교실"
 [bg classroom]
 [fx petal]
 고3 봄, 비 오는 날 방과후. 두고 온 우산을 가지러 교실에 돌아왔더니,

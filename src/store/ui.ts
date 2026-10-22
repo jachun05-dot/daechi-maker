@@ -139,19 +139,22 @@ export const ui = {
   },
   vnAdvance() {
     const vn = get().vn;
-    if (!vn || vn.view.mode === 'choice') return;
+    if (!vn || vn.closing || vn.view.mode === 'choice') return;
     ui.vnShow(vn.player.next());
   },
   vnChoose(i: number) {
     const vn = get().vn;
-    if (vn) ui.vnShow(vn.player.choose(i));
+    if (vn && !vn.closing) ui.vnShow(vn.player.choose(i));
   },
   vnShow(view: View) {
     const vn = get().vn!;
     if (view.mode === 'done') {
-      // 장면이 끝나면 잠깐 어두워지며 사라진 뒤 다음으로
+      // 장면이 끝나면 잠깐 어두워지며 사라진 뒤 다음으로 — 사라지는 동안 들어온 탭·자동 진행은 무시
+      // (결과를 받을 쪽은 지금 붙잡아 둔다. 늦게 꺼내면 다음 장면의 쪽을 잘못 풀 수 있다)
+      if (vn.closing) return;
+      const r = vnResolve; vnResolve = null;
       set({ vn: { ...vn, closing: true } });
-      setTimeout(() => { set({ vn: null }); const r = vnResolve; vnResolve = null; r?.(vn.player.result); }, 260);
+      setTimeout(() => { if (get().vn?.player === vn.player) set({ vn: null }); r?.(vn.player.result); }, 260);
     } else set({ vn: { ...vn, view } });
   },
 

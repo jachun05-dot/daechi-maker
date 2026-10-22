@@ -568,3 +568,34 @@ code { font-size: 11px; padding: 1px 4px; border-radius: 4px; background: var(--
 .wd-slot.skip { opacity: .5; text-decoration: line-through; }
 
 .fc-flow { margin: 0; display: grid; gap: 2px; font-size: 11.5px; color: var(--accent); }
+
+/* ---------- 연애 — 하트 · 단계 · 열쇠 · 취향 (ui/common/Bond.tsx) ---------- */
+.hearts { display: inline-flex; gap: 1px; font-size: 12px; line-height: 1; letter-spacing: 0; }
+.hearts i { font-style: normal; opacity: .35; }
+.hearts i.on { opacity: 1; }
+.bond-badge { display: grid; justify-items: end; gap: 3px; min-width: 76px; }
+.bond-badge .stage { font: 700 11px var(--font-ui); font-style: normal; padding: 2px 7px; border-radius: 10px; background: var(--line); color: var(--sub); }
+.bond-badge .stage.s3 { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--ink); }
+.bond-badge .stage.s4 { background: color-mix(in srgb, #e0607e 22%, transparent); color: var(--ink); }
+.bond-badge .stage.s5 { background: #e0607e; color: #fff; }
+.keys { display: inline-flex; gap: 2px; margin-left: 4px; font-size: 10px; }
+.keys i { font-style: normal; opacity: .55; }
+.keys i.on { opacity: 1; }
+.keys i.off { color: var(--sub); }
+.bond-detail { display: grid; gap: 8px; margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 12.5px; }
+.bond-detail > div > span { display: block; font-size: 11px; color: var(--sub); margin-bottom: 3px; }
+.bd-row { display: flex; align-items: center; gap: 8px; }
+.bd-row > span { margin: 0 !important; }
+.bd-keys ul, .bd-likes ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.bd-keys li { color: var(--sub); }
+.bd-keys li.on { color: var(--ink); font-weight: 600; }
+.bd-keys li.off { text-decoration: line-through; opacity: .6; }
+.bd-likes small { color: var(--sub); font-size: 10.5px; margin-right: 4px; }
+.bd-likes p, .bd-dates { margin: 0; color: var(--sub); font-size: 11.5px; }
+/* 데이트 장소 고르기 (주말 계획판 약속 카드) */
+.inv-where { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 5px; font-size: 11px; color: var(--sub); }
+.inv-where span { margin-right: 2px; }
+.inv-where button { border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 3px 9px; font: 600 11px var(--font-ui); cursor: pointer; }
+.inv-where button.on { background: #e0607e; border-color: #e0607e; color: #fff; }
+.inv-where button i { font-style: normal; color: #e0a03c; margin-right: 2px; }
+.inv-where button.on i { color: #fff; }

@@ -1,6 +1,6 @@
 /* 주말 계획판 — 서울 지도 위 핀을 눌러 토·일 × (낮·저녁) 4칸을 채우고 출발
    - 누가 있는지는 보이지 않는다. 메인 이벤트가 있는 곳엔 "!", 장소를 누르면 흔적 한 줄
-   - 약속 연락: 수락하면 그 칸이 약속으로 고정 (같은 시간 두 약속은 하나만)
+   - 약속 연락: 수락하면 그 칸이 약속(데이트)으로 고정 (같은 시간 두 약속은 하나만). 만날 곳을 바꿀 수 있다 — 알아낸 취향이면 ★
    - 핀 위치: content/places.ts 의 pos [가로 %, 세로 %]
    - 지도 이미지: src/assets/images/ui/map.png (4:5 비율 권장). 없으면 아래 SeoulMap 그림이 나온다 */
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -12,12 +12,25 @@ import { WEATHER_ICON, WEATHER_LABEL } from '@/content/weekend';
 import { uiImage, avatarImage } from '@/engine/assets';
 import { deltaChips, won } from '@/engine/chips';
 import { hpMax } from '@/engine/state';
-import type { GameState } from '@/engine/types';
+import type { CharId, GameState } from '@/engine/types';
+import { ROMANCE } from '@/content/romance';
+import { likedPlaces } from '@/engine/romance';
 import { actionsOf, recommendPlan, regularLevel, scaledDelta, slotLabel, travelCost, DAY_NAMES, SLOT_NAMES, type Plan, type WeekendSpec } from '@/engine/weekend';
 import { Chips } from '../common/Chips';
 import { Mono } from '../common/Mono';
 
 const SEASON_MARK: Record<number, string> = { 4: '🌸', 10: '🎆', 12: '⛸' };
+
+/** 데이트 장소 후보 — 그 사람이 말한 곳 + 그 사람이 좋아하는 곳 + 무난한 곳 (이번 주 지도에 있는 곳만, 최대 4) */
+const DATE_SPOTS = ['hangang', 'seongsu', 'gangnam', 'daehakro'];
+function datePlaces(st: GameState, c: CharId, suggested: string, visible: string[]) {
+  const out = [suggested];
+  for (const id of [...likedPlaces(st, c), ...DATE_SPOTS]) if (!out.includes(id) && visible.includes(id) && out.length < 4) out.push(id);
+  return out;
+}
+/** 알아낸 취향이면 ★ */
+const knownLike = (st: GameState, c: CharId, place: string) =>
+  ROMANCE[c].tastes.some(t => t.kind === 'place' && t.place === place && st.bond[c].likes.includes(t.id));
 
 export function MapOverlay() {
   const map = useUI(s => s.map);
@@ -31,6 +44,9 @@ function Planner({ spec, st }: { spec: WeekendSpec; st: GameState }) {
   const [plan, setPlan] = useState<Plan>(() => [null, null, null, null]);
   const [accepted, setAccepted] = useState<string[]>([]);
   const [declined, setDeclined] = useState<string[]>([]);
+  /** 데이트 장소 — 약속마다 고른 곳 (기본은 그 사람이 말한 곳) */
+  const [where, setWhere] = useState<Record<string, string>>({});
+  const placeOf = (id: string) => where[id] ?? spec.invites.find(x => x.id === id)!.place;
   const [active, setActive] = useState(0);
   const [sel, setSel] = useState<string | null>(null);
   const [zoom, setZoom] = useState(false);
@@ -63,11 +79,12 @@ function Planner({ spec, st }: { spec: WeekendSpec; st: GameState }) {
     return p;
   };
 
-  const accept = (id: string) => {
+  const accept = (id: string, at = placeOf(id)) => {
     const v = spec.invites.find(x => x.id === id)!;
-    const pl = placeById(v.place)!;
+    const pl = placeById(at)!;
     const act = actionsOf(st, pl, spec.month).find(x => !x.locked && !x.a.long) ?? actionsOf(st, pl, spec.month)[0];
-    put(v.slot, v.place, act.i, id);
+    setWhere(w => ({ ...w, [id]: at }));
+    put(v.slot, at, act.i, id);
     setAccepted(a => [...a.filter(x => x !== v.clash), id]);
     setDeclined(d => d.filter(x => x !== id));
   };
@@ -85,7 +102,7 @@ function Planner({ spec, st }: { spec: WeekendSpec; st: GameState }) {
 
   const cost = useMemo(() => travelCost(plan), [plan]);
   const planned = new Set(plan.filter(Boolean).map(p => p!.place));
-  const promisePlaces = new Set(spec.invites.filter(v => accepted.includes(v.id)).map(v => v.place));
+  const promisePlaces = new Set(spec.invites.filter(v => accepted.includes(v.id)).map(v => placeOf(v.id)));
   const place = sel ? placeById(sel) : undefined;
   const pending = spec.invites;
 
@@ -110,10 +127,20 @@ function Planner({ spec, st }: { spec: WeekendSpec; st: GameState }) {
               <div key={v.id} className={`inv${on ? ' on' : ''}${off || blocked ? ' off' : ''}`}>
                 <Mono src={avatarImage(v.c)} text={C.hanja[0]} color={C.color} round />
                 <div className="inv-tx">
-                  <b>{C.name}<small> · {slotLabel(v.slot)} · {placeById(v.place)!.name}</small></b>
+                  <b>{C.name}<small> · {slotLabel(v.slot)} · {placeById(placeOf(v.id))!.name}</small></b>
                   <p>{v.text}</p>
                   {v.clash && <em>같은 시간에 다른 약속 제안이 있다</em>}
                 </div>
+                {on && (
+                  <div className="inv-where">
+                    <span>어디서 만날까?</span>
+                    {datePlaces(st, v.c, v.place, spec.visible).map(id => (
+                      <button key={id} className={placeOf(v.id) === id ? 'on' : ''} onClick={() => accept(v.id, id)}>
+                        {knownLike(st, v.c, id) && <i>★</i>}{placeById(id)!.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <div className="inv-b">
                   {on ? <button className="dec" onClick={() => unaccept(v.id)}>취소</button>
                     : <>

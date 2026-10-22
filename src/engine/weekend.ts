@@ -25,6 +25,8 @@ import { emit } from './triggers';
 import { basicMeet, logAff, nextMain, playMain } from './people';
 import { slump } from './crisis';
 import { setClock } from './clock';
+import { dateMeet, STAMP } from './love';
+import { spentTime } from './romance';
 import { bump, checkMilestones, gainChips, snap } from './progress';
 import type { MainEvent } from './story/library';
 
@@ -355,20 +357,15 @@ async function visitSlot(st: GameState, T: Turn, slot: number, sp: SlotPick, wea
   if (st.stress >= 100) await slump(st);
 }
 
-/** 약속 — promise.{인물} 장면 한 줄 + 호감도 */
+/** 약속 = 데이트 — 그 사람이 좋아하는 능력·장소로 대성공/성공/실수 판정 (engine/love.ts) */
 async function promiseMeet(st: GameState, c: CharId, place: Place, already: boolean) {
   const before = { ...st.aff };
-  addAff(st, c, BALANCE.promise.aff);
   addSighting(st, c, place.name);
   (st.promiseLog[c] ??= { kept: 0, broken: 0, declined: 0 }).kept++;
+  const { res, aff } = await dateMeet(st, c, place, already);
+  addAff(st, c, aff);
   emit(st, `promise:kept:${c}`);
-  if (!already) {
-    const lead: StoryNode = { t: 'say', text: `약속한 ${place.name}. ${josa(CHARACTERS[c].name, '이/가')} 먼저 와 있었다.`, line: 0 };
-    const nodes = hasScene(`promise.${c}`) ? [lead, pick(getScene(`promise.${c}`).nodes)] : [lead];
-    await ui.playScene(nodes, { theme: 'day', bg: place.bg, intro: { where: place.name } });
-    ui.setTheme('day');
-  }
-  logAff(st, before, `${josa(CHARACTERS[c].name, '과/와')}의 약속`, c, place.name);
+  logAff(st, before, `${josa(CHARACTERS[c].name, '과/와')}의 약속 · ${STAMP[res]}`, c, place.name);
 }
 
 /** 날씨 전용 장면 — 기본 만남 대신, 호감도 조금 더 */
@@ -377,6 +374,7 @@ async function weatherMeet(st: GameState, c: CharId, place: Place, scene: string
   addAff(st, c, BALANCE.affection.basic + 1);
   st.stat.spirit += BALANCE.affection.spiritOnMeet;
   addSighting(st, c, place.name);
+  spentTime(st, c, BALANCE.romance.rumor.meet);
   const lead: StoryNode = { t: 'say', text: `${place.name}에서 ${josa(CHARACTERS[c].name, '과/와')} 마주쳤다.`, line: 0 };
   unlockAlbum(`scene:${scene}`);
   emit(st, `meet:${c}`);

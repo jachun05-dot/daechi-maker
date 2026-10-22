@@ -3,6 +3,7 @@
    ========================================================= */
 import type { ChoiceOption, Effect, Scene, StoryNode } from '../types';
 import { CHAR_ORDER } from '@/content/characters';
+import { STAGES, stageOf } from '@/content/romance';
 
 export class StoryError extends Error {
   constructor(public file: string, public line: number, msg: string) { super(`${file}:${line} — ${msg}`); }
@@ -30,8 +31,20 @@ export function parseEffect(tokens: string[], file: string, line: number): Effec
   const eff: Effect = {};
   for (const tok of tokens) {
     if (tok.startsWith('flag:')) { (eff.flags ??= []).push(tok.slice(5)); continue; }
+    // 연애 — key:taejun.1 (열쇠 열기) · lock:taejun.1 (닫기) · stage:taejun.친구 (단계) · like:taejun.river (취향 발견)
+    const rm = /^(key|lock|stage|like):(\w+)\.(\S+)$/.exec(tok);
+    if (rm) {
+      const [, kind, c, v] = rm;
+      if (!(CHAR_ORDER as string[]).includes(c)) throw new StoryError(file, line, `"${tok}"의 "${c}"은(는) 인물 id가 아닙니다`);
+      if (kind === 'stage') {
+        const n = stageOf(v);
+        if (n < 0) throw new StoryError(file, line, `"${tok}" — 단계는 ${STAGES.join(' · ')} 중 하나`);
+        (eff.stage ??= {})[c as 'ian'] = n;
+      } else (kind === 'key' ? (eff.keys ??= []) : kind === 'lock' ? (eff.locks ??= []) : (eff.likes ??= [])).push(`${c}.${v}`);
+      continue;
+    }
     const m = /^([a-z_]+)([+-])(\d+)$/.exec(tok);
-    if (!m) throw new StoryError(file, line, `알 수 없는 효과 "${tok}" (예: ian+3, spirit+2, vocal+1, stress-5, flag:이름)`);
+    if (!m) throw new StoryError(file, line, `알 수 없는 효과 "${tok}" (예: ian+3, spirit+2, vocal+1, stress-5, flag:이름, key:taejun.1)`);
     const [, key, sign, num] = m;
     const v = (sign === '-' ? -1 : 1) * Number(num);
     if (STAT_KEYS.includes(key)) (eff.stat ??= {})[key as 'int'] = v;
