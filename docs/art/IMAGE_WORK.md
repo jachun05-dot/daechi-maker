@@ -170,9 +170,13 @@ Avoid: people, faces, text, readable signs, logos, pink cherry blossoms, oversat
 | `burning` | 불타는 마을 | 2 |
 | `field` | 전장 | 1 |
 
-### ③ 평일 일정 그림 — 프롬프트가 이미 따로 정리돼 있다
-→ **[schedule_prompts.md](schedule_prompts.md)** 를 그대로 쓴다 (한국어 프롬프트, 16:9 가로, 1인칭, 얼굴 없이 손까지)
-- 보통 28장 먼저, 그다음 대성공 · 실수 버전 (편집 프롬프트도 그 파일에 있음)
+### ③ 평일 일정 그림 — 프롬프트가 이미 따로 정리돼 있다 (⚠ B안 때문에 바뀌는 점 먼저 읽기)
+→ **[schedule_prompts.md](schedule_prompts.md)** 를 쓴다 (한국어 프롬프트, 16:9 가로)
+- **2026-10-22 결정 (B안):** 평일 판정 화면은 **일정 그림을 배경으로 깔고, 그 위에서 여주 도트가 움직이며 판정에 반응**한다 (⑥ 도트 애니메이션)
+- 그래서 일정 그림이 이렇게 바뀐다 — **많이 뽑기 전에 사용자에게 한 번 확인받고 시작**
+  - schedule_prompts.md 는 "1인칭 · 손이 나오는 그림"으로 짜여 있다. 도트 여주가 그 장소에 서야 하니 **사람·손 없이 장소만** 그리는 쪽으로 고친다 (책상·소품은 그대로)
+  - 시점은 1인칭 대신 **조금 떨어진 눈높이**에서 그 장소를 본 모습. **아래 왼쪽 1/3 은 바닥이나 빈 공간**으로 단순하게 (도트가 서는 자리)
+  - **대성공 · 실수 그림 버전은 우선순위를 낮춘다** — 도트 반응(만세 · 털썩)이 그 역할을 한다. 보통 28장이 먼저, 대성공·실수 버전은 사용자가 원하면
 - 자주 나오는 순: `study` `academy` `rest` `home` `library` `dokseo` `cafe` `gym`
 - 동아리 6개(`council` `athletics` `science` `drama` `band` `mun`)도 같은 폴더 같은 규칙 (`npm run images` 목록엔 아직 안 나오지만 게임은 찾는다)
 
@@ -207,7 +211,70 @@ Avoid: people, faces, text, readable signs, logos, pink cherry blossoms, oversat
 | `ihyun1` ~ `ihyun4` | 적장 사야가 · 귀화 · 먼저 떠난 사람 · 남겨진 사람 | 왜군 투구 · 조선 갓 옆에 놓인 왜도 · 강가에 놓인 신발 한 켤레 · 빈 자리에 떨어진 배꽃 |
 | `sihyun1` ~ `sihyun3` | 천민 악공의 지음 · 적진의 거문고 · 끊어진 현 | 거문고와 술대 · 적진 천막 앞 거문고 · 줄 하나가 끊어진 거문고 |
 
-### ⑥ 보류 — 지금은 하지 않는다
+### ⑥ 도트 애니메이션 — 여주 SD 도트 (평일 판정 · B안 확정)
+**왜:** 평일 판정(대성공 / 성공 / 실수)이 그림만으로는 밋밋하다. 일정 그림(③)을 배경으로 깔고, 그 위에서 **여주 도트가 그 일정을 하다가 판정이 뜨는 순간 반응**한다.
+**원칙:** 이야기 장면(비주얼 노벨 화면)에는 여주 도트를 넣지 않는다 — 장면은 여주 시점이라 여주 얼굴이 나오지 않는 게 규칙. 도트는 육성 · 지도 같은 **게임 화면에서만**.
+
+**지금 있는 것**
+- 기준 도트: 여주 걷기 4프레임 — 원본 `docs/art/dot/heroine_walk_source.png` (제미나이) → 정리본 `src/assets/images/dot/heroine/walk.png`
+- 외형: 어깨 길이 짙은 갈색 머리 + **흰 배꽃 머리핀**, 네이비 블레이저(연회색 테두리, 왼쪽 가슴 금색 작은 문장) · 흰 셔츠 · 버건디 리본 · 차콜 주름치마 · 네이비 무릎양말 · 갈색 로퍼 · 네이비 가방
+- 크기: 도트 약 67×117 (34색). 시트는 **칸 80×128** 에 맞춰 가로로 이어 붙임
+- 걷기 순서는 **2 → 4 → 3 → 4** (1번 안 씀) — 사용자가 고름
+- **고칠 것 (사용자 지적):** 팔과 가방이 어색하다. 특히 가방이 1·3번엔 보이고 2·4번엔 안 보여서 깜빡인다 → 픽셀을 고쳐 네 장 모두 가방이 같은 자리에 보이게, 팔 흔들림을 자연스럽게. 고친 뒤 사용자에게 보여 주고 확인
+- 미리보기 페이지(이 세션이 만든 비공개 아티팩트): https://claude.ai/artifact/PYm3pknkwVFHcFUKmbCB3f — 다른 세션에서 고치려면 먼저 `read`
+
+**만들 동작 (평일 일정은 6가지 분류로 묶여 있어서 분류별로 하나씩)**
+| 파일 `dot/heroine/` | 쓰임 | 프레임 | 동작 |
+|---|---|---|---|
+| `study.png` | 공부 12개 (자습 · 학원 · 독서실 …) | 3 | 책상 앞에서 필기, 고개 끄덕 |
+| `art.png` | 예술 8개 (보컬 · 댄스 · 연기 …) | 3 | 마이크 들고 리듬 타기 |
+| `work.png` | 알바 2개 (카페 · 과외) | 3 | 앞치마 두르고 컵 닦기 |
+| `body.png` | 운동 2개 (체육관 · 운동부) | 4 | 제자리 달리기 |
+| `rest.png` | 휴식 4개 (귀가 · 휴식 …) | 2 | 엎드려 자기 (zzz 는 코드가 띄움) |
+| `social.png` | 사교 (학생회 등) | 3 | 서류 들고 손 흔들기 |
+| `great.png` | **대성공!** — 모든 일정 공통 | 4 | 만세 점프 (반짝임은 코드가) — `--keep-y` |
+| `ok.png` | **성공** | 2 | 고개 끄덕 · 주먹 쥐기 |
+| `fail.png` | **실수…** | 3 | 털썩 주저앉기 + 땀방울 |
+| `doze.png` | 수업 졸음 (선택) | 2 | 꾸벅꾸벅 |
+| `idle.png` | 서 있기 (선택) | 2 | 숨쉬기 (위아래 1도트) |
+| `snack.png` | 야식 이벤트 (나중) | 3 | 라면 후루룩 |
+- 분류는 `src/content/rolls.ts` 의 `cat` (study · art · work · body · rest · social). 동아리도 이 분류를 따른다
+- 반응 3개(great · ok · fail)는 나중에 월말 성적표 · 시험 · 체육대회 · 축제 결과에도 다시 쓴다 → 먼저 만들면 좋다
+- 추천 순서: `great` `fail` `ok` → `study` `rest` `art` → 나머지
+
+**제미나이로 뽑기** — 기준 그림 `docs/art/dot/heroine_ref_x4.png` (걷기 2번 서 있는 프레임을 4배로 키운 것, 자홍 배경)를 첨부한다. 원본 `heroine_walk_source.png` 를 같이 첨부해도 좋다. 사용자가 직접 뽑으니 이 파일을 사용자에게 보내 준다
+```
+The attached image is the character reference. Keep her exactly the same: same pixel size, same colors, same hair with the white pear-blossom hairpin, same face, same school uniform and bag. Do not redesign her.
+
+Make a {N}-frame pixel art animation sprite sheet: {동작 설명 — 영어로, 프레임마다 한 줄}.
+Side view facing right (three-quarter view is fine if the motion needs it).
+
+Layout: the {N} frames in one horizontal row, left to right, evenly spaced, every frame the same size, feet on the same baseline (except when she jumps).
+Style: retro 16-bit pixel art, flat colors, max 16 colors, 1-pixel dark outline, no anti-aliasing, no blur, no gradients.
+Background: flat solid magenta (#FF00FF) everywhere. No text, no frame numbers, no grid lines, no props floating in the air, no watermark.
+```
+- 소품(책상 · 마이크 · 컵)은 **여주 몸에 붙은 것만** 그리게 한다 (책상은 앞쪽 일부만). 배경은 일정 그림이 맡는다
+- 프레임마다 사람이 달라지면: `All frames must show the identical character; only the arms, legs and head move.`
+- 그래도 안 맞으면 기준 한 장만 쓰고, 나머지 프레임은 이 세션에서 픽셀을 고쳐 만든다 (작은 움직임 — 팔 · 고개 · 다리 몇 도트)
+
+**정리 → 넣기**
+```bash
+python3 scripts/dot_clean.py 업로드.png src/assets/images/dot/heroine/great.png --frames 4 --keep-y --preview /스크래치/great_x4.png
+```
+- 배경 지우기 · 도트 칸 찾기(보통 7~9px) · 색 맞추기 · 머리 가운데와 발끝 정렬 · 칸 80×128 에 넣기까지 한 번에. 점프처럼 위아래로 움직이는 동작만 `--keep-y`
+- `--preview` 로 4배 확대본을 만들어 눈으로 확인하고 사용자에게 보여 준다. 칸을 넘친다고 나오면 `--canvas 96x144` 처럼 키우되, **모든 동작이 같은 칸 크기**여야 하니 그때는 기존 시트도 다시 만든다
+- 원본은 `docs/art/dot/heroine_{동작}_source.png` 로 같이 보관 (나중에 다시 정리할 수 있게)
+
+**코드 연결 (아직 없음 — 도트가 2~3개 들어오면 연결)**
+- 넣을 곳: `src/ui/overlays/LiveWeek.tsx` 의 "오늘 장면" 칸 (`.lw-today`, 16:9). 지금은 일정 그림(`scheduleShot`) 또는 색 그라데이션 + 아이콘이 나온다
+- 동작: 그 칸 일정의 분류 동작을 반복 → 판정이 나오는 순간 `great` / `ok` / `fail` 을 한 번 재생하고 마지막 프레임에서 멈춤 (도장 「대성공!」「성공」「실수…」와 같은 타이밍). 수업 졸음(`doze`) · 쓰러짐은 그 상태 동작
+- 표시: 칸 아래 왼쪽, 도트 키가 칸 높이의 약 60%. **정수 배율**로만 키우고 `image-rendering: pixelated` (흐려지지 않게). 걷기처럼 시트를 칸 80×128 단위로 잘라 쓰고, 프레임 수 = 시트 너비 ÷ 80
+- 동작별 속도 · 순서는 한 곳(예: `src/content/dot.ts`)에 모은다 — 걷기 `order: [1, 3, 2, 3]` (0부터 센 번호), 기본 6~8 FPS, 반응은 조금 빠르게
+- `prefers-reduced-motion` 이면 반복 동작은 멈추고 첫 프레임만, 빠르게 넘기기(탭)면 바로 반응 마지막 프레임으로
+- 그림 없는 동작은 지금처럼 아이콘으로 (그림이 하나도 없어도 게임이 돌아가야 함)
+- 연결 후 `npm test` · `npm run build` · 폰 크기 캡처로 확인
+
+### ⑦ 보류 — 지금은 하지 않는다
 - **캐릭터 스탠딩 · 표정 · 프로필 · 인물 이벤트 CG:** 제미나이로 얼굴을 매번 같게 뽑는 데 실패해서 사용자가 보류함 ("사람은 내가 못하겠고"). 남주 플롯도 한태준 말고는 다시 쓰는 중이라 설정 확정 뒤에 다시 다룬다. 사용자가 먼저 꺼내면 그때 이어서
   - 그때 참고: 스탠딩은 세로 2:3, 허벅지~머리 위 여백, 흰 단색 배경으로 뽑고 배경 지우기. 얼굴을 지키려면 ① 기준 그림을 먼저 다듬고 ② 같은 얼굴 각도 시트를 만든 뒤 ③ 장면을 그리게 하는 순서가 가장 나았다. 앉히는 등 자세를 크게 바꾸면 얼굴이 바뀐다
   - 이안 외형(샘플 기준): 은백색 살짝 흐트러진 짧은 머리, 옆으로 넘긴 앞머리, 옅은 호박색 눈, 창백한 피부, 날렵한 턱. 교복 = 네이비 블레이저(연회색 파이핑, 금색 단추, 왼쪽 가슴 금색 백합+월계수 문장) · 네이비 줄 연회색 V넥 조끼 · 흰 셔츠 · 버건디에 네이비·흰 사선 넥타이 · 차콜 바지
@@ -259,5 +326,7 @@ npm run build:single    # dist-single/index.html (한 파일짜리 게임)
 | 톡 사진이 나오는 대화 | `src/content/stories/chat/*.story` 의 `[photo id 설명]` |
 | 전생 꿈 목록 (기억 카드 id) | `src/content/eras/joseon/stories/dreams/*.story` |
 | 평일 일정 그림 프롬프트 | `docs/art/schedule_prompts.md` |
+| 도트 정리 스크립트 · 도트 원본 | `scripts/dot_clean.py` · `docs/art/dot/` |
+| 평일 일정 분류(도트 동작 묶음) | `src/content/rolls.ts` 의 `cat` |
 | 지도 배치 가이드 그림 | `docs/art/map_layout_guide.png` |
 | 게임 전체 설계 · 인물 설정 | `docs/GAME_DESIGN.md` · `docs/CHARACTERS.md` |
