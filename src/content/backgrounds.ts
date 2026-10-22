@@ -29,7 +29,7 @@ export const BASE_BACKGROUNDS: Record<string, Background> = {
   palace:     { label: '경복궁·봉은사',        color: '#d8d0c0', focus: '70% center' },
   rooftop:    { label: '밤의 옥상',            color: '#1f2440' },
   rain:       { label: '비 오는 거리',         color: '#7a8494' },
-  airport:    { label: '인천공항',             color: '#d3dbe6' },
+  airport:    { label: '인천공항',             color: '#d3dbe6', focus: '68% center' },
   hospital:   { label: '병원',                 color: '#dfe9e9' },
   stage:      { label: '무대',                 color: '#2a1a1f' },
   winter:     { label: '겨울 거리',            color: '#e2e6ee' },
