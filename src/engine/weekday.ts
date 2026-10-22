@@ -209,6 +209,11 @@ export async function runWeekdays(st: GameState, T: Turn, week: number, incident
     days.push(r);
     ui.weekPatch(w => { w.days[day] = { ...w.days[day], school: r.school }; w.cur = { day, slot: 0 }; });
     for (const s of [0, 1]) {
+      // 하는 중 — 도트가 그 일정을 잠깐 하다가 (판정은 아직)
+      if (r.slots[s].id && !['skip', 'empty', 'broke', 'collapse'].includes(r.slots[s].state)) {
+        ui.weekPatch(w => { w.cur = { day, slot: s }; });
+        await ui.pace(R().doing);
+      }
       ui.weekPatch(w => { w.cur = { day, slot: s }; w.days[day] = { ...w.days[day], slots: w.days[day].slots.map((x, k) => (k === s ? { ...x, ...r.slots[s] } : x)) }; });
       refresh();
       await ui.pace(r.slots[s].state === 'great' || r.slots[s].state === 'fail' ? 850 : 450);

@@ -2,11 +2,23 @@
    평일 실시간 진행 — 위: 오늘 장면 (그림 + 움직임 + 판정 도장 + 오른 것)
                      아래: 월~금 띠 (칸마다 결과 · 사건 아이콘)
    그림: src/assets/images/schedule/{일정id}.jpg · {id}_great.jpg · {id}_fail.jpg (없으면 갈래 색과 아이콘)
+   도트: 여주가 그 일정을 하다가(하는 중) 판정에 반응 — content/dot.ts · ui/common/DotSprite.tsx
    ========================================================= */
 import { useUI, ui, type LiveSlot, type LiveWeek as Week } from '@/store/ui';
 import { scheduleShot } from '@/engine/assets';
 import { CAT_LOOK, type Cat } from '@/content/rolls';
 import { SLOT_LABEL } from '@/engine/timetable';
+import type { DotAnim } from '@/content/dot';
+import { DotSprite, resolveDot } from '../common/DotSprite';
+
+/** 지금 칸에서 도트가 할 동작 — 하는 중이면 그 일정 분류, 판정이 나오면 반응 */
+function dotAnim(s: LiveSlot, school: string, slot: number): DotAnim {
+  if (s.state === 'wait') return slot === 0 && (school === 'doze' || school === 'sleep') ? 'doze' : ((s.cat as Cat) ?? 'study');
+  if (s.state === 'great') return 'great';
+  if (s.state === 'ok') return 'ok';
+  if (s.state === 'fail' || s.state === 'collapse' || s.state === 'broke') return 'fail';
+  return 'idle';
+}
 
 const STAMP: Record<string, [string, string] | undefined> = {
   great: ['대성공!', 'great'], ok: ['성공', 'ok'], fail: ['실수…', 'fail'],
@@ -34,8 +46,10 @@ function Today({ w }: { w: Week }) {
   const img = s.id ? scheduleShot(s.id, s.state) : undefined;
   const stamp = STAMP[s.state];
   const key = `${cur.day}-${cur.slot}-${s.state}`;
+  const anim = dotAnim(s, day.school, cur.slot);
+  const dot = !!resolveDot('heroine', anim);
   return (
-    <div className={`lw-today st-${s.state}`}>
+    <div className={`lw-today st-${s.state}${dot ? ' has-dot' : ''}`}>
       <div key={key} className={`lw-shot${img ? '' : ' none'}`} style={img ? { backgroundImage: `url("${img}")` } : { background: `linear-gradient(135deg, ${look.from}, ${look.to})` }}>
         {!img && <span className="lw-icon">{look.icon}</span>}
       </div>
@@ -44,6 +58,7 @@ function Today({ w }: { w: Week }) {
           <i key={i} style={{ left: `${8 + ((i * 37) % 84)}%`, animationDelay: `${(i * 0.23) % 1.4}s` }}>{s.state === 'great' ? '✦' : look.fx}</i>
         ))}
       </div>
+      {dot && <div className="lw-dot"><DotSprite key={key} anim={anim} height={118} /></div>}
       <div className="lw-cap">
         <span>{day.label}요일 · {SLOT_LABEL[cur.slot as 0 | 1]}{s.club ? ' · 동아리' : ''}{s.immerse ? ' · 몰입' : ''}</span>
         <b>{s.name || '빈칸'}</b>

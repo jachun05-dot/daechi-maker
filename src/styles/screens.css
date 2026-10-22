@@ -599,3 +599,22 @@ code { font-size: 11px; padding: 1px 4px; border-radius: 4px; background: var(--
 .inv-where button.on { background: #e0607e; border-color: #e0607e; color: #fff; }
 .inv-where button i { font-style: normal; color: #e0a03c; margin-right: 2px; }
 .inv-where button.on i { color: #fff; }
+
+/* ---------- 도트 스프라이트 (ui/common/DotSprite.tsx) ---------- */
+.dot { background-repeat: no-repeat; image-rendering: pixelated; image-rendering: crisp-edges; transform-origin: 50% 100%; pointer-events: none; }
+/* 그림이 아직 없는 반응을 흉내 내는 효과 */
+.dot-hop { animation: dothop .5s cubic-bezier(.3, .7, .4, 1) 2; }
+.dot-nod { animation: dotnod .45s ease-in-out 2; }
+.dot-slump { animation: dotslump .6s ease-out both; }
+.dot-bob { animation: dotbob .7s ease-in-out infinite; }
+.dot-doze { animation: dotdoze 1.6s ease-in-out infinite; }
+@keyframes dothop { 0%, 100% { transform: translateY(0) scale(1, 1); } 15% { transform: translateY(0) scale(1.06, .92); } 50% { transform: translateY(-18%) scale(.96, 1.05); } 85% { transform: translateY(0) scale(1.05, .94); } }
+@keyframes dotnod { 50% { transform: translateY(3%) scale(1, .97); } }
+@keyframes dotslump { 0% { transform: none; filter: none; } 40% { transform: translateY(2%) rotate(-4deg) scale(1.02, .95); } 100% { transform: translateY(6%) rotate(-7deg) scale(1, .9); filter: saturate(.6) brightness(.9); } }
+@keyframes dotbob { 50% { transform: translateY(-2%); } }
+@keyframes dotdoze { 0%, 100% { transform: rotate(0); } 45% { transform: rotate(3deg) translateY(2%); } 55% { transform: rotate(3deg) translateY(2%); } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none !important; } }
+/* 평일 진행 — 오늘 장면 칸의 여주 도트 (아래 왼쪽). 글·오른 것은 도트 오른쪽으로 비킨다 */
+.lw-dot { position: absolute; left: 6%; bottom: 2px; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .35)); }
+.lw-today.has-dot .lw-line { padding-left: 38%; }
+.lw-today.has-dot .lw-gains { left: 38%; max-width: 58%; bottom: 54px; }

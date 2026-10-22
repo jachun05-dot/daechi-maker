@@ -40,3 +40,5 @@ export const scheduleShot = (id: string, state: string) =>
   (state === 'great' || state === 'fail' ? byKey[`schedule/${id}_${state}`] : undefined) ?? byKey[`schedule/${id}`];
 export const uiImage = (key: string) => byKey[`ui/${key}`];
 export const photoImage = (id: string) => byKey[`photo/${id}`];
+/** 도트 시트 — dot/{인물}/{동작} (칸 80×128 가로 이어 붙임, content/dot.ts) */
+export const dotImage = (char: string, anim: string) => byKey[`dot/${char}/${anim}`];
