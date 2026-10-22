@@ -1,12 +1,12 @@
-# 안드로이드 APK 자동 빌드
-# - 이 브랜치나 main 에 푸시하면: 테스트 → 웹 빌드 → APK 빌드
+# 안드로이드 APK 빌드 — 지금은 멈춰 둠 (게임이 완성되면 다시 켠다)
+# - 다시 켜기: 아래 on: 에 push: branches: [main] 을 되살린다
+# - 지금도 GitHub → Actions → "Android APK" → Run workflow 로 손으로는 돌릴 수 있다
+# - 순서: 테스트 → 웹 빌드 → APK 빌드
 # - 결과물: (1) Actions 실행 화면의 Artifacts 에 "ehwa-apk"
 #           (2) Releases 의 "apk-latest" (폰에서 바로 받기 좋음, 매번 덮어씀)
 name: Android APK
 
 on:
-  push:
-    branches: [main, 'claude/ehwa-visual-novel']
   workflow_dispatch:
 
 permissions:

@@ -18,7 +18,9 @@
 | `npm run build:single` | `dist-single/index.html` 한 파일 생성 (링크 공유용) |
 | `npm run cap:android` / `cap:ios` | 빌드 → 네이티브 프로젝트 동기화 → Android Studio / Xcode 열기 (iOS 는 처음에 `npx cap add ios`) |
 
-**안드로이드 APK**: 푸시하면 GitHub Actions 가 자동으로 만들어 저장소 Releases 의 `apk-latest` 에 올립니다. 자세한 건 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#앱-배포).
+**웹 플레이 링크**: main 에 푸시하면 GitHub Actions 가 테스트 → 빌드 → **https://jachun05-dot.github.io/daechi-maker/** 에 자동으로 올립니다 (`.github/workflows/pages.yml`).
+
+**안드로이드 APK**: 게임이 완성될 때까지 자동 빌드를 멈춰 두었습니다. 필요하면 GitHub → Actions → "Android APK" → Run workflow 로 손으로 돌릴 수 있습니다. 자세한 건 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#앱-배포).
 
 ## 무엇을 어디서 고치나
 

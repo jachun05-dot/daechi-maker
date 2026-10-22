@@ -113,7 +113,11 @@ platform/      웹과 앱이 다른 부분 — storage.ts (저장 위치) · nat
 
 ## 앱 배포
 
-- **안드로이드**: 이 브랜치나 main 에 푸시하면 GitHub Actions(`.github/workflows/android.yml`)가 테스트 → 웹 빌드 → APK 를 만들어
+- **웹**: main 에 푸시하면 `.github/workflows/pages.yml` 이 테스트 → `npm run build`(dist/, 그림은 별도 파일) → GitHub Pages 에 올립니다.
+  주소 https://jachun05-dot.github.io/daechi-maker/ · 처음 한 번 저장소 Settings → Pages → Source 를 "GitHub Actions" 로 설정해야 합니다.
+  `vite.config.ts` 의 `base: './'` 덕분에 하위 경로(/daechi-maker/)에서도 그대로 동작합니다.
+- **안드로이드**: **지금은 자동 빌드를 멈춰 둠** (게임 완성 후 다시 켬 — `android.yml` 의 `on:` 에 `push: branches: [main]` 되살리기).
+  손으로 돌리면 GitHub Actions(`.github/workflows/android.yml`)가 테스트 → 웹 빌드 → APK 를 만들어
   저장소 **Releases → `apk-latest`** 에 올립니다. 폰에서 `ehwa.apk` 를 받아 설치 (출처를 알 수 없는 앱 허용 필요).
   - 서명 키 `android/app/ehwa-debug.keystore` 는 테스트용이라 저장소에 있습니다. 같은 키라서 새 APK 를 덮어 설치해도 세이브가 남습니다.
   - Play 스토어에 올릴 때는 별도 출시 키를 만들어 저장소 밖(GitHub Secrets)에 두고 `assembleRelease`/`bundleRelease` 로 바꿉니다.
