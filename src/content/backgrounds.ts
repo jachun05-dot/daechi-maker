@@ -19,7 +19,7 @@ export const BASE_BACKGROUNDS: Record<string, Background> = {
   hangang:    { label: '한강 공원',            color: '#c9d6e3' },
   hongdae:    { label: '홍대 클럽 거리',       color: '#2b2238' },
   music:      { label: '낙원상가 악기점',      color: '#5a4a3e' },
-  daehakro:   { label: '대학로 소극장',        color: '#3f2f35' },
+  daehakro:   { label: '대학로 소극장',        color: '#3f2f35', focus: '68% center' },
   cheongdam:  { label: '청담동 라운지·카페',   color: '#e8e1d2' },
   gallery:    { label: '한남동 갤러리',        color: '#e6e3df' },
   classroom:  { label: '이화고 교실',          color: '#e1e6ec' },
