@@ -14,7 +14,7 @@ export const BASE_BACKGROUNDS: Record<string, Background> = {
   room:       { label: '내 방(낮)',            color: '#e9e6ea' },
   room_night: { label: '내 방(밤)',            color: '#2a2a3c' },
   school:     { label: '이화고 교정·교실',     color: '#dfe4ea' },
-  library:    { label: '이화고 도서관',        color: '#e3dbcd' },
+  library:    { label: '이화고 도서관',        color: '#e3dbcd', focus: '25% center' },
   gym:        { label: '이화고 체육관',        color: '#e6d6c3' },
   hangang:    { label: '한강 공원',            color: '#c9d6e3' },
   hongdae:    { label: '홍대 클럽 거리',       color: '#2b2238' },
