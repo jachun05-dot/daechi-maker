@@ -246,7 +246,7 @@ npm run build:single    # dist-single/index.html (한 파일짜리 게임)
 2. **플레이 링크 갱신** (아티팩트 — 같은 링크 유지):
    - `npm run build:single` 결과 `dist-single/index.html` 에서 `<!doctype>` · `<html>` · `<head>` · `<body>` 태그, `<meta charset>` · `<meta name="viewport">` · `<title>` 을 지우고, 맨 앞에 `<title>이화에 지는 달</title>` 한 줄을 붙여 스크래치 폴더에 저장 (파이썬 정규식으로 하면 된다)
    - Artifact 도구 **publish** 에 `url: https://claude.ai/artifact/Nbb1D7g9nUgQEHpWo244gw` 를 같이 넘긴다. 다른 대화에서 만든 아티팩트라서 **먼저 `read` 한 번** 해야 publish가 된다
-   - 용량 한도 16MB — 지금 약 3MB. 그림을 많이 넣으면 커지니 jpg 품질 86 · 너비 1080 을 지킨다 (한 장 150~200KB 목표)
+   - 용량 한도 16MB — **v21(그림 24장)에서 이미 8.5MB.** 그림이 한 파일 안에 글자로 들어가 1.3배쯤 커진다. 그림을 30장쯤 더 넣으면 한도를 넘으니, 그 전에 사용자에게 말하고 **그림을 따로 올리는 방식**(Artifact `files` 로 그림 파일을 따로 싣고 페이지는 상대 경로로 부르기 — 빌드 설정 변경 필요)으로 바꾼다. jpg 품질 86 · 너비 1080 은 계속 지킨다 (한 장 150~250KB)
 3. 사용자에게: 넣은 그림 목록 + 손본 것(워터마크 등) + 캡처 한두 장, 짧게.
 
 ## 7. 참고 — 어디에 무엇이 있나
