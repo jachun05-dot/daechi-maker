@@ -85,4 +85,4 @@ docs/legacy-stories/         예전 버전 대사 (참고용, 게임에서 읽�
 | `ui/title.jpg` | 타이틀 배경 |
 | `eras/{시대}/…` | 전생 시대 전용 그림. 같은 구조(`bg/` `cg/` `ui/`)로 넣으면 공용보다 우선 (지금: 진주성·손 CG·타이틀) |
 
-`npm run images` 로 빠진 이미지를 확인하세요.
+`npm run images` 로 빠진 이미지를 확인하세요. 그림 작업 순서·규칙·프롬프트는 [docs/art/IMAGE_WORK.md](docs/art/IMAGE_WORK.md) 하나에 정리돼 있습니다.
