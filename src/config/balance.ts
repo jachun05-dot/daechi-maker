@@ -51,7 +51,7 @@ export const BALANCE = {
     rhythm: { great: 0.04, stress: -0.5 },                         // 하루에 할 일 + 쉬는 일 → 그날 스트레스 −, 다음 날 대성공 ↑
     restGreat: 0.2, restBonus: { hp: 3, stress: -2 },            // 쉬는 일정은 실수 없음, 가끔 꿀잠
     failStress: 3, greatStress: -1,
-    doing: 420,            // 판정 전 "하는 중" 보여 주는 시간(ms) — 도트가 그 일정을 하는 모습
+    doing: 1000,           // 판정 전 "하는 중" 보여 주는 시간(ms) — 도트가 그 일정을 하는 모습 (설정의 글자 속도에 따라 ×1.6 / ×1 / ×0.5, 탭하면 건너뜀)
   },
   /** 평일 사건 — [한 주 기본 횟수, 한 번 더 일어날 확률] */
   dayEvents: { school: [1, 0.4] as [number, number], choice: [1, 0.3] as [number, number] },

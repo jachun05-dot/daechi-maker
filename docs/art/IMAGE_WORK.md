@@ -268,7 +268,7 @@ python3 scripts/dot_clean.py 업로드.png src/assets/images/dot/heroine/great.p
 **코드 연결 — 됐다 (2026-10-22)**
 - 설정 한 곳: `src/content/dot.ts` — 동작마다 속도 · 순서 · 반복 여부 · **그림이 없을 때 대신할 동작과 효과**
 - 그리는 곳: `src/ui/common/DotSprite.tsx` (화면 점 기준 정수 배율, `image-rendering: pixelated`) · 그림 찾기 `dotImage()` (`src/engine/assets.ts`)
-- 평일 진행 화면(`src/ui/overlays/LiveWeek.tsx`): 칸마다 **하는 중**(그 일정 분류 동작, 약 0.4초 — `balance.ts` `roll.doing`) → **판정**(great / ok / fail 한 번 재생 후 마지막 프레임에서 멈춤). 실수 · 돈 없음 · 쓰러짐은 `fail`, 빠짐 · 빈칸은 `idle`, 수업에서 졸았던 날 첫 칸은 `doze`
+- 평일 진행 화면(`src/ui/overlays/LiveWeek.tsx`): 칸마다 **하는 중**(그 일정 분류 동작, 약 1초 — `balance.ts` `roll.doing`) → **판정**(great / ok / fail 한 번 재생 후 마지막 프레임에서 멈춤). 실수 · 돈 없음 · 쓰러짐은 `fail`, 빠짐 · 빈칸은 `idle`, 수업에서 졸았던 날 첫 칸은 `doze`
 - **지금은 걷기 그림만 있어서** 나머지는 서 있는 한 장 + 코드 효과로 흉내 낸다 (대성공 폴짝 · 성공 끄덕 · 실수 털썩 · 하는 중 들썩 · 휴식 꾸벅, 운동은 제자리 걷기). **`dot/heroine/{동작}.png` 를 넣는 순간 코드 수정 없이 진짜 동작으로 바뀐다**
 - 새 동작을 넣은 뒤: `npm run build` → 평일 진행 화면 캡처로 확인 (속도가 어색하면 `dot.ts` 의 fps 만 고친다)
 - 걷기 시트는 2026-10-22 에 가방을 고쳤다: 3번의 가방 + 끈 잡은 손을 2 · 4번에 옮겨서 세 장(2 · 3 · 4) 모두 같은 자리에 가방이 보인다. 원본 정리본과 다르니 `dot_clean.py` 로 다시 만들면 이 수정이 사라진다 — 다시 만들 일이 있으면 가방도 다시 맞출 것
