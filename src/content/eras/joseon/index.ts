@@ -57,7 +57,7 @@ export const joseon: EraPack = {
     river:      { label: '달밤의 강·암자',       color: '#151c28' },
     enemy:      { label: '왜군 진영',            color: '#2a0c14' },
     field:      { label: '전장',                 color: '#2a100b' },
-    mansion:    { label: '양반가·약방',          color: '#2c231c' },
+    mansion:    { label: '양반가·약방',          color: '#2c231c', focus: '62% center' },
     moonfield:  { label: '달빛 아래 배꽃 들판',  color: '#2a2620' },
     market:     { label: '장터',                 color: '#3a2a1e' },
     palace_n:   { label: '밤의 임금 막사',       color: '#1a1420' },
