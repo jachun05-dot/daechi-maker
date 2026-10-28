@@ -68,6 +68,10 @@ docs/legacy-stories/         예전 버전 대사 (참고용, 게임에서 읽�
 - **디자인 수정**: 색·글꼴은 `src/styles/tokens.css`, 화면별 스타일은 `src/styles/*.css`
 - 스토리 파일에 문법 오류가 있으면 게임 화면에 **파일 이름과 줄 번호**가 표시됩니다.
 
+## 설정 한눈에
+
+전체 설정 한 장 요약은 [docs/SETTING.md](docs/SETTING.md).
+
 ## 이미지 넣기
 
 `src/assets/images/` 아래에 **정해진 이름으로 파일만 넣으면** 코드 수정 없이 화면에 나옵니다.
